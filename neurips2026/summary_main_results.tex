@@ -1,0 +1,32 @@
+\setlength{\tabcolsep}{3pt}
+\caption{Summary of the main result. We consider four architectures for the IQP circuit (\cref{pic:illustration}), and report the scaling of the critical rank $r^\vta$ (\cref{thm:uniform}) -- the key property of the circuit determining the scaling of MMD's derivative. ``no B.P.'' indicates the absence of barren plateau in the MMD loss. ``A.C.'' means $L^2$ anti-concentration (\cref{def:anti-concentration}) of the IQP-QCBM's output distribution, needed to claim classical non-simulability.}
+\vspace{0.5cm}
+\label{tab:examples-summary}
+\begin{tabular}{llcc}
+\toprule
+Architecture 
+& $r^\vta$ $(|\vta|=\mathcal{O}(\log n))$ 
+& no B.P. 
+& A.C. \\
+\midrule
+Product
+& $\mathcal{O}(\log n)$
+& $\checkmark$
+& $\times$ \\
+
+2D lattice
+& $\mathcal{O}(\log n)$
+& $\checkmark$
+& $\times$ \\
+
+Sparse ER
+& $\mathcal{O}(\mathrm{polylog}(n))$
+& $\checkmark$
+& $\checkmark$ \\
+
+Complete
+& $n$
+& $\times$
+& $\checkmark$ \\
+\bottomrule
+\end{tabular}

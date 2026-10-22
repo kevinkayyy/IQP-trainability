@@ -1,0 +1,1288 @@
+\documentclass[a4paper,onecolumn,notitlepage,nofootinbib,longbibliography,superscriptaddress, floatfix, pra, aps, 10pt]{revtex4-2}
+
+\usepackage{comment}
+\usepackage[caption=false]{subfig}
+\usepackage[normalem]{ulem}
+\usepackage{
+    adjustbox,
+    algorithm,
+    algpseudocode,
+    amscd,
+    amsfonts,
+    amsmath,
+    amssymb,
+    amsthm,
+    bm,
+    booktabs,
+    csquotes,
+    enumerate,
+    enumitem,
+    graphicx,
+    IEEEtrantools,
+    indentfirst,
+    latexsym,
+    mathrsfs,
+    mathtools,
+    multirow,
+    nicefrac,
+    placeins,
+    pifont,
+    relsize,
+    tabls,
+    tikz-cd,
+    times,
+    comment,
+    physics,
+    braket
+}
+\newcommand{\VD}[1]{{\color{violet}[ VD: #1]}}
+\newcommand{\cmt}[1]{{\color{blue}[#1]}}
+\newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\vttheta}{{\bm{\theta}}}
+\newcommand{\vta}{{\bm{a}}}
+\newcommand{\vtaj}{{\bm{a}^j}}
+\newcommand{\vtb}{{\bm{b}}}
+\newcommand{\vtz}{{\bm{z}}}
+\newcommand{\vtx}{{\bm{x}}}
+\newcommand{\vty}{{\bm{y}}}
+\newcommand{\vtv}{{\bm{v}}}
+\newcommand{\vtzp}{{\bm{z}'}}
+\newcommand{\vtsj}{{\bm{s}^j}}
+\newcommand{\vtsl}{{\bm{s}^\ell}}
+\newcommand{\vts}{{\bm{s}}}
+\usepackage{dsfont}
+\usepackage{physics}
+% \usepackage[colorlinks=true,linkcolor=mainred,urlcolor=mainpurple]{hyperref}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{assumption}{Assumption}
+
+
+\newcommand{\aqa}{$\langle aQa^L \rangle$ Applied Quantum Algorithms, Leiden University, The Netherlands}
+\newcommand{\liacs}{LIACS, Leiden University, Niels Bohrweg 1, 2333 CA, Leiden, The Netherlands}
+\newcommand{\bmw}{BMW Group, 80788 München, Germany}
+
+\newcommand\hw[1]{\textcolor{orange}{Hao: #1}}
+
+\begin{document}
+
+\title{Barren Plateaus in a Classically Trained Quantum Generative Model: Emergence and Mitigation}
+\date{\today}
+
+\author{Kevin Shen}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+\affiliation{\bmw}%
+
+\author{Susanne Pielawa}
+\affiliation{\bmw}%
+
+\author{Vedran Dunjko}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+
+\author{Hao Wang}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+
+\begin{abstract}
+
+\end{abstract}
+
+
+\maketitle
+
+%====================================================
+% Summary: Asymptotic support of a Pauli observable under two-copy twirling
+%====================================================
+
+\section{Introduction}
+Quantum generative models, as a branch of quantum machine learning models, typically need to deal with trainability problem. One major concern is whether there is a Barren Plateau when the model scales. The IQP-QCBM is a quantum generative model that is proposed with the hope of being efficiently trainable. Because of the special structure of the IQP circuit, i.e., all gates commute, the MMD loss function can be approximated to arbitrary precision by expressions that are classically computable. The approximated loss function can then be differentiated using back propagation, hence enabling completely classical training. The largest motivation behind the design of this classically trainable model, as discussed by the authors, is to avoid costly quantum gradient computations by methods such as parameter shift rule. Whether IQP model is also barren plateau free remains an open question. Many application papers raise this concern. Being classically trainable does not mean that computing the gradient is efficient. One needs deeply analyze the magnitude of the gradient variance. If we think about the standard results from dynamical lie algebra barren plateau, at the first glance we might think that there will be no barren plateau, because the size of the DLA is polynomial (all generators commute and we are using polynomially many generators). However, this is wrong for two reasons. First, the numerator can still be exponentially vanishing, thus resulting in an exponentially vanishing gradient variance. Second, since the loss function and its gradient are estimated via Monte Carlo methods, if the gradient variance is indeed exponentially vanishing, then we need exponentially many copies, making the training inefficient.
+
+
+Barren Plateau \cite{mcclean_barren_2018, ragone_lie_2024, PRXQuantum.3.010313, Cerezo2021CostFunctionBP, Grant2019InitializationBP, Cerezo2025ProvableAbsenceBP},
+QCBM, IQP, 
+
+\section{Background, Notations and Assumptions}
+\hw{Just a personal preference: $U(\theta)$ over $U_{\theta}$}
+\begin{definition}[Quantum Circuit Born Machine with parameterized Instantaneous Quantum Polynomial circuit (IQP-QCBM)]
+\label{def: IQP}
+An $n$-qubit IQP-QCBM is a variational quantum generative model where sampling is performed by variationally preparing a quantum state $U_\vttheta \ket{+}^{\otimes n}$, and measuring in the Pauli-$X$ basis, where $U_\vttheta$ is a parameterized IQP circuit, i.e., 
+\begin{equation}
+U_\vttheta = \prod_j U_{\theta_j}, \quad U_{\theta_j} = e^{i\theta_j Z^{\vtsj}}, \quad Z^{\vtsj} = \bigotimes_{\iota=1}^n Z^{s^j_\iota}, \quad \vtsj \in \{0,1\}^n \setminus \{\mathbf{0}\} \quad \text{ and }\theta_j\in[0, 2\pi).\end{equation} The output samples follow the distribution: \begin{equation}
+    q_{\theta}(\vtx) = \abs{\bra{\vtx} H^{\otimes n} U_\vttheta \ket{+}^{\otimes n}}^2.
+\end{equation}
+\end{definition}
+
+Previous work \cite{recio2025train, recioarmengol2025iqpoptfastoptimizationinstantaneous} suggests to train the IQP-QCBM model on a classical computer by Monte-Carlo estimating the squared Maximum Mean Discrepancy (MMD) loss function. Due to the special structure of IQP circuits, $\text{MMD}^2$ can be expressed as the weighted mean of expectation values on different observables \cite{rudolph2024trainability, recio2025train}.
+
+
+\begin{proposition} [Squared MMD in IQP-QCBM \cite{rudolph2024trainability, recio2025train}]
+Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with
+bitstrings $\vtsj \in \{0,1\}^n$. The squared MMD loss between the ground truth distribution $p$ and the model's output distribution $q_\vttheta$ can be expressed as 
+\begin{equation}
+    \mathcal{L}_\vttheta := \text{MMD}^2(p, q_\vttheta) = \operatorname*{\mathbb{E}}_{\vta \sim G} \left[ \left( C^\vta_p - C^\vta_\vttheta \right)^2 \right], \qquad C^\vta_p  = \operatorname*{\mathbb{E}}_{\vtx \sim p}[(-1)^{\vtx \cdot \vta}], \qquad C^\vta_\vttheta=\inner{U_\vttheta^\dagger X^{\vta}U_\vttheta}{\rho }_{HS},
+\end{equation}
+where $\rho = \ket{+}\bra{+}^{\otimes n}$ and $G$ is a freely chosen distribution of Fourier \hw{we can make it very formal by introducing characters (not sure if we needed it here); or, just say bitstrings} characters (bitstrings) $\vta$ supported on $\{0,1\}^n$.
+\end{proposition}
+
+% A typical choice of the distribution $G$ in the squared MMD loss is the Fourier transform of a Gaussian kernel. 
+% \begin{definition}[Fourier transform of the Gaussian kernel] The Fourier transform of the Gaussian kernel is a probability mass function $G_\sigma(\vta)$ with the bandwidth parameter $\sigma \in (0,\infty)$,
+% \begin{equation}
+% G_\sigma(\vta) = (1-\tau(\sigma))^{n-\abs{a}} \tau(\sigma)^\abs{a}, \qquad \tau(\sigma) = \frac{1}{2}\left(1-e^{-\frac{1}{2\sigma}}\right)
+% \end{equation}
+% \end{definition}
+
+We say a loss function has a Barren Plateau if the variance of the partial derivatives of the loss function vanishes exponentially with the number of qubits \cite{mcclean_barren_2018}. Some papers also define Barren Plateau with the variance of the loss function itself \cite{ragone_lie_2024}. The two definitions are equivalent for most variational quantum models considered in practice \cite{Arrasmith_2022}, including the IQP-QCBM.
+\begin{definition}[Barren Plateau]
+Consider a loss function $\mathcal{L}_\vttheta$ for training an $n$-qubit variational quantum model with parameters $\vttheta = (\theta_1, \dots, \theta_D)$, we say $\mathcal{L}_\vttheta$ has a Barren Plateau if:
+\begin{equation}
+\operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)} [\frac{ \partial \mathcal{L}_\vttheta}{\partial_{\theta_\ell}}] = e^{-\Omega(n)}.
+\end{equation}
+\end{definition}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{ll}
+Symbol & Meaning \\
+\hline
+$\rho$ & Input state: $|+\rangle\!\langle+|^{\otimes n}$ \\
+$U_{\vttheta}$ & IQP circuit: $\prod_{j=1}^D \exp \left(i\theta_j Z^{\vts^j}\right)$  \\
+$Z^{\vts^j}$ & Generator specified by bitstring $\vtsj \in \{0,1\}^n $: $\bigotimes_{\iota=1}^n Z^{s^j_\iota} $\\
+$X^\vta$ & Observable specified by bitstring $\vta \in \{0,1\}^n$: $\bigotimes_{\iota=1}^n X^{\vta_\iota} $\\
+$S^{\vta}$ & Set of bitstrings odd with $\vta$: $\{ \vtsj \big| \vta \cdot \vtsj = 1 \}$\\
+$C^{\vta}_{\vttheta}$ & Model Fourier feature: $\langle U_\vttheta^\dagger X^{\vta}U_\vttheta,\rho\rangle_{HS}$ \\
+$C^{\vta}_p$ & Data Fourier feature: $\mathbb E_{x\sim p}[(-1)^{x\cdot a}]$ \\
+\end{tabular}
+\caption{Summary of Notations.}
+\end{table}
+
+\begin{assumption}[Symmetric i.i.d.\ initialization]
+\label{ass:symm-iid-init}
+The parameters $\vttheta=(\theta_1,\dots,\theta_D)$ are independent and identically distributed, and each marginal distribution is symmetric about $0$, i.e.,
+\begin{equation}
+\theta_1,\dots,\theta_D \text{ are i.i.d. and }
+\theta_j \stackrel{d}{=} -\theta_j,\forall 1 \leq j \leq D.
+\end{equation}
+\end{assumption}
+In this work, we are mainly interested in two types of initialization: either each parameter is i.i.d. and uniform, $\theta_j \sim \mathcal{U}[0,2\pi)$, or each parameter is i.i.d. and Gaussian, $\theta_j \sim \mathcal{N}(0,\delta^2)$. However, some main theorems apply to a broader family of initialization distributions satisfying Assumption \ref{ass:symm-iid-init}.
+
+\begin{assumption}[Average-case target distribution]
+\label{ass:avgcase-target}
+The target distribution $p$ is uniformly drawn from an ensemble of distributions $\mathcal P$ under which the Fourier features $C_p^{\vta}$ are mean-zero and uncorrelated:
+\begin{equation}
+\operatorname*{\mathbb {E}}_{p\sim\mathcal {P}}[C_p^{\vta}]=0,
+\qquad
+\operatorname*{\mathbb {E}}_{p\sim\mathcal {P}}\!\left[C_p^{\vta}C_p^{\vtb}\right]=\delta_{\vta,\vtb}\,\sigma_{\vta}^2.
+\end{equation}
+
+\end{assumption}
+\hw{I tried to understand this assumption. If we apply the Hadamard transform, then we get $\mathbb{E}(p) = H^{\otimes n}\mathbb{E}(C_p) = 0$ (consider $p$ as a random vector) and $\mathbb{E}(pp^\top) = H^{\otimes n}\mathbb{E}(C_pC_p^\top) H^{\otimes n} \neq I$. It means we assume there actually exists a correlation for the distribution of measures? Formally, we can define a measurable space $(\Delta_N, \mathcal{B})$ for $p$ - $\Delta_N$ is the $N$-dimensional probability simplex and $\mathcal{B}$ are the Borel sets thereon.}
+
+
+
+\section{Results}
+\subsection{Closed-form Partial Derivative Variances}
+In this section, we state the main results of the paper. We show that the partial derivative variance of the $\text{MMD}^2$ loss function can be both upper-bounded and lower-bounded by some weighted sums of the partial derivative variances of individual expectation values $C^\vttheta_\vta$, each of which is completely controlled by a single parameter $r^\vta$, which is the dimension of the space spanned by gate generators that anticommute with $X^\vta$.
+\begin{theorem}[Closed-form single-term partial derivative variance under uniform initialization]
+\label{thm:grad-var-single-observable}
+Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with generator
+bitstrings $\vtsj \in \{0,1\}^n$, and let
+\begin{equation}
+    C^\vta_\vttheta := 
+    \inner{U_\vttheta^\dagger X^{\vta}U_\vttheta}{\rho }_{HS}, 
+\end{equation}
+where $\vta \in \{0,1\}^n \setminus \{\mathbf{0}\}$, $X^\vta = \bigotimes_{\iota=1}^n X^{a_\iota}$ and $\rho = \ket{+}\bra{+}^{\otimes n}$.
+Define
+\begin{equation}
+S^{\vta} := \{ \vtsj \big| \vta \cdot \vtsj = 1 \},
+\qquad
+r^\vta := \dim \operatorname{span}\left( S^{\vta} \right)    
+\end{equation}
+where the dot product is taken modulo $2$ and the span is over $\mathbb{F}_2$.
+Then, for $\vttheta$ drawn uniformly from $[0,2\pi)^D$,
+\begin{equation}
+\operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right]
+=
+\begin{cases}
+0, & \vta \cdot \vtsl = 0,\\
+2^{\,2-r^\vta}, & \vta \cdot \vtsl = 1.
+\end{cases}
+\end{equation}
+\end{theorem}
+\begin{proof}
+The theorem can be proven by using Proposition \ref{prop: var_as_combinatorics} and Lemma \ref{lem: matrix element counting}.
+\hw{Maybe add a remark to explain/elaborate this theorem: $a$ is the support of the measurement, and for generator $s_j$, the condition $a \cdot s_j$ means the set of all generators that anti-commute with $X^a$. Then, only if we have $O(\operatorname{polylog}(n))$ generators, there is no BP?}
+\end{proof}
+
+
+\begin{theorem}[Upper bound for MMD partial derivative variance]
+Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with generator
+bitstrings $\vtsj \in \{0,1\}^n$. The MMD derivative variance can be upper bounded as:
+\begin{equation}
+    \operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right] \leq 16 \sum_\vta G(\vta)\left[  \operatorname*{Var}_{\vttheta} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right]\right]
+\end{equation}
+\end{theorem}
+\begin{proof}
+\begin{align}
+\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right] &\leq \operatorname*{\mathbb{E}}_{\vttheta} \left[ \left(\frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right)^2 \right] \\
+&= 4\operatorname*{\mathbb{E}}_{\vttheta} \left[  \operatorname*{\mathbb{E}}_{\vta}\left[\left( C^\vta_p - C^\vta_\vttheta \right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right]^2  \right] \\
+&\leq 4\operatorname*{\mathbb{E}}_{\vttheta} \left[  \operatorname*{\mathbb{E}}_{\vta}\left[\left( C^\vta_p - C^\vta_\vttheta \right)^2 \right] \operatorname*{\mathbb{E}}_{\vta}\left[\left(\frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right)^2\right]\right] \qquad \text{(Cauchy-Schwarz)}\\
+&\leq 4\operatorname*{\mathbb{E}}_{\vttheta} \left[  4 \operatorname*{\mathbb{E}}_{\vta}\left[\left(\frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right)^2\right]\right] \qquad (\abs{C^\vta_p - C^\vta_\theta} \leq 2)\\
+&= 16 \operatorname*{\mathbb{E}}_{\vta} \left[\operatorname*{\mathbb{E}}_{\vttheta}\left[\left(\frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right)^2\right]\right] \\
+&= 16 \sum_\vta G(\vta)\left[  \operatorname*{Var}_{\vttheta} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right]\right]
+\end{align}
+\end{proof}
+
+
+\begin{theorem}[Average-case lower bound for squared MMD partial derivative variance under symmetric initialization]
+\label{thm: average case symmetric}
+Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with generator
+bitstrings $\vtsj \in \{0,1\}^n$. Consider an i.i.d. initialization distribution of the parameters $\vttheta$ that is symmetric, i.e., each $\theta_j \stackrel{d}{=} -\theta_j$.
+Consider an average-case ensemble over target distributions $p$ such that the Fourier coefficients $\{C^\vta_p\}$ are mean-zero and uncorrelated, i.e.,
+$\operatorname*{\mathbb{E}}_p \left[ C^\vta_p\right] = 0$ and $\operatorname*{\mathbb{E}}_p \left[ C^\vta_p C^\vtb_p\right] = \delta_{\vta,\vtb} \sigma_\vta^2.$
+Then, a nontrivial lower bound for the average-case squared MMD partial derivative variance can be given as:
+\begin{equation}
+\operatorname*{\mathbb{E}}_p \left[\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right]\right] \geq
+4 \sum_aG^2(a)\sigma_\vta^2\operatorname*{Var}_{\vttheta} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] 
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+First, we expand L.H.S. without applying the ensemble average $\operatorname*{\mathbb{E}}_p$.
+\begin{align}
+    \operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right] &=    \operatorname*{Var}_{\vttheta} \left[ \frac{\partial }{\partial \theta_\ell}  \left(\sum_{\vta} G(\vta)\left(C^\vta_p - C^\vta_\vttheta \right)^2\right)\right]
+\\ &= \operatorname*{Var}_{\vttheta} \left[-2 \sum_\vta G(\vta) \left(C^\vta_p - C^\vta_\vttheta \right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] \\
+&= 4 \sum_{\vta, \vtb} G(\vta) G(\vtb) \operatorname*{Cov}_{\vttheta}\left(\left(C^\vta_p - C^\vta_\vttheta\right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} , \left(C^\vtb_p - C^\vtb_\vttheta\right) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right) \\
+&= 4 \sum_{\vta, \vtb} G(\vta) G(\vtb) \left(\operatorname*{\mathbb{E}}_{\vttheta} \left[ (C^\vta_p - C^\vta_\vttheta) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} (C^\vtb_p - C^\vtb_\vttheta) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right] - \operatorname*{\mathbb{E}}_{\vttheta}\left[(C^\vta_p - C^\vta_\vttheta) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] \operatorname*{\mathbb{E}}_{\vttheta}\left[(C^\vtb_p - C^\vtb_\vttheta) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right] \right) \label{eq: one and two-copy vanish} \\
+&= 4 \operatorname*{\mathbb{E}}_{\vttheta} \left[\sum_{\vta, \vtb} G(\vta) G(\vtb)  \left( C^\vta_p - C^\vta_\vttheta \right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \left(C^\vtb_p - C^\vtb_\vttheta\right) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right] \\
+&= 4 \operatorname*{\mathbb{E}}_{\vttheta} \left[ \sum_{\vta, \vtb} G(\vta) G(\vtb) \left( C^\vta_p C^\vtb_p \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} - C^\vta_p C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} - C^\vtb_p C_\vttheta^\vta \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} + C_\vttheta^\vta C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} \right)\right] \label{eq: two, three, four copies}
+\end{align}
+In the above derivation, many terms vanish. In specific, in Equation \ref{eq: one and two-copy vanish}, all terms of the forms $\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} $ and $C^\vta_\vttheta\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell}$ have zero expectation values. The reason is, these terms either vanish when $\vta \cdot\vtsl =0$, or are odd functions in $\theta_\ell$ when $\vta \cdot\vtsl =1$, the expectations of which vanish by the symmetry in the $\vttheta$ distribution.
+
+To continue from Equation \ref{eq: two, three, four copies}, we first identify the four-copy terms as square terms, i.e., 
+\begin{equation}
+    \operatorname*{\mathbb{E}}_{\vttheta} \left[ \sum_{\vta, \vtb} G(\vta) G(\vtb) C_\vttheta^\vta C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}\right] =\operatorname*{\mathbb{E}}_{\vttheta}\left[ \left(\sum_{\vta} G(\vta) C_\vttheta^\vta \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell}\right)^2\right]
+\end{equation}
+which we can safely drop in the lower bound as non-negative terms. 
+
+Then we can apply the ensemble average. Due to the mean-zero assumption on the Fourier coefficients, all the three-copy terms $C^\vta_p C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}$ vanish. Due to the uncorrelatedness assumptions on the Fourier coefficients, all the off-diagonal two copy terms $C^\vta_p C^\vtb_p \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}$ also vanish. Finally, we obtain the desired non-trivial lower bound for an average-case problem.
+\begin{align}
+ \operatorname*{\mathbb{E}}_p\left[\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right]\right] &\geq 4 \operatorname*{\mathbb{E}}_{\vttheta}  \left[ \sum_{\vta} G(\vta)^2 (C^\vta_p)^2 \left(\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell}\right)^2 \right] \\
+ &= 4 \sum_aG(\vta)^2\sigma_\vta^2\operatorname*{Var}_{\vttheta} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] 
+\end{align}
+\end{proof}
+
+\begin{corollary}[Polynomial-decay average-case lower bound for squared MMD partial derivative variance under Gaussian initialization]
+\label{cor:poly_lb_gaussian_mmd}
+Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with polynomial-many generator
+bitstrings $\vtsj \in \{0,1\}^n$, $D \in \mathcal{O}(\text{poly}(n))$. Consider an average-case ensemble over target distributions $p$ such that the Fourier coefficients $\{C^\vta_p\}$ are mean-zero and uncorrelated, i.e.,
+$\operatorname*{\mathbb{E}}_p \left[ C^\vta_p\right] = 0$ and $\operatorname*{\mathbb{E}}_p \left[ C^\vta_p C^\vtb_p\right] = \delta_{\vta,\vtb} \sigma_\vta^2.$ Assume that the quantity $\sum_{\vta\in\{0,1\}^n} G(\vta)^2\,\sigma_\vta^2\,\mathds{1}\{\vta\cdot\vts^\ell=1\} = \Omega(1/\text{poly}(n))$. Then, for any fixed constant $c$, under Gaussian initialization with variance $\delta^2 = c/D$, the average-case MMD partial derivative variance decays at most polynomially, i.e.,
+\begin{equation}
+\operatorname*{\mathbb{E}}_p\left[\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right]\right] = \Omega(\frac{1}{\text{poly}(n)})
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+By Theorem \ref{thm: single Gaussian}, fix 
+\begin{equation}
+\operatorname*{Var}_{\vttheta}\!\left(\frac{\partial C_\vttheta^\vta}{\partial\theta_\ell}\right)
+=
+4\sum_{J\in \Omega^\vta}
+\left[
+\mathds{1}\{\ell\in J\}\,\mu^{|J|-1}\nu^{m^\vta-|J|+1}
++
+\mathds{1}\{\ell\notin J\}\,\mu^{|J|+1}\,\nu^{m^\vta-|J|-1}
+\right] \mathds{1}\{\vta \cdot \vtsl=1\},
+\label{eq:single_var_exact_c}
+\end{equation}
+with $\mu=\operatorname*{\mathbb{E}}_{\theta\sim\mathcal N(0,\gamma^2)}[\sin^2(2\theta)] =(1-e^{-8\gamma^2})/2,$ and $
+\nu=\operatorname*{\mathbb{E}}_{\theta\sim\mathcal N(0,\gamma^2)}[\cos^2(2\theta)]
+=(1+e^{-8\gamma^2})/2$. Note that every term in the summation is nonnegative. For the proof it suffies to keep the term $J= \emptyset$ and drop other terms, which gives
+\begin{align}
+\operatorname*{Var}_{\vttheta}\!\left(\frac{\partial C_\vttheta^\vta}{\partial\theta_\ell}\right) & \geq 
+4\mu\,\nu^{m^\vta-1}\,\mathds{1}\{\vta \cdot\vtsl=1\} \\
+& \geq  4\mu\,\nu^{D-1}\,\mathds{1}\{\vta \cdot\vtsl=1\}  
+\label{eq:single_var_lb_c}
+\end{align}
+By Theorem \ref{thm: average case symmetric},
+\begin{equation}
+\mathbb{E}_p\!\left[\operatorname*{Var}_{\vttheta}\!\left(\frac{\partial \mathcal{L}_\vttheta}{\partial\theta_\ell}\right)\right]
+\;\ge\;
+4\sum_{\vta} G(\vta)^2\,\sigma_\vta^2\;
+\operatorname*{Var}_{\vttheta}\!\left(\frac{\partial C_\vttheta^\vta}{\partial\theta_\ell}\right). 
+\label{eq:avgcase_lb_start_c}
+\end{equation}
+Substituting in Inequality \ref{eq:single_var_lb_c} yields \begin{align}
+\mathbb{E}_p\left[\operatorname*{Var}_{\vttheta}\left(\frac{\partial \mathcal{L}_\vttheta}{\partial\theta_\ell}\right)\right]
+& \geq
+16\mu \nu^{D-1} \sum_{\vta} G(\vta)^2\sigma_\vta^2 \cdot  \mathds{1}\{\vta \cdot\vtsl=1\}  \\
+&\geq 16\mu \nu^{D-1} \Omega(\frac{1}{\text{poly}(n)})
+\end{align}
+By Taylor expansion, we can derive that $\mu = 4c/D + o(1/D)$ and $\nu^{D-1} = e^{-4c} + o(1)$. Therefore, $16\mu \nu^{D-1} =\Theta(1/D)$, which completes the proof.
+
+\end{proof}
+
+
+\subsection{Examples of Generator Sets with Barren Plateaus}
+Theorem \ref{thm:grad-var-single-observable} states that the partial derivative variance of a single expectation value $\braket{X^\vta}$ is fully determined by the quantity $r = \dim \operatorname{span}\left( S^{\vta} \right)$, which is the dimension of the vector space spanned by the generator bitstings that anticommute with the observable, $S^\vta = \{\vtsj \vert \vta \cdot \vtsj = 1\}$. Therefore, the factors that decide the presence or absence of Barren Plateaus in IQP-QCBM are, the type of gate generators, the amount of gate generators, and the distribution of Fourier characters $\vta$. Below we will study some demonstrative examples.
+\begin{example}[All $1$-qubit gates] Consider an IQP-QCBM whose circuit contains all the parameterized single-qubit $Z$-gates, and nothing else. The set of its generator bitstrings is then $S=\{e_i\}_{i=0}^n$, where $e_i$ is a bitstring whose $i$-th bit is $1$ and all other bits are $0$. One can easily derive that in this case, \begin{equation}r = \abs{a} \end{equation} 
+\begin{align}
+    \operatorname{Var}_\vttheta \left[\mathbb{E}_a\left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+ \right] &= \mathbb{E}_a\left[\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+ \right]  \label{variance 1: eq}\\
+ & \leq \mathbb{E}_a \left[2^{2-r(G,\vta)} \right] \label{variance 2: eq}\\
+ & = \mathbb{E}_a \left[2^{2-\abs{\vta}} \right] \\
+ & = 4 \prod_{i=1}^{n} \mathbb{E}_{a_i}\left[2^{-a_i} \right] \\
+ & = 4 (1-\frac{\tau(\sigma)}{2})^n
+\end{align}
+In the case $\sigma = \mathcal{O}(1)$, $\tau(\sigma) = \mathcal{O}(1)$. Then, $\operatorname{Var}_\vttheta \left[\frac{\partial \mathcal{L}_\vttheta}{\partial \theta_i}\right] = e^{-\Omega(n)}$, meaning that there is Barren Plateau.
+\end{example}
+
+\begin{example}[All $2$-qubit gates] If the circuit consists of all the two-qubit gates, nothing else, then regardless of how the MMD spectral density looks like, there is always Barren Plateau.
+\end{example}
+
+\begin{example}[Random choice of arbitrary-weight gates] To do. should be simple.
+\end{example}
+
+\begin{example}[Random choice of two-qubit gates] Most interesting and complicated. Can be address by random graph theory results. \textbf{See appendix}
+\end{example}
+
+
+\subsection{Small Gaussian Initialization}
+Our BP scaling is a statement about random (e.g., uniform) initialization; data-dependent initialization changes the parameter distribution, intentionally biasing it toward a region where the IQP gradients avoid immediate exponential concentration—consistent with the empirical success reported in arXiv:2503.02934.
+
+\begin{theorem}[Closed-form single-term derivative variance under centered Gaussian initialization]
+\label{thm: single Gaussian}
+Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with generator
+bitstrings $\vtsj \in \{0,1\}^n$, and let
+\begin{equation}
+    C^\vta_\vttheta := 
+    \inner{U_\vttheta^\dagger X^{\vta}U_\vttheta}{\rho }_{HS}, 
+\end{equation}
+where $\vta \in \{0,1\}^n \setminus \{\mathbf{0}\}$, $X^\vta = \bigotimes_{\iota=1}^n X^{a_\iota}$ and $\rho = \ket{+}\bra{+}^{\otimes n}$. Define
+\begin{equation}
+S^{\vta} := \{ \vtsj \big| \vta \cdot \vtsj = 1 \},
+\qquad
+m^\vta := \abs{S^{\vta}}
+\end{equation}
+where the dot product is taken modulo $2$. Also define \begin{equation}
+    \Omega^\vta:=\Bigl\{J\subseteq S^\vta:\ \bigoplus_{j\in J}\vtsj=\mathbf 0\Bigr\},
+\end{equation}
+where $\oplus$ denotes bitwise XOR over $\mathbb F_2$.
+Then, for $\vttheta$ i.i.d. as $\theta_j \sim \mathcal{N}(0, \delta^2)$,
+\begin{equation}
+\operatorname*{Var}_{\substack{\theta_j \sim \mathcal{N}(0, \delta^2),\\ \forall 1 \leq j \leq D}} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right]
+= \begin{cases}
+0, & \vta \cdot \vtsl=0 \\
+4\sum_{J\in \Omega^\vta}
+\left[
+\mathds{1}\{\ell\in J\}\,\mu^{|J|-1}\nu^{m^\vta-|J|+1}
++
+\mathds{1}\{\ell\notin J\}\,\mu^{|J|+1}\,\nu^{m^\vta-|J|-1}
+\right], & \vta \cdot \vtsl=1
+\end{cases}
+\end{equation}
+where
+\begin{equation}
+    \mu:=\operatorname*{\mathbb{E}}_{\theta\sim\mathcal N(0,\gamma^2)}[\sin^2(2\theta)]
+=\frac{1-e^{-8\gamma^2}}{2},
+\qquad
+\nu:=\operatorname*{\mathbb{E}}_{\theta\sim\mathcal N(0,\gamma^2)}[\cos^2(2\theta)]
+=\frac{1+e^{-8\gamma^2}}{2}.
+\end{equation}
+\end{theorem}
+
+
+\begin{proof}
+Fix $\vta\neq \mathbf 0$ and abbreviate $S:=S^\vta$, $m:=m^\vta$.
+If $\vta \cdot \vtsl=0$, then $\comm{Z^{\vts^\ell}}{X^\vta}=0$ and $C^\vta_\vttheta$ is independent of $\theta_\ell$. 
+
+Now, assume that $\vta \cdot \vtsl=1$. By recursively applying anticommutation rules on $X^\vta$ and the gates, one can derive the following equation (reformulation of Equation 27 of Ref. \cite{recio2025train}. Note that $\forall J \in \Omega^\vta, \abs{J} = 0 \, (\text{mod 2})$, so no imaginary number $i$ appears.)
+\begin{equation}
+C^\vta_\vttheta
+=
+\sum_{J\in\Omega^\vta} \eta_J 
+\Bigl(\prod_{j\in J} \sin(2\theta_j)\Bigr)\Bigl(\prod_{j\in S\setminus J}\cos(2\theta_j)\Bigr),
+\label{eq:C_subset_sum}
+\end{equation}
+where $\eta_J \in \{-1,1\}$.
+Now we differentiate~\eqref{eq:C_subset_sum} with respect to $\theta_\ell$.
+\begin{equation}
+\frac{\partial C^\vta_\vttheta}{\partial\theta_\ell}
+=
+\sum_{J\in\Omega^\vta} T_J(\vttheta),
+\end{equation}
+where
+\begin{equation}
+T_J(\vttheta)
+=
+\begin{cases}
+2 \eta_J\prod_{j\in J\setminus\{\ell\}}\sin(2\theta_j)\prod_{j\in (S\setminus J) \cup \{\ell\}}\cos(2\theta_j), & \ell\in J,\\
+-2 \eta_J \prod_{j\in J\cup \{\ell \}}\sin(2\theta_j)\prod_{j\in (S\setminus J)\setminus\{\ell\}}\cos(2\theta_j), & \ell\notin J.
+\end{cases}
+\label{eq:TJ_def}
+\end{equation}
+
+Since each $\theta_j$ follows an independent centered Gaussian distribution, which is symmetric about $0$, $\forall J \neq K$,  
+\begin{equation}
+\operatorname*{\mathbb{E}}_{\substack{\theta_j \sim \mathcal{N}(0, \delta^2),\\ \forall 1 \leq j \leq D}}[T_J(\vttheta)T_K(\vttheta)] = 0.
+\label{eq:cross_terms_vanish}
+\end{equation}
+Also, by symmetry, \begin{equation}
+    \operatorname*{\mathbb{E}}_{\substack{\theta_j \sim \mathcal{N}(0, \delta^2),\\ \forall 1 \leq j \leq D}} \left[ \frac{\partial C^\vta_\vttheta}{\partial\theta_\ell}\right] = 0.
+\end{equation}
+Therefore,
+\begin{equation}
+\operatorname*{Var}_{\substack{\theta_j \sim \mathcal{N}(0, \delta^2),\\ \forall 1 \leq j \leq D}}\left[\frac{\partial C^\vta_\vttheta}{\partial\theta_\ell}\right]
+=
+\operatorname*{\mathbb{E}}_{\substack{\theta_j \sim \mathcal{N}(0, \delta^2),\\ \forall 1 \leq j \leq D}}\left[\left(\frac{\partial C^\vta_\vttheta}{\partial\theta_\ell}\right)^2\right]
+=
+\sum_{J\in\Omega^\vta}\operatorname*{\mathbb{E}}_{\substack{\theta_j \sim \mathcal{N}(0, \delta^2),\\ \forall 1 \leq j \leq D}}[T_J(\vttheta)^2],
+\end{equation}
+
+Finally, by plugging in Equation \ref{eq:TJ_def} and using the independence of the parameters and counting the number of terms in the products gives the desired result.
+\end{proof}
+
+
+
+\subsection{Dequantization}
+Anticoncentration means that with constant probability over the random choice of circuit parameters, the output distribution is at least a constant fraction of the uniform value $1/2^n$ for all bitstring output. Adrian call the output distribution of IQP circuits 'pseudo-independent distributions' and it anciconcentrates. They show that for any anticoncentrated family, any global loss (including MMD) will concentrate exponentially. For two IQP circuits with random parameters, there output distribtion $p, q$ satisfy $MMD^2(p,q)\leq e^{-\mathcal{O}(n)}/\delta$ with probability $1-\delta$. (Their proposition 6). \cmt{Whether MMD exponentially concentrates depends on two things: 1. The MMD kernel choice. 2. The circuit architecture (what generators are used). If the generator set is too powerful, for example, using all the two-qubit gates without geometrical restrictions (This is what Adrian chose in their numerical experiments, see their Figure 8), according to my Theorem $r_\vta$ is n, and indeed gradient variance decays exponentially. If the genertor set is less powerful, for example using only two-qubit gates that form a 2d square lattice, then $r_\vta$ is $\mathcal{O}(\abs{\vta})$ and hence it depends on the MMD kernel. If MMD kernel has a flat spectrum, i.e., uniform, then it is exponential decay (even for IQP with only single qubit gates, see their Figure 7 and my example). But if it is a Gaussian kernel that is heavily biased towards low-body observables (bandwith $\mathcal{O}(n)$), it should not be only polynomial decay. They also admit this in their Section 6.}
+
+Possibly Important thing: On their page 3 bottom, they say they assume the target distribution is a typical outcome of the generative model, mirroring the average-case hardness of the distribution families. They also say the result should also hold if the target distribution is an outlier, because it should be nearly equal distant to output distributions of the model with random parameters (triangle inequality). \cmt{I feel their results should be solid under this assumption. We need to restrict the generator set such that the IQP do not anticoncentrate for most parameters. Square lattice IQP should not be anticoncentrated right? Square lattice IQP also has other possible source of quantum advantage besides anticoncentration, like using PostBQP-style reduction ... ? }
+
+One idea: In Robert Huang's paper, they proposed a model that looks extremely similar to IQP. They have a square lattice of qubits (some edges missing), initialize as product state, each qubit in $\ket{0}$ and $\ket{+}$ depending on an input bitstring. Then they apply parameterized single qubit $Z$ gates, and CZ gates. They measure in X basis. They say that the output distribution is a joint distribution of $y'$ and $z$, where $y'$ are uniformly distributed, and $z$ is the output distribution of a 1D deep circuit $D(y')$. They say, generating an output bitstring from their model is equivalent to sampling a deep quantum model and generating a bitstring from the deep quantum model, and this should be classically hard. \cmt{In their experiments, they consider learning conditional distributions $p(y|x)$, but later do sampling only for $x$ equals all zeros, so exactly IQP. The reason they learn conditional distribution, not just when $x=00000...$ is that their special training technique (local statistics) get no signal when $x=00000...$, so they need samples with other inputs to help training.}. \cmt{I have several questions. First, when $x=00000...$, is the output distribution anti-concentrated or not? i.e, is the output distribution of random 1D deep circuit anticoncentrated? If yes, maybe this is a more fundemental reason that they learn conditional distribution. Second, anticoncentrated distribution cannot be distinguished from uniform distribution in low-order marginals, right? If yes, then if the target distribution is anticoncentrated, when we are using Gaussian kernel biased towards local observables, then we will likely end up learning something different but indistinguishable.} 
+
+\newpage
+\section{Related Work}
+\subsection{Connection to QAOA}
+1. How is the architecture of 1-layer QAOA related to IQP?
+In \cite{Leontica_2024} (Equation 4), using $RX(\pi/2) = RZ(-\pi/2)HRZ(-\pi/2)$, they proved that the IQP state equals 1-layer QAOA state.
+
+2. What is the dynamical Lie Algebra of 1-layer QAOA and are they using this or something else to compute Barren Plateau?
+
+3. 
+
+In IQP, all generators commute. The Lie Algebra is Abelian. The set of generators is polynomial-sized, each generator is a Pauli string of Zs and Is. Since all generators commute, the DLA is just the complex span of the set of generators. 
+
+If the DLA is not full rank (dimension of $SU(2^n)$, i.e., $4^n-1$), the system is uncontrollable. There are two sources of uncontrollability. First, the generators in the set share symmetries, i.e., there is a Hermitian operator that commutes with every element in the set, such that every element in the DLA is block diagonal in the eigenbasis. For IQP, at least all Pauli-Z strings are symmetries hence the DLA is reducible. Every independent generator (ranf over $F_2$) has its own subspace. The DLA of IQP is not subspace-controllable in any meaningful way (not for subspace with dimension $>$ 1) because only phases are reachable, but not non-diagonal mixing. In Section 4, we cannot apply Theorem 2 to IQP for 2 reasons. First, the irreducible representations are all of dimension 1, hence division by 0. Second, the initial state $\rho$ is not in any irrecducible representation. 
+
+Neither can we apply the results of 'uncontrollable and reducible systems' (4.3) still because $\rho$ is not in the DLA.
+
+We can learn from the comments on the general case 'linking gradient scaling to the dimension of the lie algebra'. In Conjecture 1, the subspace DLA means the part of the dynamical Lie algebra that actually acts on the invariant subspace where the input state lives. They remark that systems with sub-DLAs not exponentially growing may still have barren plateaus which are not related to the dimension of the DLA. For instance, if the cost function is global. \cite{Cerezo2021CostFunctionBP} We need to relate to this reference. 
+
+\cite{ragone_lie_2024} assumes that either $\rho$ or $O$ is in $ig$. In outlook they say it could be interesting to
+generalize our results to operators and measurements not
+in the DLA. They refer to the paper \cite{diaz2023showcasingbarrenplateautheory} for an example with matchgate circuits. Similar Lie Algebra results with similar assumptions is also done in the paper \cite{Fontana_2024} (Regarding general VQAs, when the observable has support outside of the DLA, we show in the Supplementary Information that the same techniques used in the
+LASA setting can be used to obtain gradient variance
+expression for general ansatz. Unfortunately, it can be
+challenging to determine gradient variance scaling from
+these expressions in general.)
+
+\cite{Leontica_2024} Explores the neighborhood of 1-layer QAOA and IQP; it’s directly relevant to your $QAOA_1 \approx IQP$ discussion, i.e., state families can coincide up to single-qubit rotations/Cliffords for certain problem choices. One layer QAOA circuits belong to the class of weighted graph states. They say all-to-all two qubit interaction are good for ion traps. They analyze the same IQP circuit family we use here and show that it embeds 1-layer QAOA and admits closed-form expressions for energy expectation values via reduced Ising Hamiltonians retaining only generators that anticommute with the measured observable. 
+
+\cite{Larocca_2022}
+
+\cite{Lee_2021} “Favorable landscapes” line of work—more in the quantum-control / optimization landscape direction than in the newer Lie-algebra BP variance-formula direction.
+
+\cite{Vijendran_2024}
+Proposes an overparameterized low-depth QAOA variant and argues for “benign landscapes” at small depth via problem-specific/analytic arguments (not the same as “deep 2-design $Var \sim 1/\dim(g)$ logic)
+
+\cite{Bittel_2021} Shows training VQAs is NP-hard (landscape can have bad local minima), which is logically orthogonal to “barren plateau due to concentration” (you can have hardness without BP and vice versa).
+
+\cite{heidari2024efficientgradientestimationvariational} To check. Uses “polynomial-size DLA” as a structural assumption to enable efficient gradient estimation, i.e., a positive algorithmic consequence of small 
+��
+g.
+
+\cite{vijendran2025nearoptimalparametertuninglevel1} About efficiently finding good $(γ,β)$ for $p=1$ Ising/QUBO; again, different from DLA-driven BP proofs (it’s about oscillatory structure and optimization heuristics)
+
+\cite{yfwq-yqmk} Studies the DLA and invariant subspaces for standard QAOA, orbit QAOA, and multi-angle QAOA on MaxCut graphs. A major theme: for many graph families, the Lie algebra becomes exponentially large, implying susceptibility to barren plateaus (using the logic enabled by the Lie-algebra BP frameworks). Many Lie-algebra studies are restricted to two cases: circuits whose gates are generated by single Pauli operators, or ansätze where generators are very structured linear combinations of Paulis, for example invariant under some symmetry group. The first case corresponds to circuits where each rotation is
+individually parametrized, while the second one contains circuits with correlated gate angles. Among the different versions of QAOA they study, the multiangle ansatz, where one assigns a single parameter to each gate in the standard Ansatz, is the most interesting to this work. The multiangle ansatz can be characterized into six families. Except for the cycle and path graphs, the other graph families have exponentially large Lie algebra, and this is why they have Barren Plateau. They say all hard instances are covered by archetypal graphs and they focus on this. They found example archertypal graphs that have exponentially vanishing gradients already for a single layer. Usually one does not expect single layer of shallow circuits to have barren plateau because there are few local entangling gates or have a small number of parameters. However, for a D-regular graph with D growing with n, already one layer is very expressive. 
+
+\cite{mao2025qaoamaxcutbarrenplateausgraphs}
+A strong “typical-case” result: for (weighted) graphs with generic weights and for asymptotically almost all unweighted graphs, the QAOA-MaxCut DLA has $\Theta(4^n)$ dimension and they leverage the DLA decomposition to show variance decays like $O(2^{-n})$ barren plateaus for almost all graphs.
+
+\cite{dalessandro2024controllabilityperiodicquantumising} Controllability/DLA for the periodic Ising chain. They explicitly show a decomposition into a center many $su(2)$ blocks, matching the general “symmetry  block decomposition” narrative that also appears in QAOA on symmetric graphs.
+
+\cite{allcock2024dynamicalliealgebrasquantum} Computes DLAs for QAOA-MaxCut on specific graphs (notably cycle and complete graphs), including explicit direct-sum decompositions and even closed-form variance conclusions (no BP on cycles) that explicitly connect to the Lie-algebra BP theory.
+
+\cite{aguilar2024classificationpauliliealgebras} A classification program: Lie algebras generated by Pauli strings, with an algorithmic viewpoint (graph reductions / equivalence classes). This is useful infrastructure if your generators are Pauli strings (QAOA/IQP both are).
+
+\cite{kökcü2024classificationdynamicalliealgebras} Classifies DLAs from 2-local spin interactions on graphs, emphasizing that polynomial-size DLAs are very special and often tied to 1D structure/bipartiteness. This supports why “most graphs” lead to big algebras in QAOA-like settings.
+
+\subsection{How to relate to Lie Algebra approach?}
+In the general Lie Algebra approach, the loss functions have moments that can be computed by representation theory of the Lie group. The operator space decomposes into isotypic sectors under conjugation, and we can define orthogonal projections onto these sectors. When the only sector matters is the adjoint sector (the one isomorphic to $g$ itself, i.e., conditions that $\rho$ or $O$ is in $ig$ in those reference papers), all other sectors are killed, then we get a factors of $1/\dim(g_j)$ and hence looking at the dimension of Lie algebra is sufficient.
+
+In the IQP case, the reachable Lie group is an abelian diagonal torus. The sectors are just characters of the torus. The projections are Fourier decomposition of the operators in the computational basis. 
+
+\paragraph{Lie-algebraic and representation-theoretic views of barren plateaus.}
+A prominent approach to barren plateaus characterizes an ansatz by its dynamical Lie algebra (DLA) $\mathfrak g$ and the associated dynamical Lie group $G=\exp(\mathfrak g)$, relating concentration of objectives/gradients to how the circuit ensemble mixes over $G$.
+In particular, Ragone \emph{et al.}\ derive explicit variance formulas for sufficiently deep parameterized circuits under (approximate) design assumptions over $G$ together with an \emph{alignment} condition---that either the input state $\rho$ or the observable $O$ lies in the Hermitian image $i\mathfrak g$ \cite{RagoneNatComm2024}.
+Related works develop complementary Lie/adjoint-based perspectives and conditions (e.g., observable-in-DLA settings) under which gradient concentration can be computed and tied to $\dim(\mathfrak g)$ \cite{FontanaAdjoint2309_07902, LaroccaQuantumControl2021}.
+
+\paragraph{Our setting: IQP-QCBM as a small-DLA, non-aligned example.}
+This work analyzes IQP-based quantum circuit Born machines (IQP-QCBM) with commuting $Z$-type generators, and proves closed-form expressions for the objective variance and gradient variance,
+$\operatorname*{Var}(\ell)=2^{-r}$ and $\operatorname*{Var}(\partial \ell)=2^{2-r}$, where $r$ is a rank parameter determined by the commutation structure between the generator set and the measured Pauli-string observable.
+Although our proof uses elementary Fourier/character techniques, it can also be interpreted through the general representation-theoretic mechanism underlying Lie-algebraic barren-plateau results: decompose operator space into charge sectors (irreducible modules under conjugation by $G$) and compute the sector projections of $\rho$ and $O$.
+Crucially, IQP-QCBM provides a particularly transparent instance where barren-plateau-like scaling can be derived exactly even when $\dim(\mathfrak g)$ is only polynomial and, moreover, where the natural $\rho$ and $O$ need not be DLA-aligned (i.e., neither $\rho$ nor $O$ necessarily lies in $i\mathfrak g$), preventing a direct plug-in of alignment-based theorems such as \cite{RagoneNatComm2024}.
+
+\paragraph{Connections to QAOA and QAOA barren-plateau literature.}
+\hw{Okay, here we should make it very clear that the DLA method/approach of Cerezo cannot be applied to IQP}
+IQP circuits are closely related to shallow QAOA: Leontica and Amaro study how one-layer QAOA states can be embedded into an IQP neighborhood (up to basis changes), clarifying architectural links between the two families \cite{LeonticaAmaroPRR2024}.
+However, standard QAOA alternates a diagonal problem Hamiltonian with a non-commuting mixer, typically yielding a non-abelian reachable group and often substantially larger DLAs at increasing depth.
+Recent QAOA barren-plateau studies frequently follow a three-step ``DLA pipeline'': (i) compute or characterize $\mathfrak g$ for a graph family; (ii) identify symmetries, invariant subspaces, and decompose $\mathfrak g$ into its center and semisimple components; and (iii) translate this structure into variance/concentration statements using Lie-algebraic formulas (often applicable because the cost observable is the problem Hamiltonian and thus lies in $i\mathfrak g$).
+Allcock \emph{et al.}\ provide an analytic example on cycle graphs by computing and decomposing the QAOA DLA and deriving a closed-form cost variance (showing an absence of barren plateaus for that family) \cite{AllcockQAOADLA2407_12587}.
+Kazi \emph{et al.}\ systematize DLA/symmetry analysis for QAOA variants (including multi-angle QAOA) and show that for broad graph classes the resulting algebra is exponentially large, implying strong concentration under deep/design assumptions \cite{KaziPRXQ2025}.
+Mao \emph{et al.}\ establish a typical-case barren-plateau result for QAOA-MaxCut by proving that the DLA is exponential for almost all graphs (and generic weights) and connecting this to variance decay via Lie-algebraic decomposition logic \cite{MaoQAOAMaxCutBP2512_24577}.
+
+\paragraph{DLA classification tools.}
+A parallel line of work develops general tools to classify and compute Lie algebras generated by Pauli operators or by spin interactions on graphs, providing reusable infrastructure for DLA-based analyses in both QAOA and commuting/IQP-like architectures \cite{AguilarPauliLie2408_00081, KokcuGraphSpinDLA2409_19797}.
+
+\paragraph{Positioning.}
+Most QAOA barren-plateau results exploit that (a) the mixer produces non-abelian dynamics and (b) the cost observable is typically DLA-aligned, so concentration can be linked to the emergence of exponentially large DLAs or large invariant blocks via Lie-algebraic variance formulas.
+In contrast, IQP-QCBM training with commuting generators can exhibit exponential concentration governed by a \emph{rank} parameter $r$ even when $\dim(\mathfrak g)$ remains polynomial and even when $\rho$ and $O$ are not DLA-aligned.
+Our results therefore provide a complementary, exactly solvable case study that clarifies how the general sector/projection viewpoint extends beyond the common alignment regime emphasized in prior Lie-algebraic barren-plateau theorems.
+
+\bibliography{ref}
+
+\appendix
+
+\section{Technical Lemmas}
+\begin{definition}[Pauli-$Z$-string dephasing twirling] 
+Let $Z^\vts$ be a Pauli string consisting only of Pauli-$Z$s and $I$s, and let $U_\theta$ be the parameterized gate it generates,
+\begin{equation}
+Z^{\vts} = \bigotimes_{\iota=1}^n Z^{s_\iota}, \quad \vts \in \{0,1\}^n \setminus \{\mathbf{0}\}, \qquad U_{\theta} = e^{i\theta Z^{\vts}}, \quad \theta\in[0, 2\pi).
+\end{equation}
+The $k$-copy twirling induced by $Z^\vts$, denoted by $\mathcal{T}^k_\vts$, is an operator that writes as:
+\begin{equation}
+\mathcal{T}^k_\vts (O) =  \frac{1}{2\pi}\int_{[0,2\pi)} \left(U_{\theta}^{\otimes k}\right)^\dagger O U_{\theta} ^{\otimes k}  d \theta.
+\end{equation}
+\end{definition}
+\hw{This is essentially the same as the moment operator, which is the orthogonal projection (w.r.t. HS) onto the commutant of $(U_\theta)^{\otimes k}$, which is a one-parameter subgroup of $U(N)$, correct?}
+
+\begin{lemma}[One-copy twirling] \label{lem: one_copy_twirl} Let $\mathcal{T}^1_\vts(\cdot)$ be a one-copy twirling induced by some Pauli-$Z$-string $\vts$ and let $X^\vta $ be some Pauli-$X$-string specified by $\vta$. Then,
+\begin{equation}\mathcal{T}^1_\vts(X^\vta) = \begin{cases} X^\vta, & \vta \cdot \vts = 0\\
+0, & \vta \cdot \vts = 1 \end{cases}
+    \end{equation}
+\end{lemma}
+\begin{proof}
+\hw{I gave you a simpler proof: let $G=\{\exp(i\theta Z_s)\;\vert\;\theta\in[0,2\pi)\}$. We have the commutant $\operatorname{Comm}(G,1)$ is spanned by orthonomal basis $\mathcal{B}=\{2^{-|x|/2}P_x\;\vert\; x\cdot s = 0, P\in \{X, Y\}\}\cup \{2^{-|x|/2}Z_x\;\vert\; x\in \mathbb{Z}_2^n\}$. Now, $\mathcal{T}^1_s$ is the projector onto $\operatorname{Comm}(G,1)$. If $a\cdot s = 0$, $X^a\in\operatorname{Comm}(G,1)$ and hence $\mathcal{T}^1_s(X^a)=X^a$; otherwise, $X^a\notin \operatorname{Comm}(G,1)$ and hence $\mathcal{T}^1_s(X^a)=0$.}
+We begin by expressing the unitaries in terms of projectors.
+\begin{equation}
+  U_{\theta} = e^{i\theta_j Z^{\vts}} = e^{i\theta}\Pi_+^{\vts} + e^{-i\theta}\Pi_-^{\vts}, \qquad\Pi_\pm^{\vts} = \frac{I\pm Z^{\vts}}{2}
+\end{equation}
+Using the fact that $\int_{[0,2\pi)} e^{i c\theta} d \theta = 0 \iff c\neq 0$,
+\begin{equation}
+    \mathcal{T}^1_{\vts}(X^\vta) = \Pi_+^{\vts} X^\vta \Pi_+^{\vts} + \Pi_-^{\vts} X^\vta \Pi_-^{\vts} 
+\end{equation}
+If $\vta \cdot \vts = 0$, then $\comm{X^\vta}{\Pi_\pm^{\vts}} = \comm{X^\vta}{Z^\vts} = 0$. By swapping the projectors with $X^\vta$ and using $\Pi_+^{\vts} + \Pi_-^{\vts} = I$,
+\begin{equation}
+    \mathcal{T}^1_{\vts}(X^\vta) = (\Pi_+^{\vts})^2X^\vta + (\Pi_-^{\vts})^2 X^\vta  = (\Pi_+^{\vts})X^\vta + (\Pi_-^{\vts}) X^\vta  = X^\vta
+    \end{equation}
+If $\vta \cdot \vts = 1$, then $\{X^\vta, Z^\vts\} = 0$. By swapping the projectors with $X^\vta$ and using $\Pi_+^{\vts} \perp \Pi_-^{\vts}$,
+\begin{equation}
+    \mathcal{T}^1_{\vts}(X^\vta) = \Pi_+^{\vts}\Pi_-^{\vts} X^\vta + \Pi_-^{\vts}\Pi_+^{\vts} X^\vta
+    = 0 
+\end{equation}
+\end{proof}
+
+\begin{lemma}[Two-copy twirling] \label{lem: two_copy_twirl}
+Let $\mathcal{T}^2_\vts(\cdot)$ be a two-copy twirling induced by some Pauli-$Z$-string $\vts$ and let $X^\vta, X^\vtb$ be some Pauli-$X$-strings specified by $\vta, \vtb$. 
+    \begin{equation}
+      \mathcal{T}^2_\vts(X^\vta \otimes X^\vtb) = \begin{cases} X^\vta \otimes X^\vtb, & \vta \cdot \vts = 0 \text{ and } \vtb \cdot \vts = 0,\\
+      P_0^{\vts} \left(X^\vta \otimes X^\vtb \right) P_0^{\vts}, & \vta \cdot \vts = 1 \text{ and } \vtb \cdot \vts = 1 , \\
+           0, &\text{otherwise}
+      \end{cases}
+    \end{equation}
+where $
+  P_0^{\vts} := \Pi_+^{\vts}\otimes\Pi_-^{\vts} + \Pi_-^{\vts}\otimes\Pi_+^{\vts}
+$
+is the projector onto the zero eigenspace of $(Z^{\vts} \otimes I + I\otimes Z^{\vts})
+$ and $\Pi_\pm^{\vts} = (I\pm Z^{\vts}) /2$.
+\end{lemma}
+\hw{Hmm.. I do not get it right. For $a\cdot s=b\cdot s=1$, $X^a, X^b$ commute with $\Pi_{\pm}$. You can also think about it with commutant: for any $n$-bit Pauli operators $P_x, P_y\in\{I, X, Y\}^{\otimes n}$, we have $(Z_s\otimes Z_s)(P_x\otimes P_y)=(-1)^{x\cdot s + y\cdot s}(P_x\otimes P_y)(Z_s\otimes Z_s)$, and hence $\mathrm{Comm}(G,2)=\mathrm{span}\{P_x\otimes P_y \;\vert\;\;P\in\{X,Y\}, x\cdot s + y\cdot s = 0\}$ (I omit all Z operators). Hence, whenever $a\cdot s = b\cdot s=1$ or $a\cdot s = b\cdot s =0$, $X^a\otimes X^b\in\operatorname{Comm}(G,2)$, and $\mathcal{T}^2_s(X^a\otimes X^b) = X^a\otimes X^b$.} 
+\begin{proof}
+We begin by expressing the unitaries in terms of projectors.
+\begin{align}
+  U_{\theta} \otimes U_{\theta} &= e^{i\theta Z^{\vts}} \otimes e^{i\theta Z^{\vts}} \\
+  &= e^{i 2\theta} \Pi_+^{\vts} \otimes \Pi_+^{\vts} + e^{-2i\theta}\Pi_-^{\vts}\otimes \Pi_-^{\vts} + \Pi_-^{\vts} \otimes \Pi_+^{\vts} + \Pi_+^{\vts} \otimes \Pi_-^{\vts}\\
+  &= e^{i 2\theta} \Pi_+^{\vts} \otimes \Pi_+^{\vts} + e^{-2i\theta}\Pi_-^{\vts}\otimes \Pi_-^{\vts} + P_0^{\vts}
+\end{align}
+Using the fact that $\int_{[0,2\pi)} e^{i c\theta} d \theta = 0 \iff c\neq 0$,
+\begin{equation}
+    \mathcal{T}^2_\vts(X^\vta \otimes X^\vtb) = (\Pi_+^{\vts})^{\otimes 2} (X^\vta \otimes X^\vtb)(\Pi_+^{\vts})^{\otimes 2} + (\Pi_-^{\vts})^{\otimes 2} (X^\vta \otimes X^\vtb) (\Pi_-^{\vts})^{\otimes 2} + P_0^{\vts}(X^\vta \otimes X^\vtb) P_0^{\vts}\\
+\end{equation}
+If $\vta \cdot \vts = 0$ and $\vtb \cdot \vts = 0$, then $\comm{X^\vta}{\Pi_\pm^{\vts}} = \comm{X^\vtb}{\Pi_\pm^{\vts}} = 0$. By swapping the projectors with $X^\vta \otimes X^\vtb$ and using that $(\Pi_+^{\vts})^{\otimes 2} + (\Pi_-^{\vts})^{\otimes 2} + P_0^{\vts} = I\otimes I$,
+\begin{equation}
+    \mathcal{T}^2_\vts(X^\vta \otimes X^\vtb) = (X^\vta \otimes X^\vtb) \left((\Pi_+^{\vts})^{\otimes 2}\right)^2 +(X^\vta \otimes X^\vtb) \left((\Pi_-^{\vts})^{\otimes 2}\right)^2 + (X^\vta \otimes X^\vtb) \left(P_0^{\vts}\right)^2 = X^\vta \otimes X^\vtb 
+\end{equation}
+If $\vta \cdot \vts = 1$ and $\vtb \cdot \vts = 1$, then $\{X^\vta, Z^\vts\} = \{X^\vtb, Z^\vts\} = 0$. By swapping the projectors with $X^\vta \otimes X^\vtb$ and using $\Pi_+^{\vts} \perp \Pi_-^{\vts}$,
+\begin{equation}
+    \mathcal{T}^2_\vts(X^\vta \otimes X^\vtb) = (X^\vta \otimes X^\vtb)(\Pi_-^{\vts})^{\otimes 2}(\Pi_+^{\vts})^{\otimes 2} +(X^\vta \otimes X^\vtb)(\Pi_+^{\vts})^{\otimes 2} (\Pi_-^{\vts})^{\otimes 2} +P_0^{\vts}(X^\vta \otimes X^\vtb)P_0^{\vts} = P_0^{\vts}(X^\vta \otimes X^\vtb) P_0^{\vts}.
+\end{equation}
+If $\vta \cdot \vts = 1$ and $\vtb \cdot \vts = 0$, by similar techniques as above, 
+\begin{equation}
+    \mathcal{T}^2_\vts(X^\vta \otimes X^\vtb) = (X^\vta \otimes X^\vtb) (\Pi_-^{\vts} \otimes \Pi_+^{\vts})(\Pi_+^{\vts})^{\otimes 2} +(X^\vta \otimes X^\vtb)(\Pi_+^{\vts} \otimes \Pi_-^{\vts})(\Pi_-^{\vts})^{\otimes 2} + (X^\vta \otimes X^\vtb)(\Pi_-^{\vts} \otimes \Pi_-^{\vts} + \Pi_+^{\vts} \otimes \Pi_+^{\vts}) P_0^\vts = 0.
+\end{equation}
+If $\vta \cdot \vts = 0$ and $\vtb \cdot \vts = 1$, the result is also $0$ by symmetry.
+\end{proof}
+
+\begin{definition}[Cost-derivative moment]
+Let $A = \{\vta^1,\dots,\vta^\lambda\}$ and $B = \{\vtb^1,\dots,\vtb^\mu\}$ be two sets of bitstrings specifying the observables for which costs and cost partial derivatives are computed respectively, and let $\ell \in \{1,\dots,D\}$ be the index specifying the direction for which partial derivatives are taken. We define the $(\lambda + \mu)$-copy cost-derivative moment as the quantity:
+\begin{equation}
+    \Gamma_{A,B}^{\ell} := \operatorname*{\mathbb{E}}_{\vttheta}\left[
+        \prod_{i=1}^{\lambda} C^{\vta^i}_\vttheta
+        \prod_{j=1}^{\mu}
+        \frac{\partial C^{\vtb^j}_\vttheta}{\partial \theta_{\ell}}
+    \right], \quad 
+    C^\vta_\vttheta := 
+    \inner{U_\vttheta^\dagger X^{\vta}U_\vttheta}{\rho }_{HS}, 
+\end{equation}
+We say the cost-derivative moment is 'mixed' if both $\lambda > 0$ and $\mu>0$. Otherwise, we call it a pure cost moment or pure derivative moment. If $A$ equals $B$ and contains only one bitstring, we call it an auto-cost-derivative moment. Otherwise, we call it a cross-cost-derivative moment.
+\end{definition}
+
+\begin{lemma}[One-copy pure derivative moment vanishes]
+\label{lem: first moment vanish}
+For any bitstring $\vta$, and any set of generators $\{\vtsj\}$, the 
+one-copy pure derivative moment $ \Gamma_{A,B}^{\ell}$ where $A=\operatorname*{Var}nothing$ and $B=\{\vta\}$ vanishes, i.e.,
+\begin{equation}
+\Gamma_{A,B}^{\ell}:= \operatorname*{\mathbb{E}}_\vttheta\left[ \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \right]=0
+\end{equation}
+\end{lemma}
+\begin{proof}
+\begin{equation}
+\inner{\left[Z^\vtsl,\rho\right]}{
+\left(\mathcal{T}^1_{\vts^D}\circ\cdots\circ\mathcal{T}^1_{\vts^1} \right)(X^\vta)}_{HS} =     
+\end{equation}
+
+Note that on one side, the commutator \begin{equation}\left[Z^\vtsl,\rho\right] = \comm{\bigotimes_{\iota=1}^n Z^{s^l_\iota}} {\bigotimes_{\iota=1}^n\frac{I+X}{2}}\end{equation} gives a sum of Pauli strings, all of which containing at least one Pauli-$Y$ or -$Z$. 
+
+On the other side, by Lemma \ref{lem: one_copy_twirl}, $\left(\mathcal{T}^1_{\vts^D}\circ\cdots\circ\mathcal{T}^1_{\vts^1}\right)(X^\vta)  \in \{X^\vta,0\}$. It is clear that their product is a nontrivial Pauli-string, whose trace is $0$. 
+\end{proof}
+
+
+\begin{lemma} [Commuting projectors] \label{lem: twirl_comp}
+Consider the two-copy twirling in Proposition \ref{prop: var_as_twirl}, $\mathcal{T}^2_{\vts^k}(\cdot)$ and the projector $P_0^\vtsj$ in Lemma \ref{lem: two_copy_twirl}. The following equality holds true:
+\begin{equation}
+    \mathcal{T}^2_{\vts^k}(P_0^\vtsj (X^\vta \otimes X^\vta) P_0^\vtsj) =  P_0^\vtsj \mathcal{T}^2_{\vts^k}(X^\vta \otimes X^\vta)P_0^\vtsj
+\end{equation}
+\end{lemma}
+\begin{proof}
+Since $Z^\vtsj$ and $Z^{\vts^k}$ commute, projectors onto the eigenspaces of $Z^\vtsj$ and projectors onto eigenspaces of $Z^{\vts^k}$ also commute with each other. In particular, $P_0^\vtsj$ commutes with all eignspace projectors of $Z^{\mathbf{s}^j}\otimes I+I\otimes Z^{\mathbf{s}^j}$, $P_0^{\vts^k} = \Pi_+^{\vtsj}\otimes\Pi_-^{\vtsj} + \Pi_-^{\vtsj}\otimes\Pi_+^{\vtsj}$, $P_2^{\vts^k} = \Pi_+^{\vts^k} \otimes \Pi_+^{\vts^k}$, and $P_{-2}^{\vts^k} = \Pi_-^{\vts^k} \otimes \Pi_-^{\vts^k}$. Therefore, we can move $P_0^{\vtsj}$ out of $\mathcal{T}^2_{\vts^k}$.
+\end{proof}
+
+\begin{proposition} [Expressing derivative variance in terms of twirlings]  \label{prop: var_as_twirl}
+Consider the cost function $C^\vta_\vttheta$ in Theorem \ref{thm:grad-var-single-observable}. By treating the average actions of $U_{\theta_j}$ as compositions of twirling operations, 
+the derivative variance of $C^\vta_\vttheta$ can be expressed as:
+\begin{equation}
+\operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)}\left[\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right] = \inner{\left[Z^\vtsl,\rho\right]}{
+\left(\mathcal{T}^1_{\vts^D}\circ\cdots\circ\mathcal{T}^1_{\vts^1} \right)(X^\vta)}_{HS}^2 - \inner{\left[Z^\vtsl,\rho\right] \otimes \left[Z^\vtsl,\rho\right]}{\left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1} \right)(X^\vta \otimes X^\vta)}_{HS}
+\end{equation}
+\end{proposition}
+\begin{proof}
+First, using the fact that all gates commute, we get:
+\begin{align}
+    \frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}} &= i\inner{U_\vttheta^\dagger X^{\vta}U_\vttheta Z^\vtsl - Z^\vtsl U_\vttheta^\dagger X^{\vta}U_\vttheta}{\rho}_{HS}\\
+    &= i\inner{\comm{Z^\vtsl}{\rho}} {U_\vttheta  ^\dagger X^{\vta}U_\vttheta }_{HS}\\
+    \left(\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right)^2 &= -\inner{\comm{Z^\vtsl}{\rho} \otimes \comm{Z^\vtsl}{\rho}} {\left(U_\vttheta  ^\dagger \otimes U_\vttheta^\dagger \right) \left(X^{\vta} \otimes X^{\vta}\right)\left(U_\vttheta \otimes U_\vttheta\right)}_{HS}
+\end{align}
+Then, using the variance-expectation formula, we get:
+\begin{align}
+\operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)}\left[\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right] =&  \mathbb{E}_\vttheta \left[\left(\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right)^2\right] - \left(\mathbb{E}_\vttheta \left[\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right]\right)^2\\
+=& \inner{\left[Z^\vtsl,\rho\right]}{
+\int_{[0,2\pi)^D} U_\vttheta^\dagger X^\vta U_\vttheta d \vttheta }^2_{HS} \\
+& - \inner{\left[Z^\vtsl,\rho\right] \otimes \left[Z^\vtsl,\rho\right]}{\int_{[0,2\pi)^D}\left(U^\dagger_\vttheta \otimes U^\dagger_\vttheta \right) \left(X^{\vta} \otimes X^{\vta} \right) \left(U_\vttheta \otimes U_\vttheta \right) d \vttheta}_{HS} \\
+=& \inner{\left[Z^\vtsl,\rho\right]}{
+\left(\mathcal{T}^1_{\vts^D}\circ\cdots\circ\mathcal{T}^1_{\vts^1}(X^\vta) \right)}^2 - \inner{\left[Z^\vtsl,\rho\right] \otimes \left[Z^\vtsl,\rho\right]}{\left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1}(X^\vta \otimes X^\vta) \right)}_{HS}
+\end{align}
+\end{proof}
+
+Note that the observable of interest, $X^\vta = \sum_x \lvert x \oplus a\rangle\langle x\rvert$, is a permutation matrix, in which exactly $2^n$ off-diagonal elements are $1$, and all others are $0$. Depending on the overlap between $\vta$ and $\vtsj$, applying every twirl $\mathcal{T}^1_{\vts^j}$ either leaves $X^\vta$ unchanged, or turn some $1$s into $0$s. Then, the difficulty of computing the variance of the derivative is mostly transferred to the problem of counting how many $1$s survive after the twirls.
+
+\begin{proposition}[Combinatorial expression of the derivative variance]
+\label{prop: var_as_combinatorics}
+Consider the cost function $C^\vta_\vttheta$ in Theorem \ref{thm:grad-var-single-observable}, and fix a parameter index $\ell$ such that $\vta \cdot \vts^\ell = 1$. 
+Then, the derivative variance can be written as
+\begin{equation}
+    \operatorname{Var}_\vttheta \!\left[\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right]
+    \;=\; 2^{2-2n} \cdot 
+    \bigl(\text{number of entries of $\left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1}\right)(X^\vta \otimes X^\vta)$ that are equal to $1$}\bigr).
+\end{equation}
+When $\vta\cdot\vts^\ell=0$, the variance is zero.
+\end{proposition}
+
+\begin{proof}
+By Proposition \ref{prop: var_as_twirl} and Lemma \ref{lem: first moment vanish}, the derivative variance of $C^\vta_\vttheta$ can be expressed in the following form:
+\begin{equation}
+\operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)}\left[\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right] = - \inner{\left[Z^\vtsl,\rho\right] \otimes \left[Z^\vtsl,\rho\right]}{\left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1} \right)(X^\vta \otimes X^\vta)}_{HS}
+\end{equation}
+Note that on one side:
+\begin{align}
+\left[Z^\vtsl,\rho\right] &= \frac{1}{2^n} \sum_{x,y} \left((-1)^{\vtsl \cdot x} - (-1)^{\vtsl \cdot y} \right) \ket{x}\bra{y} \\
+A :=\left[Z^\vtsl,\rho\right] \otimes \left[Z^\vtsl,\rho\right]&= \frac{1}{2^{2n}} \sum_{x,y,u,v} \left((-1)^{\vtsl \cdot x} - (-1)^{\vtsl \cdot y} \right) \left((-1)^{\vtsl \cdot u} - (-1)^{\vtsl \cdot v} \right) \ket{x,u}\bra{y,v}
+\end{align}
+On the other side, by recursively applying Lemma \ref{lem: two_copy_twirl} and Lemma \ref{lem: twirl_comp}, 
+\begin{align}
+\tilde{X}^\vta :=& \left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1}\right)(X^\vta \otimes X^\vta) \\ =& \left(\prod_{j:\vta \cdot \vtsj = 1} P_0^\vtsj\right) (X^\vta \otimes X^\vta)  \left(\prod_{j:\vta \cdot \vtsj = 1} P_0^\vtsj\right) \label{eq: joint twirling equation} \\
+=& \sum_{\substack{y,v \in \{0,1\}^n:\\ (-1)^{\vts^j \cdot y} = -(-1)^{\vts^j \cdot v},\ \forall j:\,\vta\cdot\vts^j=1}}
+\ket{y\oplus \vta, v\oplus \vta}\bra{y,v}, \label{eq: number of surviving}
+\end{align}
+where the last equation is obtained because each $P_0^{\vts^j}$ is the projector onto the zero eigenspace of $(Z^{\vtsj} \otimes I + I\otimes Z^{\vtsj})$. Then, 
+\begin{align}
+    \operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)}\left[\frac{\partial C^\vta_\vttheta}{\partial {\theta_\ell}}\right] &= - \inner{A}{\tilde{X}^\vta}_{HS} \\
+    &= - \frac{1}{2^{2n}} \sum_{\substack{y,v \in \{0,1\}^n:\\ (-1)^{\vts^j \cdot y} = -(-1)^{\vts^j \cdot v},\ \forall j:\,\vta\cdot\vts^j=1}}  \left((-1)^{\vtsl \cdot (\vty \oplus \vta)} - (-1)^{\vtsl \cdot y} \right) \left((-1)^{\vtsl \cdot (\vtv \oplus \vta)} - (-1)^{\vtsl \cdot v} \right)  \\
+    &= - \frac{1}{2^{2n}} \sum_{\substack{y,v \in \{0,1\}^n:\\ (-1)^{\vts^j \cdot y} = -(-1)^{\vts^j \cdot v},\ \forall j:\,\vta\cdot\vts^j=1}}  (-1)^{\vtsl \cdot y} (-1)^{\vtsl \cdot v}\left((-1)^{\vtsl \cdot \vta} - 1 \right)  \left((-1)^{\vtsl \cdot \vta} - 1 \right) \\
+    &= - \frac{1}{2^{2n}} \sum_{\substack{y,v \in \{0,1\}^n:\\ (-1)^{\vts^j \cdot y} = -(-1)^{\vts^j \cdot v},\ \forall j:\,\vta\cdot\vts^j=1}} -4 \cdot \mathds{1}\{\vtsl \cdot \vta=1\} \\
+    &= \mathds{1}\{\vtsl \cdot \vta=1\} \cdot 2^{2-2n} \cdot N_S^\vta,
+\end{align}
+where $N_S^\vta$ is the cardinality of the set of bitstring pairs that satisfy the constraints posed by all the projectors, which is also the number of entries of $\tilde{X}^\vta$ that are equal to $1$ by Equation \ref{eq: number of surviving}, i.e.,
+\begin{align}
+    N_S^\vta &= \text{card}(\{(y,v)\in \{0,1\}^n \times \{0,1\}^n \vert (-1)^{\vts^j \cdot y} = -(-1)^{\vts^j \cdot v},\ \forall j:\,\vta\cdot\vts^j=1\}) \label{eq: system of linear equations} \\
+    &=\sum_{x,y,u,v}\bra{x,u}\tilde{X}^\vta\ket{y,v}
+\end{align}
+\end{proof}
+
+\begin{lemma}[Matrix element counting] \label{lem: matrix element counting}
+Consider the derivative variance formula in Proposition \ref{prop: var_as_combinatorics}. The number of entries of $\left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1}\right)(X^\vta \otimes X^\vta)$ that are equal to $1$, denoted by $N_S^\vta$, is:
+\begin{equation}
+N_S^\vta = 2^{2n-r},
+\end{equation}
+where $r = \dim \text{span} \{\vts^j|\vta \cdot \vts^j = 1\}$.
+\end{lemma}
+\begin{proof}
+One way to prove this lemma is by reformulating the problem as solving a system of linear equations, as in Equation \ref{eq: system of linear equations}, and counting the solutions. Here, we provide an algebraic alternative proof. 
+
+Denote the set of all generator bitstrings $S=\{\vts^1 \dots, \vts^D\}$, and the subset of bitstrings for which the generators anticommute with the observable $S^\vta=\{\vts^j|\vta \cdot \vts^j = 1\}$. We choose a subset $S'\subseteq S$ that forms a basis of $\text{span}(S^\vta)$, i.e., any element in $S^\vta$ is the XOR of elements in $S'$, and no element in $S'$ is the XOR of other elements in $S'$. 
+Recall Equation \ref{eq: joint twirling equation},
+\begin{equation}
+\left(\mathcal{T}^2_{\vts^D}\circ\cdots\circ\mathcal{T}^2_{\vts^1}\right)(X^\vta \otimes X^\vta) = \left(\prod_{j:\vtsj \in S^\vta} P_0^\vtsj\right) (X^\vta \otimes X^\vta)  \left(\prod_{j:\vtsj \in S^\vta} P_0^\vtsj\right).
+\end{equation}
+
+Since $X^\vta$ is a permutation matrix, the number of surviving $1$s equals $\Tr\left[\prod_{j:\vtsj \in S^\vta} P_0^\vtsj\right]$. We will show that 
+\begin{equation}
+\Tr\left[\prod_{j:\vtsj \in S^\vta} P_0^\vtsj\right] = \Tr\left[\prod_{j:\vtsj \in S'} P_0^\vtsj\right] = 2^{2n-r}.
+\end{equation}
+
+First, we show the second equality. Note that for any $\vtsl \in S$, $P_0^\vtsl = (I\otimes I - Z^\vtsl\otimes Z^\vtsl)/2$ and $\Tr[P_0^\vtsl] = 2^{2n-1}$. Then, \begin{equation}\Tr\left[\prod_{j:\vtsj \in S'} P_0^\vtsj\right] = \frac{1}{2^r}\Tr\left[\prod_{j:\vtsj \in S'}(I\otimes I - Z^{\vtsj}\otimes Z^{\vtsj})\right] = \frac{1}{2^r}\Tr\left[(I\otimes I)^r \right] = 
+2^{2n-r}.\end{equation} In the derivation above, after expanding the product of projectors, except for the first term $(I\otimes I)^{r}$, all other terms remain as some traceless Pauli-$Z$ strings, due to the fact that elements in $S'$ are not the XOR of each other. 
+
+Now we show the first equality. Consider any bitstring $\vts^\gamma \in S^\vta \backslash S'$. There exists exactly one subset $S'' \subseteq S'$, such that $\left(\bigoplus_{j:\vtsj \in S'} \vtsj \right) \oplus \vts^\gamma = \mathbf{0}$. Then, $Z^{\vts^\gamma} \prod_{j:\vtsj \in S'}Z^{\vtsj} = I$. We can compute that 
+\begin{align}
+\Tr\left[P_0^{\vts^\gamma}\prod_{j:\vtsj \in S'} P_0^\vtsj\right] &= \frac{1}{2^{r+1}}\Tr\left[(I\otimes I - Z^{\vts^\gamma}\otimes Z^{\vts^\gamma})\prod_{j:\vtsj \in S'}(I\otimes I - Z^{\vtsj}\otimes Z^{\vtsj})\right] 
+\\&= \frac{1}{2^{r+1}}\Tr\left[(I\otimes I)^{r+1} + (Z^{\vts^\gamma}\otimes Z^{\vts^\gamma})\prod_{j:\vtsj \in S'}(Z^{\vtsj}\otimes Z^{\vtsj})\right] \\ &= \frac{1}{2^{r+1}} \Tr\left[2I\otimes I\right] \\ &= 
+2^{2n-r}. 
+\end{align}
+\end{proof}
+
+
+
+\section{Two-qubit-generator Example Setup and problem statement}
+
+We consider an $n$-qubit observable
+\begin{equation}
+  O = X^{\otimes a} = \bigotimes_{i=1}^n X^{a_i}, 
+  \qquad a\in\{0,1\}^n,\quad |a| = k,
+\end{equation}
+and generators
+\begin{equation}
+  H_b = Z^{\otimes b} = \bigotimes_{i=1}^n Z^{b_i}, 
+  \qquad b\in\{0,1\}^n,
+\end{equation}
+with single-parameter unitaries
+\begin{equation}
+  U_\theta^{(b)} = e^{i\theta H_b}.
+\end{equation}
+We focus on the two-copy twirl
+\begin{equation}
+  \mathcal{T}_b(X) 
+  := \frac{1}{2\pi}\int_0^{2\pi} 
+  (U_\theta^{(b)}\otimes U_\theta^{(b)})\,X\,
+  (U_\theta^{(b)\dagger}\otimes U_\theta^{(b)\dagger})\,d\theta.
+\end{equation}
+
+Starting from $O\otimes O$, we apply $M$ independent two-copy twirls
+\begin{equation}
+  X_M 
+  := \mathcal{T}_{b_M}\circ\cdots\circ\mathcal{T}_{b_1}(O\otimes O),
+\end{equation}
+where each $b_r$ is a random weight-2 bitstring (so $H_{b_r}=Z_iZ_j$ for some $\{i,j\}$) sampled uniformly \emph{without} repetition from the set of all weight-2 bitstrings. We are interested in the asymptotic (as $n\to\infty$) expectation and variance of the number of nonzero entries of $X_M$, i.e.
+\begin{equation}
+  N := \#\{\text{nonzero matrix entries of }X_M\},
+\end{equation}
+as a function of $M$ and the Hamming weight $k=|a|$, treating the generator graph as random.
+
+We proceed in three steps:
+\begin{enumerate}
+  \item Describe the action of a single two-copy twirl $\mathcal{T}_b$ using the spectral projectors of $H_b$ (commuting versus anticommuting cases).
+  \item Reinterpret the joint effect of $M$ twirls as a random constraint system on the basis indices, identified with a random bipartite graph, and express $N$ in terms of the rank of this constraint system.
+  \item Analyze the asymptotics of $\mathbb{E}[N]$ and $\mathrm{Var}(N)$ in three regimes:
+        \begin{enumerate}
+          \item $M=\alpha n$ below the critical threshold,
+          \item $M=\alpha n$ above the critical threshold,
+          \item $M=\alpha n\log n$ (connectivity regime),
+        \end{enumerate}
+        including the sequence of approximations (hypergeometric $\to$ binomial, rank approximations, exponential moments) and error propagation.
+\end{enumerate}
+
+%====================================================
+\subsection{One-twirl action via spectral projectors}
+
+For a fixed Pauli-$Z$ string $H_b$, define the spectral projectors
+\begin{equation}
+  \Pi_\pm^{(b)} = \frac{I\pm H_b}{2},
+  \qquad H_b = \Pi_+^{(b)} - \Pi_-^{(b)},
+\end{equation}
+so that
+\begin{equation}
+  U_\theta^{(b)} = e^{i\theta H_b} = e^{i\theta}\Pi_+^{(b)} + e^{-i\theta}\Pi_-^{(b)}.
+\end{equation}
+On two copies, the twirl can be written as
+\begin{equation}
+\begin{split}
+  \mathcal{T}_b(X)
+  &= \frac{1}{2\pi}\int_0^{2\pi} 
+     (U_\theta^{(b)}\otimes U_\theta^{(b)})\,X\,
+     (U_\theta^{(b)\dagger}\otimes U_\theta^{(b)\dagger})\,d\theta \\
+  &= \Pi_+^{(b)}\otimes\Pi_+^{(b)}\,X\,\Pi_+^{(b)}\otimes\Pi_+^{(b)}
+   + \Pi_-^{(b)}\otimes\Pi_-^{(b)}\,X\,\Pi_-^{(b)}\otimes\Pi_-^{(b)} \\
+  &\quad + P_0^{(b)}\,X\,P_0^{(b)},
+\end{split}
+\end{equation}
+where
+\begin{equation}
+  P_0^{(b)} := \Pi_+^{(b)}\otimes\Pi_-^{(b)} + \Pi_-^{(b)}\otimes\Pi_+^{(b)},
+\end{equation}
+is the projector onto the zero-eigenspace of
+\begin{equation}
+  K_b := H_b\otimes I + I\otimes H_b.
+\end{equation}
+
+For the special input $X = O\otimes O$ and Pauli-type $H_b$, there are only two cases:
+\begin{itemize}
+  \item \textbf{Commuting case:} If $b\cdot a \equiv 0\pmod 2$, then $O$ commutes with $H_b$ and preserves each eigenspace of $H_b$. In this case
+    \begin{equation}
+      \mathcal{T}_b(O\otimes O) = O\otimes O.
+    \end{equation}
+  \item \textbf{Anticommuting case:} If $b\cdot a \equiv 1\pmod 2$, then $O$ anticommutes with $H_b$ and flips the $\pm1$ eigenspaces of $H_b$. In this case the two-copy twirl projects onto the zero-eigenspace of $K_b$:
+    \begin{equation}
+      \mathcal{T}_b(O\otimes O) = P_0^{(b)}(O\otimes O)P_0^{(b)}.
+    \end{equation}
+\end{itemize}
+
+Thus, each two-copy twirl either leaves $O\otimes O$ invariant (commuting case) or enforces a nontrivial linear constraint on the set of nonzero matrix elements (anticommuting case).
+
+%====================================================
+\subsection{Random constraint system and bipartite graph representation}
+
+We now specialize to \emph{weight-2} generators $H_b=Z_iZ_j$ with bitstrings $b$ having exactly two 1s. Define the decomposition
+\begin{equation}
+  L := \{i : a_i = 1\},\quad |L| = k, \qquad
+  R := \{j : a_j = 0\},\quad |R| = n-k,
+\end{equation}
+so $L\cup R = \{1,\dots,n\}$. Edges of the complete bipartite graph $K_{k,n-k}$ correspond exactly to weight-2 strings that have one endpoint in $L$ and one in $R$.
+
+A generator $Z_iZ_j$ anticommutes with $O$ if and only if $\{i,j\}$ is a cross edge between $L$ and $R$. There are
+\begin{equation}
+  N_{\mathrm{cross}} = k(n-k)
+\end{equation}
+such edges among all
+\begin{equation}
+  N_{\mathrm{tot}} = \binom{n}{2}
+\end{equation}
+possible weight-2 bitstrings.
+
+We choose a \emph{set} of $M$ distinct weight-2 constraints (no repetition) uniformly from the $N_{\mathrm{tot}}$ possibilities. Let $N_A$ denote the number of anticommute generators among these $M$; then
+\begin{equation}
+  N_A \sim \mathrm{Hypergeom}\big(N_{\mathrm{tot}}, N_{\mathrm{cross}}, M\big),
+\end{equation}
+with mean
+\begin{equation}
+  \mathbb{E}[N_A] = \mu 
+  = M\,\frac{N_{\mathrm{cross}}}{N_{\mathrm{tot}}}
+  = M\,p_2(k;n),
+\end{equation}
+where
+\begin{equation}
+  p_2(k;n) := \frac{2k(n-k)}{n(n-1)}.
+\end{equation}
+Since $M=O(n)$ or $M=O(n\log n)$ while $N_{\mathrm{tot}}=\Theta(n^2)$, the hypergeometric distribution is asymptotically equivalent to the binomial $\mathrm{Binomial}(M,p_2(k;n))$ for the statistics we use, with corrections $o(1)$ in the exponents. Thus, for asymptotic analysis we may write
+\begin{equation}
+  N_A \approx \mathrm{Binomial}\big(M, p_2(k;n)\big).
+\end{equation}
+
+Conditioned on $N_A = m$, the $m$ anticommute generators define a random bipartite graph $G_m$ obtained by sampling $m$ distinct edges uniformly from the $k(n-k)$ edges of $K_{k,n-k}$ (again, without repetition). Let $U_m$ be the set of vertices incident to at least one edge in $G_m$, and let $c(G_m)$ be the number of connected components in the induced subgraph on $U_m$.
+
+Over $\mathbb{F}_2$, the incidence vectors of the edges of $G_m$ form a matrix whose rank is
+\begin{equation}
+  r_{\mathrm{eff}}(m) = |U_m| - c(G_m),
+\end{equation}
+the standard rank-components relation for the incidence matrix of a graph.
+
+Let $G_A$ denote the random bipartite graph generated by the $N_A$ anticommute edges, and let
+\begin{equation}
+  r_{\mathrm{eff}} := |U| - c(G_A)
+\end{equation}
+be the resulting constraint rank. Then the final two-copy observable has
+\begin{equation}
+  N := \#\{\text{nonzero entries of }X_M\}
+  = 2^{2n - r_{\mathrm{eff}}}
+\end{equation}
+nonzero entries. In particular,
+\begin{equation}
+  \mathbb{E}[N] = 2^{2n}\,\mathbb{E}\big[2^{-r_{\mathrm{eff}}}\big],
+\end{equation}
+and
+\begin{equation}
+  \mathrm{Var}(N) 
+  = 2^{4n}\left(\mathbb{E}\big[2^{-2r_{\mathrm{eff}}}\big] 
+  - \mathbb{E}\big[2^{-r_{\mathrm{eff}}}\big]^2\right).
+\end{equation}
+
+The problem thus reduces to understanding the asymptotic behavior of $r_{\mathrm{eff}}$ for random bipartite graphs on $K_{k,n-k}$ in various regimes of $M$.
+
+%====================================================
+\subsection{Asymptotic regimes and error propagation}
+
+Let $\rho := k/n \in (0,1)$ and $p_2(k;n)\to p_\infty := 2\rho(1-\rho)$ as $n\to\infty$.
+
+We consider three regimes:
+\begin{enumerate}
+  \item $M=\alpha n$, subcritical case $4\alpha\rho(1-\rho)<1$,
+  \item $M=\alpha n$, supercritical case $4\alpha\rho(1-\rho)>1$,
+  \item $M=\alpha n\log n$ (connectivity regime).
+\end{enumerate}
+
+Throughout, we track the effect of the two main approximations:
+
+\begin{itemize}
+  \item Replacing hypergeometric $N_A$ by a binomial with the same mean,
+  \item Relating $r_{\mathrm{eff}}$ to the random-graph structure (and sometimes to $N_A$ itself).
+\end{itemize}
+
+We \emph{do not} rely on the uncontrolled approximation $\mathbb{E}[2^{-r_{\mathrm{eff}}}] \approx 2^{-\mathbb{E}[r_{\mathrm{eff}}]}$; instead, we control $\mathbb{E}[2^{-r_{\mathrm{eff}}}]$ via explicit bounds on $r_{\mathrm{eff}}$.
+
+%----------------------------------------------------
+\subsubsection{Subcritical regime: $M = \alpha n$, $4\alpha\rho(1-\rho)<1$}
+
+Define the effective average degree in the anticommute bipartite graph:
+\begin{equation}
+  \delta \approx \frac{2\mu}{n} = 4\alpha\rho(1-\rho),
+\end{equation}
+so the subcritical condition is $\delta<1$.
+
+In this regime, $G_A$ is a sparse random bipartite graph on $K_{k,n-k}$: with high probability, all components are trees or small unicyclic components of size $O(\log n)$, and the number of cycles is tight (Poisson-like). In particular, one can write
+\begin{equation}
+  r_{\mathrm{eff}} = N_A - Y,
+\end{equation}
+where $Y$ counts the (finite) cycle corrections and satisfies
+\begin{equation}
+  Y = O_{\mathbb{P}}(1),\qquad \mathbb{E}[Y] = O(1).
+\end{equation}
+It follows that
+\begin{equation}
+  \mathbb{E}[r_{\mathrm{eff}}] = \mu + O(1),
+  \qquad 
+  \mathrm{Var}(r_{\mathrm{eff}}) = \mathrm{Var}(N_A) + O(1) = \Theta(n).
+\end{equation}
+
+On the high-probability event $|Y|\le C$, we have
+\begin{equation}
+  2^{-C}2^{-N_A} \le 2^{-r_{\mathrm{eff}}} \le 2^{C}2^{-N_A},
+\end{equation}
+so
+\begin{equation}
+  2^{-C}\mathbb{E}[2^{-N_A}] - \operatorname*{Var}epsilon_n
+  \le \mathbb{E}[2^{-r_{\mathrm{eff}}}]
+  \le 2^{C}\mathbb{E}[2^{-N_A}] + \operatorname*{Var}epsilon_n,
+\end{equation}
+for some $\operatorname*{Var}epsilon_n\to 0$.
+
+Using the binomial approximation $N_A\approx\mathrm{Binomial}(M,p_2(k;n))$ and the mgf of the binomial, we obtain
+\begin{equation}
+  \mathbb{E}[2^{-N_A}] = \big(1 - p_2(k;n)/2\big)^M,
+\end{equation}
+and similarly
+\begin{equation}
+  \mathbb{E}[2^{-2N_A}] = \big(1 - p_2(k;n)/4\big)^M.
+\end{equation}
+Hence,
+\begin{equation}
+  \mathbb{E}[2^{-r_{\mathrm{eff}}}]
+  = \Theta(1)\big(1 - p_2(k;n)/2\big)^M,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{E}[2^{-2r_{\mathrm{eff}}}]
+  = \Theta(1)\big(1 - p_2(k;n)/4\big)^M,
+\end{equation}
+where the $\Theta(1)$ factors are bounded away from zero and infinity uniformly in $n$.
+
+Therefore, the logarithmic asymptotics of the expectation and variance are
+\begin{equation}
+  \log_2\mathbb{E}[N]
+  = 2n + M\log_2\big(1 - p_2(k;n)/2\big) + O(1),
+\end{equation}
+and
+\begin{equation}
+  \log_2\mathrm{Var}(N)
+  = 4n + M\log_2\big(1 - p_2(k;n)/4\big) + O(1).
+\end{equation}
+Here the total error in the exponents coming from (a) hypergeometric $\to$ binomial and (b) replacing $r_{\mathrm{eff}}$ by $N_A-Y$ is at most $O(1)$.
+
+%----------------------------------------------------
+\subsubsection{Supercritical regime: $M = \alpha n$, $4\alpha\rho(1-\rho)>1$}
+
+Now the average degree $\delta>1$, and $G_A$ has a giant component of linear size plus many smaller components. Random bipartite-graph results imply that there exists a constant $\gamma(\alpha,\rho)\in(0,1]$ such that
+\begin{equation}
+  \frac{r_{\mathrm{eff}}}{n}\xrightarrow{\mathbb{P}}\gamma(\alpha,\rho),
+\end{equation}
+and
+\begin{equation}
+  \mathbb{E}[r_{\mathrm{eff}}] = \gamma(\alpha,\rho)\,n + o(n),\qquad
+  \mathrm{Var}(r_{\mathrm{eff}}) = O(n).
+\end{equation}
+The exact value of $\gamma(\alpha,\rho)$ is determined by the giant-component and component-count asymptotics of the random bipartite graph and can be expressed implicitly via branching-process equations; we do not require a closed form.
+
+From concentration of $r_{\mathrm{eff}}$ on a band of width $o(n)$, we obtain, for any fixed $\operatorname*{Var}epsilon>0$ and large $n$,
+\begin{equation}
+  2^{-(\gamma+\operatorname*{Var}epsilon)n} \lesssim \mathbb{E}[2^{-r_{\mathrm{eff}}}] 
+  \lesssim 2^{-(\gamma-\operatorname*{Var}epsilon)n},
+\end{equation}
+which implies
+\begin{equation}
+  \log_2\mathbb{E}[N]
+  = 2n - \gamma(\alpha,\rho)n + o(n),
+\end{equation}
+and
+\begin{equation}
+  \log_2\mathrm{Var}(N)
+  = 4n - 2\gamma(\alpha,\rho)n + o(n).
+\end{equation}
+In this regime, using only $\mu=\mathbb{E}[N_A]$ to approximate $\mathbb{E}[r_{\mathrm{eff}}]$ is \emph{not} accurate (the rank no longer tracks $N_A$), but once $\gamma(\alpha,\rho)$ is known from the bipartite random-graph theory, replacing $\mathbb{E}[2^{-r_{\mathrm{eff}}}]$ by an exponential with exponent $\gamma(\alpha,\rho)n$ introduces only $o(n)$ error in the exponent.
+
+%----------------------------------------------------
+\subsubsection{Connectivity regime: $M = \alpha n\log n$}
+
+Finally, take
+\begin{equation}
+  M = \alpha n\log n.
+\end{equation}
+Then the expected number of anticommute edges is
+\begin{equation}
+  \mu = \mathbb{E}[N_A] \sim 2\alpha\rho(1-\rho)\,n\log n,
+\end{equation}
+and the average degree in the anticommute graph is
+\begin{equation}
+  \delta \approx \frac{2\mu}{n}
+  \sim 4\alpha\rho(1-\rho)\,\log n.
+\end{equation}
+This is well above the connectivity threshold of order $(\log n)/n$ for random bipartite graphs on $K_{k,n-k}$. With probability $1-o(1)$, the anticommute graph is connected and every vertex has positive degree. Therefore
+\begin{equation}
+  r_{\mathrm{eff}} = n-1 \quad\text{with probability }1-o(1).
+\end{equation}
+Thus
+\begin{equation}
+  \mathbb{E}[r_{\mathrm{eff}}] = n-1 + o(1),\qquad
+  \mathrm{Var}(r_{\mathrm{eff}}) = o(1),
+\end{equation}
+and
+\begin{equation}
+  \mathbb{E}[2^{-r_{\mathrm{eff}}}] = 2^{-(n-1)}\big(1+o(1)\big),\qquad
+  \mathbb{E}[2^{-2r_{\mathrm{eff}}}] = 2^{-2(n-1)}\big(1+o(1)\big).
+\end{equation}
+Therefore
+\begin{equation}
+  \log_2\mathbb{E}[N]
+  = 2n - (n-1) + o(1) = n+1 + o(1),
+\end{equation}
+and
+\begin{equation}
+  \log_2\mathrm{Var}(N)
+  = 4n - 2(n-1) + o(1) = 2n+2 + o(1).
+\end{equation}
+In particular, the relative fluctuations vanish exponentially:
+\begin{equation}
+  \frac{\mathrm{Var}(N)}{\mathbb{E}[N]^2} \to 0.
+\end{equation}
+In this regime, $r_{\mathrm{eff}}$ is essentially deterministic ($n-1$), so approximating $\mathbb{E}[2^{-r_{\mathrm{eff}}}]$ by $2^{-\mathbb{E}[r_{\mathrm{eff}}]}$ is asymptotically exact up to $o(1)$ error in the exponent.
+
+\begin{theorem}[Torus-twirl charge constraints equal rank constraints]
+\label{thm:charge_to_rank}
+Let $U_\theta=\prod_{j=1}^D e^{i\theta_j Z^{\vts^j}}$ be an $n$-qubit IQP circuit with commuting generators
+$Z^{\vts^j}$, and let $\rho=\ket{+}\!\bra{+}^{\otimes n}$.
+Fix $\vta\in\{0,1\}^n\setminus\{\mathbf 0\}$ and define
+\[
+X^\vta=\sum_{x\in\{0,1\}^n}\ket{x\oplus\vta}\bra{x},
+\qquad
+S^\vta:=\{\vts^j:\ \vta\cdot\vts^j=1\},
+\qquad
+r^\vta:=\dim_{\mathbb F_2}\mathrm{span}(S^\vta).
+\]
+Assume the parameter distribution induces the Haar $2$-copy twirl on the torus
+$G=\{\prod_j e^{i\theta_j Z^{\vts^j}}\}$ (e.g., i.i.d.\ uniform $\theta_j\sim \mathcal U([0,2\pi))$ on a full-rank generating set).
+
+Fix an index $\ell$ with $\vta\cdot\vts^\ell=1$, and define the two-copy averaged operator
+\[
+\widetilde X^\vta
+:=\mathbb{E}_{\theta}\big[(U_\theta^\dagger)^{\otimes 2}(X^\vta\otimes X^\vta)U_\theta^{\otimes 2}\big].
+\]
+Then:
+\begin{enumerate}
+\item A computational-basis matrix element
+$\bra{x\oplus\vta,\,u\oplus\vta}\widetilde X^\vta\ket{x,u}$
+is nonzero if and only if
+\begin{equation}
+  \vts\cdot x \;\oplus\; \vts\cdot u \;=\; 1
+  \qquad\text{for all }\vts\in S^\vta.
+  \label{eq:charge_constraints}
+\end{equation}
+(Equivalently, $(-1)^{\vts\cdot x}=-(-1)^{\vts\cdot u}$ for all $\vts\in S^\vta$.)
+
+\item The number of nonzero entries of $\widetilde X^\vta$ equals $2^{2n-r^\vta}$.
+
+\item Consequently, the single-term derivative variance under this initialization satisfies
+\[
+\mathrm{Var}_{\theta}\!\left[\frac{\partial C^\vta_\theta}{\partial\theta_\ell}\right]
+=2^{2-r^\vta},
+\qquad
+C^\vta_\theta=\langle U_\theta^\dagger X^\vta U_\theta,\rho\rangle_{HS}.
+\]
+In particular, if $r^\vta=\Omega(n)$ for some $\vta$ with $\vta\cdot\vts^\ell=1$, then
+$\mathrm{Var}_{\theta}\!\left[\frac{\partial C^\vta_\theta}{\partial\theta_\ell}\right]=e^{-\Omega(n)}$ (barren plateau scaling).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\textbf{Step 1: derive the charge constraint.}
+Fix a generator $\vts$ and consider $U_\theta^{(\vts)}=e^{i\theta Z^\vts}$.
+Since $Z^\vts\ket{x}=(-1)^{\vts\cdot x}\ket{x}$, we have for any rank-one operator $\ket{x}\!\bra{y}$,
+\[
+U_\theta^{(\vts)}\ket{x}\!\bra{y}\,U_\theta^{(\vts)\dagger}
+=
+e^{i\theta\left((-1)^{\vts\cdot x}-(-1)^{\vts\cdot y}\right)}\ket{x}\!\bra{y}.
+\]
+Now use $X^\vta=\sum_x\ket{x\oplus\vta}\!\bra{x}$.
+If $\vts\cdot\vta=0$, then $(-1)^{\vts\cdot(x\oplus\vta)}=(-1)^{\vts\cdot x}$ and the phase is $1$, i.e.\ $Z^\vts$ imposes no constraint.
+If $\vts\cdot\vta=1$, then $(-1)^{\vts\cdot(x\oplus\vta)}=-(-1)^{\vts\cdot x}$ and
+\[
+U_\theta^{(\vts)}\ket{x\oplus\vta}\!\bra{x}\,U_\theta^{(\vts)\dagger}
+=
+e^{-i2\theta(-1)^{\vts\cdot x}}\ket{x\oplus\vta}\!\bra{x}.
+\]
+On two copies, a basis element of $X^\vta\otimes X^\vta$ has the form
+$\ket{x\oplus\vta,\,u\oplus\vta}\!\bra{x,u}$ and under conjugation by $U_\theta^{(\vts)}\otimes U_\theta^{(\vts)}$ picks up phase
+\[
+e^{-i2\theta\left((-1)^{\vts\cdot x}+(-1)^{\vts\cdot u}\right)}
+\quad\text{when }\vts\cdot\vta=1.
+\]
+Averaging over $\theta$ (Haar on $U(1)$) kills all nonzero frequencies, hence the element survives iff
+$(-1)^{\vts\cdot x}+(-1)^{\vts\cdot u}=0$, i.e.
+$(-1)^{\vts\cdot x}=-(-1)^{\vts\cdot u}$, equivalently $\vts\cdot x\oplus \vts\cdot u=1$.
+Doing this for every $\vts\in S^\vta$ gives \eqref{eq:charge_constraints}. This proves (1).
+
+\textbf{Step 2: count surviving entries via rank.}
+Let $W:=\mathrm{span}_{\mathbb F_2}(S^\vta)\subseteq\mathbb F_2^n$ and let $r^\vta=\dim W$.
+Choose a basis $\{w_1,\dots,w_{r^\vta}\}$ of $W$. Since every $\vts\in S^\vta$ is an $\mathbb F_2$-linear combination of the $w_i$,
+the constraints \eqref{eq:charge_constraints} for all $\vts\in S^\vta$ are equivalent to the $r^\vta$ independent constraints
+\[
+w_i\cdot x \oplus w_i\cdot u = 1,\qquad i=1,\dots,r^\vta.
+\]
+Equivalently, with variable $z:=(x,u)\in\mathbb F_2^{2n}$, this is a linear system $Az=\mathbf 1$ over $\mathbb F_2$ whose row space has rank $r^\vta$.
+Therefore, the solution set has cardinality $2^{2n-r^\vta}$.
+Each solution $(x,u)$ corresponds to exactly one surviving matrix element
+$\ket{x\oplus\vta,\,u\oplus\vta}\!\bra{x,u}$ of $\widetilde X^\vta$, hence $\widetilde X^\vta$ has exactly $2^{2n-r^\vta}$ nonzero entries.
+This proves (2).
+
+\textbf{Step 3: translate surviving-count to derivative variance and BP.}
+For $\vta\cdot\vts^\ell=1$, one has
+\[
+\frac{\partial C^\vta_\theta}{\partial\theta_\ell}
+=i\langle [Z^{\vts^\ell},\rho],\,U_\theta^\dagger X^\vta U_\theta\rangle_{HS},
+\]
+and the symmetric torus initialization implies
+$\mathbb{E}_\theta[\partial_{\theta_\ell}C^\vta_\theta]=0$, hence the variance equals the second moment.
+As in the standard two-copy reduction, this second moment is proportional to the number of surviving entries of $\widetilde X^\vta$,
+with normalization factor $2^{2-2n}$, yielding
+\[
+\mathrm{Var}_{\theta}\!\left[\frac{\partial C^\vta_\theta}{\partial\theta_\ell}\right]
+=2^{2-2n}\cdot \#\{\text{nonzero entries of }\widetilde X^\vta\}
+=2^{2-2n}\cdot 2^{2n-r^\vta}
+=2^{2-r^\vta}.
+\]
+If $r^\vta=\Omega(n)$, then $2^{2-r^\vta}=e^{-\Omega(n)}$, which is barren plateau scaling.
+This proves (3) and completes the proof.
+\end{proof}
+
+
+%====================================================
+% End of LaTeX summary
+%====================================================
+
+% \begin{theorem}[Average case lower bound for squared MMD partial derivative variance under uniform initialization]
+% Let $U_\vttheta = \prod_{j=1}^D e^{i \theta_j Z^\vtsj}$ be an $n$-qubit parameterized IQP circuit with generator
+% bitstrings $\vtsj \in \{0,1\}^n$. 
+% Consider an ensemble of ground truth distributions $p$ such that in the Fourier basis the coefficients $C^\vta_p$ are uncorrelated and have $0$-mean, i.e.,
+% \begin{equation}
+% \operatorname*{\mathbb{E}}_p \left[ C^\vta_p\right] = 0, \qquad \operatorname*{\mathbb{E}}_p \left[ C^\vta_p C^\vtb_p\right] = 0, \forall a \neq b, \qquad \operatorname*{\mathbb{E}}_p \left[ (C^\vta_p)^2\right] = \sigma_\vta^2 \geq 0.
+% \end{equation}
+% Then, a nontrivial lower bound for the MMD derivative variance for an average case problem can be written as:
+% \begin{equation}
+% \operatorname*{\mathbb{E}}_p \left[\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right]\right] \geq
+% 4 \sum_aG^2(a)\sigma_\vta^2\operatorname*{Var}_{\vttheta} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] 
+% \end{equation}
+% \end{theorem}
+
+
+% \begin{proof}
+% \begin{align}
+%     \operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right] &=    \operatorname*{Var}_{\vttheta} \left[ \frac{\partial }{\partial \theta_\ell}  \left(\sum_{\vta} G(\vta)\left(C^\vta_p - C^\vta_\vttheta \right)^2\right)\right]
+% \\ &= \operatorname*{Var}_{\vttheta} \left[-2 \sum_\vta G(\vta) \left(C^\vta_p - C^\vta_\vttheta \right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] \\
+% &= 4 \sum_{\vta, \vtb} G(\vta) G(\vtb) \operatorname*{Cov}_{\vttheta}\left(\left(C^\vta_p - C^\vta_\vttheta\right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} , \left(C^\vtb_p - C^\vtb_\vttheta\right) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right) \\
+% &= 4 \sum_{\vta, \vtb} G(\vta) G(\vtb) \left(\operatorname*{\mathbb{E}}_{\vttheta} \left[ (C^\vta_p - C^\vta_\vttheta) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} (C^\vtb_p - C^\vtb_\vttheta) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right] - \operatorname*{\mathbb{E}}_{\vttheta}\left[(C^\vta_p - C^\vta_\vttheta) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] \operatorname*{\mathbb{E}}_{\vttheta}\left[(C^\vtb_p - C^\vtb_\vttheta) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right] \right) \\
+% &= 4 \sum_{\vta, \vtb} G(\vta) G(\vtb) \left(\operatorname*{\mathbb{E}}_{\vttheta} \left[ \left(C^\vta_p - C^\vta_\vttheta\right) \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \left(C^\vtb_p - C^\vtb_\vttheta\right) \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell} \right] \right) \label{eq: one and two-copy vanish}\\
+% &= 4 \sum_{\vta, \vtb} G(\vta) G(\vtb) \operatorname*{\mathbb{E}}_{\vttheta} \left[ C^\vta_p C^\vtb_p \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} - C^\vta_p C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} - C^\vtb_p C_\vttheta^\vta \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} + C_\vttheta^\vta C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}\right]  \\
+% &=4 \operatorname*{\mathbb{E}}_{\vttheta}  \left[ \sum_{\vta, \vtb} G(\vta) G(\vtb) C^\vta_p C^\vtb_p \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}\right]  + 4\operatorname*{\mathbb{E}}_{\vttheta}\left[\sum_{\vta, \vtb} G(\vta) G(\vtb) C_\vttheta^\vta C_\vttheta^\vtb \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}\right] \label{eq: three copy vanish} \\
+% &=4 \operatorname*{\mathbb{E}}_{\vttheta}  \left[ \sum_{\vta, \vtb} G(\vta) G(\vtb) C^\vta_p C^\vtb_p \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell}\right]  + 4 \operatorname*{\mathbb{E}}_{\vttheta}\left[ \left(\sum_{\vta} G(\vta) C_\vttheta^\vta \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell}\right)^2\right] 
+% \end{align}
+
+% In Equation \ref{eq: one and two-copy vanish}, we used that one-copy pure derivative moments vanish, i.e., $\operatorname*{\mathbb{E}} \left[\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \right] = 0$ (Lemma \ref{lem: first moment vanish}), and that two-copy mixed auto-cost-derivative moments vanish, i.e., $\operatorname*{\mathbb{E}} \left[C^\vta_\vttheta\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \right] =0$, which we prove now. One can express the term as:
+% \begin{align}
+% \operatorname*{\mathbb{E}} \left[C^\vta_\vttheta\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \right] &= i \inner{\rho \otimes \comm{Z^\vtsl}{\rho}}{\mathcal{T}^2_S(X^a\otimes X^a)}.
+% \end{align}
+% On one side, by Lemma \ref{lem: two_copy_twirl} and Lemma \ref{lem: twirl_comp}, we can check that the output of $\mathcal{T}^2_S(X^a\otimes X^a)$ is always symmetric, i.e., it is either $X^a\otimes X^a$ (if for all $j$, $\vta \cdot \vtsj = 0$), or a linear combination of identical two-copies of bitstrings, meaning that whenever there is a Pauli-$Y$ or -$Z$ on one index in one copy, it will appear on the same index in the other copy (if for some $j$, $\vta \cdot \vtsj = 1$). On the other side, in product basis, $\rho$ contains no bitstings containing Pauli-$Y$ or -$Z$, while $\comm{Z^\vtsl}{\rho}$ is a sum of Pauli strings, all of which containing at least one Pauli-$Y$ or -$Z$. The inner product will therefore always vanish.
+
+% In Equation \ref{eq: three copy vanish}, we used that three-copy mixed cross-cost-derivative moments vanish, i.e., ${\mathbb{E}}_{\vttheta} \left[ C^\vta_\vttheta\frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell}\right] = 0$. One can express the term as:
+% \begin{align}
+% {\mathbb{E}}_{\vttheta} \left[ C^\vta_\vttheta\frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \frac{\partial C^\vtb_\vttheta}{\partial \theta_\ell}\right] &= -\inner{\rho \otimes \comm{Z^\vtsl}{\rho}\otimes \comm{Z^\vtsl}{\rho}}{\mathcal{T}^3_S(X^a\otimes X^a \otimes X^b)}
+% \end{align}
+% Similar as in the proof for Lemma \ref{lem: two_copy_twirl}, one can derive that:
+% \begin{equation}
+% \mathcal{T}^3_\vts(X^\vta \otimes X^\vta \otimes X^\vtb) = \begin{cases} X^\vta \otimes X^\vta \otimes X^\vtb, & \vta \cdot \vts = 0 \text{ and } \vtb \cdot \vts = 0\\
+% (P_0^\vts (X^\vta \otimes X^\vta)P_0^\vts) \otimes X^\vtb, & \vta \cdot \vts = 1 \text{ and } \vtb \cdot \vts = 0 
+% \\ 0, & \vtb \cdot \vts = 1 \end{cases}
+% \end{equation}
+% where $P_0^\vts$ is defined in Lemma \ref{lem: two_copy_twirl}. By Lemma \ref{lem: twirl_comp}, one can then derive that $\mathcal{T}^3_S(X^\vta \otimes X^\vta \otimes X^\vtb) = \mathcal{T}^2_S(X^\vta \otimes X^\vta) \otimes X^\vtb$ or $0$. Then, by similar reasoning, it is clear that this term also always vanishes.
+
+% Equation \ref{eq: three copy vanish} then consists of two-copy pure derivative moments and four-copy mixed cost-derivative terms. While each four-copy terms can be negative, the sum of them all can be written in a quadratic form, which is always non negative. without specifying the exact generators. 
+
+% Each two-copy term is nonnegative. By derivation similar to the proof of Proposition \ref{prop: var_as_combinatorics}, we can show that \begin{equation}
+% \operatorname*{\mathbb{E}}_\vttheta \left[ \frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \frac{\partial C_\vttheta^\vtb}{\partial \theta_\ell} \right]= \operatorname*{\mathbb{E}}_\vttheta \left[ \left(\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell} \right)^2 \right] \mathds{1}\{\vta \cdot \vtsj = \vtb\cdot \vtsj, \forall 1\leq j \leq D\}
+% \end{equation}
+% However, since $C^\vta_p \in [-1,1]$ can be negative, one can always engineer some special distribution and generator sets such that the negative contributions from off-diagonal terms completely cancel the positive contributions from the diagonal terms. Therefore, for an unknown target distribution, in general no nontrivial lower bound can be provided. 
+
+% If we consider an average case target distribution such that \begin{equation}
+% \operatorname*{\mathbb{E}}_p \left[ C^\vta_p\right] = 0, \qquad \operatorname*{\mathbb{E}}_p \left[ C^\vta_p C^\vtb_p\right] = 0, \forall a \neq b, \qquad \operatorname*{\mathbb{E}}_p \left[ (C^\vta_p)^2\right] = \sigma_\vta^2 \geq 0,
+% \end{equation}
+% then we can derive that 
+% \begin{align}
+%  \operatorname*{\mathbb{E}}_p\left[\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}_\vttheta}{\partial \theta_\ell} \right]\right] &\geq 4 \operatorname*{\mathbb{E}}_{\vttheta}  \left[ \sum_{\vta} G(\vta)^2 (C^\vta_p)^2 \left(\frac{\partial C_\vttheta^\vta}{\partial \theta_\ell}\right)^2 \right]  + 0 \\
+%  &= 4 \sum_aG^2(a)\sigma_\vta^2\operatorname*{Var}_{\vttheta} \left[ \frac{\partial C^\vta_\vttheta}{\partial \theta_\ell} \right] 
+% \end{align}
+% \end{proof}
+
+\end{document}

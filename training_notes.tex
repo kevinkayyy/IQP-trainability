@@ -1,0 +1,325 @@
+\documentclass[a4paper,onecolumn,notitlepage,nofootinbib,longbibliography,superscriptaddress, floatfix, pra, aps, 10pt]{revtex4-2}
+
+\usepackage{comment}
+\usepackage[caption=false]{subfig}
+\usepackage[normalem]{ulem}
+% \usepackage{algorithm}
+% \usepackage{algorithmic}
+\usepackage{
+    adjustbox,
+    % algorithm,
+    % algpseudocode,
+    amscd,
+    amsfonts,
+    amsmath,
+    amssymb,
+    amsthm,
+    bm,
+    booktabs,
+    csquotes,
+    enumerate,
+    enumitem,
+    graphicx,
+    % IEEEtrantools,
+    indentfirst,
+    latexsym,
+    mathrsfs,
+    mathtools,
+    multirow,
+    nicefrac,
+    placeins,
+    pifont,
+    relsize,
+    tabls,
+    tikz-cd,
+    times,
+    comment
+}
+\newcommand{\VD}[1]{{\color{violet}[ VD: #1]}}
+\usepackage{dsfont}
+\usepackage{physics}
+% \usepackage[colorlinks=true,linkcolor=mainred,urlcolor=mainpurple]{hyperref}
+
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\renewcommand{\a}{\boldsymbol{a}}
+\newcommand{\x}{\boldsymbol{x}}
+\newcommand{\y}{\boldsymbol{y}}
+\newcommand{\z}{\boldsymbol{z}}
+\newcommand{\g}{\boldsymbol{g}}
+
+
+\newcommand{\aqa}{$\langle aQa^L \rangle$ Applied Quantum Algorithms, Leiden University, The Netherlands}
+\newcommand{\liacs}{LIACS, Leiden University, Niels Bohrweg 1, 2333 CA, Leiden, The Netherlands}
+\newcommand{\bmw}{BMW Group, 80788 München, Germany}
+
+\begin{document}
+
+\title{Parameterized IQP-QCBM generative model: universality with hidden units and kernel-adaptive efficient training on classical hardware}
+\date{\today}
+
+\author{Andrii Kurkin}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+\affiliation{\bmw}%
+
+\author{Kevin Shen}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+\affiliation{\bmw}%
+
+\author{Susanne Pielawa}
+\affiliation{\bmw}%
+
+\author{Hao Wang}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+
+\author{Vedran Dunjko}
+\affiliation{\aqa}%
+\affiliation{\liacs}%
+\maketitle
+
+\section{Adaptive Training}
+In our adaptive training, the loss function writes
+\begin{equation}
+\mathcal{L}(\vec\gamma, \vec\theta) =\mathop{\mathbb{E}}\limits_{\vec{a} \sim G_{\vec{\gamma}}(\vec{a})} \left[ F_{\vec{\theta}}(\vec{a})^2 \right],
+\end{equation} where $G_{\vec{\gamma}}(\vec{a})$ is a parameterized strictly positive spectral measure and \begin{equation}F_{\vec{\theta}}(\vec{a}) = \frac{1}{M} \sum_{i=0}^{M} (-1)^{\vec{x}_i \cdot \vec{a}} - \frac{1}{N_s} \sum_{j=1}^{N_s}\cos \left( \vec{\theta}_j (-1)^{\vec{g}_j \cdot \vec{z}_j} (1- (-1)^{\vec{g}_j \cdot \vec{a}})\right). \end{equation}
+Equation (2) is already implemented in \cite{recioarmengol2025iqpoptfastoptimizationinstantaneous} (function \textit{loss\_estimate\_iqp}). Note that to avoid heavy computation, we should not perform exact summation over $\vec{a}$ to evaluate equation (1) when the number of qubits $n \gg 20$:
+\begin{equation}
+\mathcal{L}(\vec\gamma, \vec\theta) = \sum_{\vec{a}\in \{0,1\}^n} F_{\vec{\theta}}(a)^2 G_{\vec{\gamma}}(\vec{a})
+\end{equation}
+When updating $\vec{\gamma}$, we may use the score function trick and Monte Carlo estimation:
+\begin{align}
+\nabla_{\vec{{\gamma}}}\mathcal{L}(\vec\gamma, \vec\theta) =& \mathop{\mathbb{E}}\limits_{\vec{a} \sim G_{\vec{\gamma}}(\vec{a})} \left[ \nabla_{\vec{\gamma}} \log G_{\vec{\gamma}}(\vec{a}) F_{\vec{\theta}}(\vec{a})^2 \right] \\
+\approx& \frac{1}{K}\sum_{k=1}^{K} \left[ \nabla_{\vec{\gamma}} \log G_{\vec{\gamma}}(\vec{a}^{(k)}) F_{\vec{\theta}}(\vec{a}^{(k)})^2 \right], \quad \vec{a}^{(k)} \sim G_{\vec{\gamma}}(\vec{a})
+\end{align}
+To reduce variance, we may introduce an additional baseline term 
+\begin{equation}
+b= \frac{1}{K}\sum_{k=1}^{K} F_{\vec{\theta}}(\vec{a}^{(k)})^2,
+\end{equation} such that \begin{equation}
+\widehat{\nabla_{\vec{{\gamma}}}\mathcal{L}(\vec\gamma, \vec\theta)} = \frac{1}{K}\sum_{k=1}^{K} \left[ \nabla_{\vec{\gamma}} \log G_{\vec{\gamma}}(\vec{a}^{(k)}) (F_{\vec{\theta}}(\vec{a}^{(k)})^2 - b )\right], \quad \vec{a}^{(k)} \sim G_{\vec{\gamma}}(\vec{a})
+\end{equation}
+When updating $\vec{\theta}$, we only need the Monte Carlo estimation:
+\begin{equation}
+\widehat{\nabla_{\vec{{\theta}}}\mathcal{L}(\vec\gamma, \vec\theta)} =\nabla_{\vec{\theta}} \left( \frac{1}{K}\sum_{k=1}^{K} \left[ F_{\vec{\theta}}(\vec{a}^{(k)})^2\right] \right), \quad \vec{a}^{(k)} \sim G_{\vec{\gamma}}(\vec{a})
+\end{equation}
+To ensure computational efficiency, we parameterize $\log G_{\vec{\gamma}}(\vec{a})$ as an autoregressive network, which output the log-probabilities in a factorized form: 
+\begin{equation}
+\log G_{\vec{\gamma}}(\vec{a}^{(k)}) = \sum_{i=1}^n \log p_{\vec{\gamma}}(a_i^{(k)} | a_{<i}^{(k)}),
+\end{equation} where $a_i$ is the $i$-th bit. The benefit of this choice is that the computational cost will be $\mathcal{O}(n)$.
+
+\section{Related Work (WIP)}
+\cite{pmlr-v37-li15} (GMMN). They propose to train the same generator as in GANs, a MLP $f_w(x)$, using the MMD loss with a fixed Gaussian kernel. Specifically, they need to generate batches of data $x$ and do backpropagation through $x$, and hence $w$, $\frac{\mathcal{L}_{MMD}}{\partial w}$. Their motivation is that the optimization is easier than the mini-max problem of GANs. However, the empirical performance is typically worse than GANs in all aspects: worse sample quality, larger batch sizes, slower computation.
+
+\cite{NIPS2017_dfd7468a}: Motivation is to make the kernel in GMMN trainable and hence always have a stronger signal when the distributions are different. They keep using the Gaussian kernel, but learn a quasi-injective feature transform before the Gaussian kernel. The feature transform has the architecture of the encoder in an autoencoder. 
+
+\cite{pmlr-v89-li19f}
+
+The use of MMD in our case has a different motivation (not because of easier training than GANs). Our network is IQP, not MLP, meaning that sampling is impossible. Hence, the evaluation of MMD relies on the spectral representation. 
+
+\section{Spectral Measure Parameterization (WIP)}
+% ---------------------------------------------------------------
+% Bernoulli-RNN spectral measure
+% ---------------------------------------------------------------
+\paragraph{Autoregressive Architecture}  
+To be clear with notations, in this section we use $G_\gamma$ to denote the autoregressive newtork, and $p_\gamma$ to denote the probability mass. Let \(\vec{a}=(a_1,\dots,a_n)\in\{0,1\}^n\) be a bit-string. $G_{\vec{\gamma}}$ both computes $p_\gamma(\vec{a})$, and samples $\vec{a}$ according to $p_\gamma$. Let us denote by \(\vec{a}_{<i}:=(a_1,\dots,a_{i-1})\) the prefix up to site \(i-1\). $p_\gamma$ takes a factorized form. This property allows an easy form of log probability (used for training) and easy ancestral sampling.
+\[
+p_{\vec\gamma}(\vec{a})=
+  \prod_{i=1}^n 
+  \bigl[p_{\vec\gamma}(a_i=1\mid\vec{a}_{<i})\bigr]^{a_i}\,
+  \bigl[1-p_{\vec\gamma}(a_i=1\mid\vec{a}_{<i})\bigr]^{1-a_i}.
+\]
+where
+\[
+p_{\vec\gamma}\!\left(a_i=1\,\big|\,\vec{a}_{<i}\right)
+ = \varepsilon+(1-2\varepsilon)\,
+   \sigma\!\bigl(\ell_i\bigr), 
+\quad
+\sigma(\ell_i)=\frac1{1+e^{-\ell_i}},
+\]
+The logits $\ell_i$ are recursively computed with a masked MLP: 
+\[
+\ell_i = b_i + \sum_{r<i}W_{ir} (2a_r - 1) 
+\]
+Above, $W_{ir}$ is a lower-triangular matrix. Intuitively, now the logit (hence the probability) of sampling each bit $a_i$ depends on the bits that have been sampled previously $a_{r<i}$. 
+
+\paragraph{Freezing Parameters as Ablation Studies}
+The above construction is one of the simplest ways to model a 'parameterized spectral measure'. By freezing some of the parameters, it also allows us to recover kernels of different levels of expressivity for ablation studies.
+\begin{itemize}
+    \item \textbf{M1. Fixed Gaussian spectral measure }(which is a Binomial distribution): Freeze $W$ to $0$, and $\forall i, b_i = b_\sigma$, where $b_\sigma=\log\!\frac{p_\sigma-\varepsilon}{1-p_\sigma-\varepsilon}$ and $
+p_\sigma=\frac{1-e^{-1/(2\sigma)}}{2}$ is set to recover the desired bandwidth $p_\sigma$.
+\item \textbf{M2. Gaussian spectral measure with tunable bandwidth}: Freeze $W=0$, but allow $b_i$ to vary while sharing the same value, we are effectively tuning the bandwidth.
+\item \textbf{M3. Nonidentical Independent sampling of each bit}: Freeze $W=0$, but allow $b_i$ to vary independently, the model is strictly more expressive than any Gaussian spectral measure, while the sampling of each bit is still independent.
+\item \textbf{M4. Correlated sampling of bits}: Now we unfreeze all the parameters. Correlation between bits is introduced through $W$, representing the most expressive case.
+\end{itemize}
+
+%\begin{equation}
+    %\hat{\text{MMD}^2}(\mathcal{X, A, Z}, \btheta) = \frac{1}{\vert \mathcal{A} \vert}\sum_k\Big(\frac{1}{|\mathcal{X}|}\sum_i (-1)^{\x_i\cdot \a_k}  - \frac{1}{|\mathcal{Z}|}\sum_{i=1}^{|\mathcal{Z}|}\cos\big(\sum_j \theta_j(-1)^{\g_j\cdot \z_i}(1-(-1)^{\g_j\cdot \a_k})\big)\Big)^2 
+%\end{equation}
+
+% \section{Experiments (Previous result on 8 blobs dataset was not successful. The new LDPC dataset is successful. See a later section.)}
+% \textbf{Big problem here. Either we need a more difficult dataset that necessitates tunable kernel, or we need to try really hard to tune the kernel on current dataset.}
+% The default training setting I consider is: I alternatingly train kernel once, circuit once, kernel one, circuit once, ... The initial bandwidth is set at 2.0 (coming from Median Heuristics). The initial learning rate is 1e-3 for both circuit and kernel. Current experience with the 8 blobs dataset include : 
+% \begin{itemize}
+%     \item There is no difference between M1 with well chosen bandwidth and M2. Evidence: I first trained M2 and extracted the final bandwidth. I initialize the kernel with that final bandwidth and retrain using both M1 and M2. The two results are very similar.
+%     \item M3 and M4 have training instability problem. Evidence: I used the same default setting for all modes. While M2 has a better performance than M1 (the final trained bandwidth is far smaller than the initialied bandwidth), M3 and M4's total variation distance (TVD) explode after a few thousand iterations. Other symptoms include: gradient norm of circuit update blows up, and gradient norm of kernel update remains at high level.  Sign of instability!
+%     \item Learning rate decay for kernel update helps M4. Evidence: I applied some curriculum training: first pretrain the model with M2 for $2000$ steps so that the bandwidth goes to a fairly good value. Then I turn on M4 to continue training for $8000$ steps. During M4, I tried both the default training setting, and adding exponential learning rate decay to kernel update (for every 500 steps, learning rate is reduced by $10\%$). While the trial without decay still blows up, the trial with decay continues decreasing TVD (However, it is still not as good as if we just continue with M2 and not use M4). As a side note, I also tried using gradient clipping together with the decay, there isn't much obvious benefit or harm.
+% \end{itemize}
+% There are two problems that need to be fixed:
+% \begin{itemize}
+%     \item M3 and M4 definitely should not be worse than M2 (not necessarily better, depending on the dataset). The training instability should be solvable by applying more tricks, carefully tuning learning rate decay and scheduling of kernel update vs circuit update.
+%     \item We need a dataset that is difficult enough so that M2 does not work well. Only then, it is possible that M3 and M4 would outperform M2. It is also important that that dataset has $<20$ qubits if we want to show the advantage in terms of TVD. (Otherwise only MMD can be computed, and I don't know how convincing that would be.)
+% \end{itemize}
+%We consider the following datasets:
+%\begin{enumerate}
+%    \item 8 Blobs (16 qubits)
+  %  \item Ising model (16 qubits)
+   % \item Binarized MNIST (784 qubits)
+   % \item Binarized Fashion-MNIST (784 qubits)
+   % \item Binarized Caltech 101 Silhouettes (784 qubits)
+%\end{enumerate}
+%For the small datasets, we can generate samples, and hence compute metrics including negative likelihood and total variation distance. In addition, we compute MMD loss, averaged over 10 different random Gaussian kernels. The average MMD should match with the two sample-based metrics to build confidence of the latter. For the larger experiments, we can only compute the average MMD. For all experiments, we also compute the covariance matrix, plot it, and derive a quantitative metric out of it. 
+
+%For each dataset, we compare the three training methods: 
+%\begin{enumerate}
+   % \item Fixed Gaussian kernel.
+    %\item Gaussian kernel with updated bandwidth.
+    %\item Fully updated kernel.
+%\end{enumerate}
+%All three methods are realized using the RNN-parameterized kernel, but with different initialization strategies and training loop.
+
+%For the first two datasets, we perform 10 independent runs and report the average. For the last three datasets, we only perform one run. We record the parameters every $200$ iterations and do the evaluation later. 
+\newcommand{\Ztwo}{\{0,1\}}
+\newcommand{\one}{\mathbf 1}
+
+\section{What dataset challenges Gaussian kernels?}
+\textbf{Problem Statement}. We would like to find datasets that are challenging to be learned by an IQP generator using MMD loss with Gaussian kernel, while the learning using MMD loss with a more expressive trainable kernel will be easier. (By challenging / easy, we mean the required time complexity for training.)
+
+For two distributions $P,Q$ the squared MMD writes as
+\begin{equation}\label{eq:mmd-sum}
+\operatorname{MMD}^2_G(P,Q)\;=\;
+   \sum_{a\in\Ztwo^n} G_\sigma(a)\;\bigl\lvert\widehat P(a)-\widehat Q(a)\bigr\rvert^{2}.
+\end{equation} where for $a\in\Ztwo^n$
+\[
+\widehat{P}(a)\;=\;\mathbb{E}_{x\sim P}\bigl[(-1)^{a\cdot x}\bigr], \quad \text{and $\widehat{Q}(a)$ likewise, }
+\]
+and 
+\begin{equation}
+G_\sigma(a)
+=\frac{(1+e^{-\beta})^{\,n-|a|}\,(1-e^{-\beta})^{\,|a|}}{2^{n}}, \qquad \beta = \frac{1}{2\sigma^2}.
+\end{equation}
+
+First, we identify the weakness of Gaussian kernel. The spectral weights of high Hamming-weight modes, $\{a, \abs{a}> n/2\}$, are decreasing exponentially in $n$, regardless of $\sigma$: 
+\begin{equation}\text{if } \abs{a}> n/2 \text{, for any $\sigma \geq 0$, } G_{\sigma}(a) \leq 2^{-n}
+\end{equation}
+
+
+Consequently, if the spectral difference between $P$ and $Q$ is concentrated on heavy modes, i.e., for any $a$ such that $|a|\le n/2$, $\widehat P(a) = \widehat Q(a)$,
+then for any $\sigma \geq 0$,
+\begin{equation}
+\operatorname{MMD}^2_{G_\sigma}(P,Q) = \sum_{|a|\ge n/2}\bigl|\widehat P(a)-\widehat Q(a)\bigr|^{2} \le c 2^{-n}, \end{equation}
+where $c$ is the number of modes that differ.
+
+\textbf{Lesson learned.} It is clear that at the beginning of training, if the difference between the initial generated distribution and the target distribution only occurs at polynomial-many high frequencies and no frequencies, then the gradient magnitudes entering generator training is exponentially small. Now suppose that the IQP generator has all its gates uniformly randomly initialized, or initialized according to the training data's covariance matrix \cite{recio2025train}, the initial generated distribution should not have any thing special in high frequencies (close to uniform distribution). So, if we design datasets that resembles uniform distribution at low frequencies but differs largely at high frequencies, by high chance it will be challenging for the Gaussian kernel. 
+
+\textbf{Low Density Parity Check (LDPC) data set.} Fix an $m\times n$ binary parity-check matrix $H$ with rows
+$h^{(1)},\dots,h^{(m)}$ of (typically high) weight $w$.
+Define the target distribution
+\[
+P_H(x)\;=\;\frac{1}{2^{\,n-m}} \cdot\one\!\bigl[Hx=0\bigr]
+\quad\bigl(\text{uniform on the null-space of }H\bigr).
+\]
+
+$P_H$ differs from the uniform distribution $U$ \emph{only} on the $m$
+row vectors:\footnote{Because $Hx=0$ iff $(-1)^{h^{(j)}\!\cdot x}=1$ for all rows.}
+\[
+\bigl\{\;a\in\Ztwo^n
+   \;:\;
+   \widehat P_H(a)\neq\widehat U(a)\bigr\}
+   \;=\;\{\,h^{(1)},\dots,h^{(m)}\}.
+\]
+All those $a$ have the \emph{same weight $w$}.  
+Therefore, datasets induced by $H$, with rows of high weights are likely to challenge the Gaussian kernel.
+
+\subsection{Experiment Design}
+Ablation Studies
+\begin{itemize}
+    \item (Baseline) Fixed Gaussian kernel with bandwidth from median heuristics
+    \item Gaussian kernel with tunable bandwidth, initialized from median heuristics
+    \item Fully updated kernel, initialized from median heuristics
+    \item Fully updated kernel, initialized randomly
+\end{itemize}
+
+\subsection{results}
+\begin{table}[t]
+  \centering
+  \caption{Performance comparison on LDPC datasets over three scales. Best total variation distance over five runs is shown.}
+  \label{tab:main_results}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Training Method} & \textbf{12 bits} & \textbf{14 bits} & \textbf{16 bits} \\
+    \midrule
+    Fixed Gaussian kernel \cite{recio2025train} & $0.386 \pm 0.001$ & $0.633 \pm 0.001$ & $0.775 \pm 0.001$ \\
+    \textbf{Adaptive RNN kernel (ours)} & \bm{$0.344 \pm 0.003$} & \bm{$0.525 \pm 0.002$} & \bm{$0.654 \pm 0.008$} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure*}[h!]
+    \makebox[\linewidth][c]{%
+        \includegraphics[width=\linewidth]{ldpc_results.pdf}}
+    \caption{}
+    \label{fig:illustration}
+\end{figure*}
+%\subsection*{Signal–to–noise ratio for the Gaussian kernel}
+
+%The shell $\{|a|=w\}$ contains $\binom{n}{w}$ vectors, only $m$ of which are informative.
+%Therefore, with a Monte-Carlo estimate of~\eqref{eq:mmd-sum},
+%the expected fraction of ``useful’’ samples is
+%\begin{equation}\label{eq:signal-fraction}
+%p_{\text{signal}}\;=\;
+%\frac{m}{\binom{n}{w}}\;\ll\;1
+%\quad(n=10,w=8,m=3\;\Longrightarrow\;p_{\text{signal}}\simeq6.7\%).
+%\end{equation}
+%Coupled with the exponential damping $g_\sigma(w)$, the gradient
+%variance dominates and learning stalls.
+
+%\subsection*{Why a learnable (anisotropic) spectral measure helps}
+
+%If the kernel spectral measure is \emph{not} forced to be radial, it can
+%concentrate essentially all its probability mass on the $m$ specific dual
+%vectors.  Then
+%\[
+%p_{\text{signal}}^{\text{\,anisotropic}}\;=\;1,
+%\quad
+%\operatorname{MMD}^2\text{ gradient } \sim
+%\bigl|\widehat P_H(h^{(j)})-\widehat Q(h^{(j)})\bigr|,
+%\]
+%recovering full signal strength regardless of $w$.
+
+%\subsection{Summaryr}
+
+%\begin{enumerate}[label=\arabic*)]
+%\item The Gaussian kernel’s spectral weight is exponentially suppressed
+      %on high Hamming-weight modes \(\bigl(G_\sigma(a)\propto e^{-|a|/2\sigma^{2}}\bigr)\).
+%\item An LDPC-coset distribution places \emph{all} its distinguishing
+      %Fourier mass on a handful of weight-$w$ parities
+      %\(h^{(j)}\), typically with \(w\ge 8\).
+%\item A radial Gaussian must dilute probability over
+      %\(\binom{n}{w}\) vectors, so only the tiny fraction~\eqref{eq:signal-fraction}
+      %contributes useful gradient, and that fraction itself is damped by
+      %\(e^{-w/2\sigma^{2}}\).
+%\item A learnable anisotropic kernel can put mass directly on
+      %\(h^{(1)},\dots,h^{(m)}\), removing the combinatorial and exponential
+      %bottlenecks.
+%\end{enumerate}
+
+\bibliography{ref.bib}
+\end{document}

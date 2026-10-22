@@ -1,0 +1,733 @@
+\documentclass[a4paper,onecolumn,notitlepage,nofootinbib,longbibliography,superscriptaddress, floatfix, pra, aps, 10pt]{revtex4-2}
+
+\usepackage{comment}
+\usepackage[caption=false]{subfig}
+\usepackage[normalem]{ulem}
+\usepackage{
+    adjustbox,
+    algorithm,
+    algpseudocode,
+    amscd,
+    amsfonts,
+    amsmath,
+    amssymb,
+    amsthm,
+    bm,
+    booktabs,
+    csquotes,
+    enumerate,
+    enumitem,
+    graphicx,
+    IEEEtrantools,
+    indentfirst,
+    latexsym,
+    mathrsfs,
+    mathtools,
+    multirow,
+    nicefrac,
+    placeins,
+    pifont,
+    relsize,
+    tabls,
+    tikz-cd,
+    times,
+    comment,
+    physics,
+    braket
+}
+\newcommand{\VD}[1]{{\color{violet}[ VD: #1]}}
+\newcommand{\cmt}[1]{{\color{blue}[#1]}}
+\newcommand{\vttheta}{{\bm{\theta}}}
+\newcommand{\vta}{{\bm{a}}}
+\newcommand{\vtz}{{\bm{z}}}
+\newcommand{\vtzp}{{\bm{z}'}}
+\newcommand{\vtv}{{\bm{v}}}
+\newcommand{\vtsj}{{\bm{s}_j}}
+\usepackage{dsfont}
+\usepackage{physics}
+% \usepackage[colorlinks=true,linkcolor=mainred,urlcolor=mainpurple]{hyperref}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+
+\newcommand{\aqa}{$\langle aQa^L \rangle$ Applied Quantum Algorithms, Leiden University, The Netherlands}
+\newcommand{\liacs}{LIACS, Leiden University, Niels Bohrweg 1, 2333 CA, Leiden, The Netherlands}
+\newcommand{\bmw}{BMW Group, 80788 München, Germany}
+
+
+\begin{document}
+
+\title{Note on the Trainability of IQP-QCBMs}
+\date{\today}
+
+\author{Kevin Shen}
+% \affiliation{\aqa}%
+% \affiliation{\liacs}%
+% \affiliation{\bmw}%
+
+% \author{Andrii Kurkin}
+% \affiliation{\aqa}%
+% \affiliation{\liacs}%
+% \affiliation{\bmw}%
+
+% \author{Susanne Pielawa}
+% \affiliation{\bmw}%
+
+% \author{Hao Wang}
+% \affiliation{\aqa}%
+% \affiliation{\liacs}%
+
+% \author{Vedran Dunjko}
+% \affiliation{\aqa}%
+% \affiliation{\liacs}%
+ 
+\begin{abstract}
+
+\end{abstract}
+
+
+\maketitle
+
+\subsubsection{Takeaway: IQP-QCBMs are not ``dead'', but the claim must be phrased carefully.}
+The dequantization result of Herbst \emph{et al.} applies to an \emph{ensemble} viewpoint that is deliberately aligned with standard supremacy heuristics: they introduce \emph{pseudo-independent} distributions as an analytical proxy for typical outputs of models such as IQP and random quantum circuits, and show that these distributions anticoncentrate (in the usual sense that typical point probabilities are $\Omega(2^{-n})$) \cite[Def.~2, Prop.~2]{herbst25}. Under the same symmetry assumptions, they prove that several global discrepancy measures---including MMD for common kernels---\emph{concentrate} sharply: for two independently drawn instances $p,q$ from the pseudo-independent family, $\mathrm{MMD}^2(p,q)$ is exponentially small with high probability (Prop.~6 in their notation) \cite[Prop.~6]{herbst25}. Conceptually, this means that if one insists on (i) drawing targets that are \emph{typical} members of an anticoncentrated supremacy-style ensemble, and (ii) optimizing a loss that effectively averages global information across exponentially many outcomes, then the landscape provides essentially no distinguishing signal at random initialization.
+
+However, this conclusion does \emph{not} rule out trainability of IQP-QCBMs once we abandon either of the two ensemble-level premises above. The main message from \cref{thm:uniform} is that the availability of gradients under uniform initialization is governed by the rank profile $r^\vta$, while \emph{the loss function} determines which $\vta$ are actually queried through the weighting $G(\vta)$. In particular, a local kernel (e.g., a Gaussian kernel with bandwidth scaling so that $G$ places non-negligible weight on $\abs{\vta}\le O(\log n)$) focuses learning on low-order parities / marginals, where $r^\vta$ can remain only polylogarithmic for structured generator sets (Examples 1--3), giving polynomial-size gradients. This is precisely the regime in which Herbst \emph{et al.} explicitly note that only \emph{strong biases} in either the target distribution or the model (which a local kernel induces by construction) can significantly deviate from the mean concentration trend \cite[discussion around Prop.~6]{herbst25}. In short: the dequantization result warns that \emph{global} MMD generically washes out, but it leaves room for \emph{local} MMD to remain informative when the architecture is locality-preserving.
+
+Turning to (conjectural) classical hardness, the relevant point is that the best available \emph{$\ell_1$-robust} hardness statements for IQP sampling do \emph{not} follow merely from postselection universality. Postselection arguments yield a collapse of PH from an \emph{efficient exact (or multiplicative-error strong) simulation} via $\mathrm{PostBQP}=\mathrm{PP}$ \cite{aaronson05}, and they explain the dramatic transition in planar geometries when single-qubit diagonal gates are added: planar-IQP without single-qubit rotations admits an efficient weak simulation (via solvable planar Ising structure), whereas adding single-qubit commuting gates yields universality-under-postselection \cite[items (ii) and the discussion thereafter]{fujiiMorimae16}. But, as you already anticipated, postselection-universality by itself does not give an additive-error sampling hardness theorem.
+
+To access additive-error (total-variation) hardness, one typically needs \emph{average-case hardness conjectures} plus some anticoncentration input, as in the line of work of Bremner--Montanaro--Shepherd \cite{bms16approx}. Moreover, even within that program, Bremner--Montanaro--Shepherd (2017) emphasize that sufficiently anticoncentrated IQP outputs become \emph{classically simulable after a constant amount of simple local noise} up to constant total-variation accuracy, unless one builds in extra structure (e.g., fault-tolerant encodings) \cite[Abstract]{bms17sparse}. This clarifies a realistic ``positive'' positioning:
+
+\begin{itemize}
+\item \textbf{Trainability claim (provable in this work):} For locality-respecting generator sets (e.g., 2D lattice + singles, or sparse IQP), and for kernels concentrating mass on low-weight $\vta$, the MMD gradient signal can be polynomial at initialization (by \cref{thm:uniform} together with the rank bounds in Examples 1--3). This is a concrete, architecture-level route around barren plateaus \emph{for the chosen loss}.
+
+\item \textbf{Hardness claim (must be stated conditionally):} The \emph{same} architectural families can contain instances that are believed hard to sample in various senses---e.g., sparse IQP families that are conjectured hard to approximately sample up to constant $\ell_1$ error under additional assumptions \cite[Thm.~3 (informal) and surrounding discussion]{bms17sparse}, or 2D planar geometries that become universal-under-postselection once single-qubit diagonal gates are added \cite[discussion after item (ii)]{fujiiMorimae16}. But if one wants an \emph{additive-error hardness} story, one should explicitly cite the need for average-case conjectures and (often) anticoncentration-type hypotheses rather than relying solely on postselection \cite{bms16approx}.
+\end{itemize}
+
+Finally, it is important to keep two notions separate: \emph{anticoncentration} (a second-moment / tail condition on point probabilities) and \emph{distinguishability by low-order statistics}. A distribution can be anticoncentrated while still exhibiting detectable low-order parity biases (i.e., a non-negligible set of low-weight Fourier coefficients), because anticoncentration constrains $\sum_\vta (C_\vttheta^\vta)^2$ globally, not how that mass is \emph{distributed} across Hamming weights. Thus, even in ensembles where the full distribution is ``flat'' in a Porter--Thomas sense, there may remain learnable signal at low frequencies for structured architectures and appropriately chosen $G(\vta)$. What local MMD \emph{cannot} guarantee, of course, is closeness in total variation distance: matching low-order marginals can still leave exponentially many global degrees of freedom unconstrained. This is the correct ``non-dead'' but realistic conclusion for IQP-QCBMs: they can be trainable (for local objectives) and still be connected to plausible hardness conjectures, but one must be explicit about the loss being local and the hardness being conditional and notion-dependent.
+
+
+\section{Barren Plateau in IQP-QCBMs}
+\subsection{Problem Setup}
+IQP-QCBMs are trained with the MMD loss function $\mathcal{L}_\vttheta$ (defined below). We will show that when the parameters are uniformly randomly initialized, the MMD loss function for most IQP-QCBMs (specified in the next section) will have Barren Plateaus, which means the average-case loss gradients are exponentially small. Given that $\mathcal{L}_\vttheta$ is estimated by Monte Carlo with $\frac{1}{\epsilon^2}$ samples, gradient-based optimizers will fail on problems at scale.
+\begin{definition}[Barren Plateau]
+Given a loss function $\mathcal{L}_\vttheta$ for an $n$-qubit variational-circuit-based model with parameters $\vttheta = (\theta_1, \dots, \theta_D)$, we say $\mathcal{L}_\vttheta$ has Barren Plateau if:
+\begin{equation}
+\operatorname*{Var}_{\vttheta \sim \mathcal{U}([0,2\pi)^D)} [\frac{ \partial \mathcal{L}_\vttheta}{\partial_{\theta_i}}] = e^{-\Omega(n)}.
+\end{equation}
+\end{definition}
+
+% \begin{definition}[Exponential Loss Concentration]
+% Given a loss function $\mathcal{L}_\theta$ for an $n$-qubit variational-circuit-based model with parameters $\theta = (\theta_1, \dots, \theta_D)$, we say $\mathcal{L}_\theta$ is exponentially concentrated if: 
+%     \begin{equation}
+%     \mathbb{P}\left(\abs{\mathcal{L}_\theta - \operatorname*{\mathbb{E}}_{\theta \sim \mathcal{U}([0,2\pi)^D)} [\mathcal{L}_\theta]} \geq t\right) = \mathcal{O}(1/\operatorname{exp}(n)),
+% \end{equation}
+% \end{definition}
+
+\begin{definition}[Gaussian-kernel MMD loss for IQP-QCBM]
+\label{def:mmd} For an $n$-qubit IQP-QCBM model with gates specified by the indices $G\subseteq \{0,1\}^n$ and parameters $\vttheta = (\theta_i)_{i=1}^{\abs{G}}$, and the training empirical distribution $p$, the MMD loss function with respect to a Gaussian kernel of bandwidth $\sigma$ writes:
+where \begin{equation} f_\sigma(a) = (1-\tau(\sigma))^{n-\abs{a}} \tau(\sigma)^\abs{a} \end{equation} is the spectral measure (a binomial distribution) with \begin{equation} \tau(\sigma) = \frac{1-e^{-\frac{1}{2\sigma}}}{2} \end{equation} being the per bit probability, \begin{equation}
+\braket{Z_{a}}_p = \operatorname*{\mathbb{E}}_{x \sim p} [(-1)^{x \cdot a}]\end{equation} are the classical, training-data-dependent terms and 
+\begin{equation}
+\braket{Z^G_\vta}_\vttheta = \operatorname*{\mathbb{E}}_{z \sim U}[\cos\Big(\sum_{1\leq i \leq \abs{G}} \theta_i(-1)^{\vtsj\cdot \vtz}(1-(-1)^{\vtsj\cdot a})\Big)]\end{equation} are the quantum, $\vttheta$-dependent terms.
+\end{definition}
+
+
+
+% We remark that implies having exponential loss concentration.
+% We remark that, by Chebyshev's inequality, it is equivalent that a loss function $\mathcal{L}_\theta$ is exponentially concentrated and that \begin{equation}
+% \operatorname*{Var}_{\theta \sim \mathcal{U}([0,2\pi)^D)} [\mathcal{L}_\theta] = \mathcal{O}(1/\operatorname{exp}(n)).
+% \end{equation}
+
+\subsection{Results}
+% \cmt{
+% \begin{equation}
+% \mathbb{P}_{G}\left[\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]\right]
+% \end{equation}
+% }
+\begin{lemma}
+\label{lemma: derivation}
+Consider an IQP-QCBM with gate set specified by the indices $G$. For any probe frequency $\vta \in \{0,1\}^n$, the following inequality holds: \begin{equation}\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right] \leq 2^{2-r(G,\vta)}, \end{equation}
+where $r(G,\vta)$ is the dimension of the set $\operatorname{span}(\{\vtsj \in G|\vtsj \cdot\vta=1\})$.
+\end{lemma}
+\begin{proof}
+We provide a direct proof by expanding the term
+\begin{equation}
+\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+\end{equation}
+For convenience, we introduce the notations
+\begin{equation}
+v_i(\vta,\vtz) := (-1)^{\vtsj\cdot \vtz}\,\big(1-(-1)^{\vtsj\cdot \vta}\big)\in\{0,\pm2\},
+\qquad
+\vt\vtv(\vta,\vtz) := \big(v_i(\vta,\vtz)\big)_{1 \leq i \leq D}.
+\end{equation}
+Then, we obtain the following equations: \begin{align} 
+\braket{Z^G_\vta}_\vttheta &= \mathbb{E}_z \left[\cos(\vttheta \cdot \vtv(\vta,\vtz)) \right] \\
+\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta &= -\mathbb{E}_z \left[ v_i(\vta,\vtz) \sin(\vttheta \cdot \vtv{(\vta,\vtz)}) \right] = -\frac{1}{2^n} \sum_{z} v_i(\vta,\vtz) \sin(\vttheta \cdot \vtv{(\vta,\vtz)}). \\
+\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right] & = \mathbb{E}_\vttheta\left[ \left(\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right)^2 \right] - \mathbb{E}_\vttheta\left[ \left(\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right) \right]^2
+\end{align}
+We see that the first moment vanishes and the variance equals the second moment.
+\begin{align}
+\mathbb{E}_\vttheta\left[ \left(\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right) \right] &= -\frac{1}{2^n} \sum_{z} v_i(\vta,\vtz) \mathbb{E}_\theta\left[\sin(\vttheta \cdot \vtv{(\vta,\vtz)})\right] 
+= 0 \\
+\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right] = \mathbb{E}_\vttheta\left[ \left(\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right)^2 \right] & = \frac{1}{2^{2n}}\sum_{z,z'} v_i(\vta,\vtz) v_i(a,z') \mathbb{E}_\vttheta\left[\sin(\vttheta \cdot \vtv{(\vta,\vtz)}) \sin(\vttheta \cdot \vtv{(\vta,\vtzp)}) \right]  \label{eq squared}
+\end{align}
+
+Note that \begin{align}
+    \mathbb{E}_\vttheta\left[\sin(\vttheta \cdot \vtv{(\vta,\vtz)}) \sin(\vttheta \cdot \vtv{(\vta,\vtzp)}) \right] &= \frac{1}{2}\mathbb{E}_\vttheta\left[\cos\left(\vttheta \cdot (\vtv{(\vta,\vtz)} - \vtv{(\vta,\vtzp)})\right) - \cos\left(\vttheta \cdot (\vtv{(\vta,\vtz)} + \vtv{(\vta,\vtzp)})\right) \right] \label{indicator eq1}\\ 
+    &= \frac{1}{2}\left(\mathbf{1}\{\vtv{(\vta,\vtz)} = \vtv{(\vta,\vtzp)}\} - \mathbf{1}\{\vtv{(\vta,\vtz)} = -\vtv{(\vta,\vtzp)}\}\right) \label{indicator eq2}
+\end{align}
+To proceed further, we introduce the set $S(G,\vta) = \{\vtsj \in G |\vtsj\cdot a =1\}$. We observe two things. First,
+\begin{equation}
+\vec{v}_i(a,z) = \begin{cases}
+2(-1)^{\vtsj \cdot z}, & \vtsj \in S(a) \\
+0, & \vtsj \notin S(a)
+\end{cases}
+\end{equation}
+Second, by introducing $\bm{\bar{z}}=(\vtz \oplus \vtzp)$,
+\begin{align}
+\vtv{(\vta,\vtz)} = \vtv{(\vta,\vtzp)} \iff  \vtsj\cdot \bm{\bar{z}} &= 0,\forall \vtsj \in S(G,a) \label{Ma0}\\
+\vtv{(\vta,\vtz)} = -\vtv{(\vta,\vtzp)} \iff \vtsj\cdot \bm{\bar{z}}&= 1, \forall \vtsj \in S(G,a)  \label{Ma1},
+\end{align}
+We write the dimension of the set $\operatorname{span}(S(G,\vta))$ as $r(G,\vta)$. Then there are exactly $2^{n - r(G,\vta)}$ vectors $\bm{\bar{z}}$ such that Equations \ref{Ma0} hold. There are either no solution, or also $2^{n - r(G,\vta)}$ $\bm{\bar{z}}$ such that Equations \ref{Ma1} hold. Plugging Equations \ref{indicator eq}-\ref{Ma1} into Equation \ref{eq squared} completes the proof,
+\begin{align}
+\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right] &= \frac{1}{2^{2n}} \sum_{z,z'}v_i(\vta,\vtz) v_i(a,z') \cdot \frac{1}{2}\left(\mathbf{1}\{\vtv{(\vta,\vtz)} = \vtv{(\vta,\vtzp)}\} - \mathbf{1}\{\vtv{(\vta,\vtz)} = -\vtv{(\vta,\vtzp)}\}\right) \label{variance before bound, eq}\\
+& \leq \frac{1}{2^{2n}} \sum_z 4\cdot\frac{1}{2}( 2^{n - r(G,\vta)} + 2^{n - r(G,\vta)}) \\
+& = 2^{2-r(G,\vta)}
+\end{align}
+\end{proof}
+
+\begin{corollary}
+Consider two IQP-QCBMs with gate sets specified by the indices $G$ and $G'$ respectively. Then for any probe frequency $\vta \in \{0,1\}^n$, the following statement holds: 
+\begin{equation}
+G \subseteq G' \implies \operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right] \geq \operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^{G'}_\vta}_\vttheta \right]
+\end{equation}
+\end{corollary}
+\begin{proof}
+If $G \subseteq G'$, then $r(G,\vta) \leq r(G',\vta)$. The statement directly follows from the intermediate results when proving Lemma \ref{lemma: derivation}. \cmt{To be more rigorous, one can compare the two variances using Equation \ref{variance before bound, eq} and point out that adding more gates can never bring a new solution to Equation \ref{Ma1} when it has no solution otherwise.}
+\end{proof}
+
+\begin{theorem}
+Consider an IQP-QCBM that uses only all the parameterized single-qubit Z gates, i.e., $G=\{e_i\}_{i=0}^n$, where $e_i$ is a bitstring with $1$ on the $i$-th position and $0$ elsewhere, and the loss function given by Definition \ref{def:mmd}. There is a Barren Plateau if the Gaussian kernel has constant bandwidth. There is no Barren Plateau if the Gaussian kernel bandwidth scales linearly in $n$.
+\end{theorem}
+\begin{proof}
+Given that $G=\{e_i\}_{i=0}^n$, one can check that for any probe frequency $\vta$, \begin{equation}S(G,\vta) = \{e_i|a_i=1\} \implies r(G,\vta)=\abs{a}.\end{equation} 
+By Cauchy-Schwarz Inequality, we derive that
+\begin{align}
+\operatorname{Var}_\vttheta \left[\frac{\partial \mathcal{L}_\vttheta}{\partial \theta_i}\right] &= \operatorname{Var}_\vttheta \left[ \frac{\partial}{\partial \theta_i}\mathbb{E}_a\left[\braket{Z^G_\vta}_\vttheta^2 \right] - \frac{\partial}{\partial \theta_i} \mathbb{E}_a\left[2\braket{Z_\vta}_p \braket{Z^G_\vta}_\vttheta \right] \right] \\
+&\leq \left(\sqrt{\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_{q_\vttheta}^2\right] \right]} + \sqrt{\operatorname{Var}_\vttheta \left[ \frac{\partial}{\partial \theta_i}\operatorname{\mathbb{E}}_{a} \left[2\braket{Z_{a}}_p \braket{Z_{a}}_{q_\vttheta}\right]\right]} \right)^2 \\
+& =  \left(\sqrt{\operatorname{Var}_\vttheta \left[2 \mathbb{E}_a \left[\braket{Z^G_\vta}_\vttheta \frac{\partial}{\partial \theta_i}\braket{Z^G_\vta}_\vttheta\right] \right]} + \sqrt{\operatorname{Var}_\vttheta \left[ 2 \mathbb{E}_a\left[\braket{Z_\vta}_p \frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+ \right]} \right)^2
+\end{align}
+
+\cmt{We can show that if the second term is exponentially small, then the first term is also exponentially small.}
+We derive the scaling of the second term. Since $\braket{Z_\vta}_p$ is a constant, essentially we only need to evaluate the quantity \begin{align}
+    \operatorname{Var}_\vttheta \left[\mathbb{E}_a\left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+ \right] &= \mathbb{E}_a\left[\operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+ \right]  \label{variance 1: eq}\\
+ & \leq \mathbb{E}_a \left[2^{2-r(G,\vta)} \right] \label{variance 2: eq}\\
+ & = \mathbb{E}_a \left[2^{2-\abs{\vta}} \right] \\
+ & = 4 \prod_{i=1}^{n} \mathbb{E}_{a_i}\left[2^{-a_i} \right] \\
+ & = 4 (1-\frac{\tau(\sigma)}{2})^n
+\end{align}
+In the case $\sigma = \mathcal{O}(1)$, $\tau(\sigma) = \mathcal{O}(1)$. Then, $\operatorname{Var}_\vttheta \left[\frac{\partial \mathcal{L}_\vttheta}{\partial \theta_i}\right] = e^{-\Omega(n)}$, meaning that there is Barren Plateau.
+
+In the case $\sigma = \mathcal{O}(n)$, $\tau(\sigma) = 1/\Theta(n)$. Then, $\operatorname{Var}_\vttheta \left[\frac{\partial \mathcal{L}_\vttheta}{\partial \theta_i}\right] = 1/\Theta(n)$, meaning that there is no Barren Plateau.
+\end{proof}
+
+\begin{theorem}
+Consider an IQP-QCBM that uses all the parameterized single-qubit Z gates and all the parameterized two qubits gates, i.e., $G=\{e_i\}_{i=0}^n \cup \{e_{ij}\}_{i,j=0}^n $, where $e_i$ is a bitstring with $1$ on the $i$-th position and $0$ elsewhere, and $e_{ij}$ is a bitstring with $1$ on the $i$-th and $j$-th positions and $0$ elsewhere, and the loss function given by Definition \ref{def:mmd}. There is always a Barren Plateau regardless of how the Gaussian kernel bandwidth is chosen.
+\end{theorem}
+\begin{proof}
+Given that $G=\{e_i\}_{i=0}^n \cup \{e_{ij}\}_{i,j=0}^n $, one can check that for any probe frequency $\vta$, if $\vta\neq \bm{0}$, meaning that there exists some $a_i \neq 0$, then we already know \begin{equation}
+    \{e_{ij}\}_{j=0}^n \subseteq S(G,\vta),
+\end{equation}
+which immediately spans the whole space of $\{0,1\}^n$, and hence 
+\begin{equation}r(G,\vta)=n.\end{equation} 
+Then, by Equation \ref{variance 1: eq} and Lemma \ref{lemma: derivation}, we can evaluate the quantity \begin{align}
+\operatorname{Var}_\vttheta \left[\mathbb{E}_a\left[\frac{\partial}{\partial \theta_i} \braket{Z^G_\vta}_\vttheta \right]
+ \right] & \leq \mathbb{P}[\vta=\bm{0}] \cdot 0 + \mathbb{P}[\vta \neq \bm{0}] \cdot 2^{2-n} \\
+ & = e^{-\Omega(n)}
+\end{align}
+By Cauchy-Schwarz Inequality, we can conclude that there is always a Barren Plateau, irregard of the Gaussian kernel bandwidth.
+\end{proof}
+% \subsection{Questions open}
+% \begin{itemize}
+%     \item Where does the barren-plateau transition happen once we have ancillas? \\
+%     \item In the Barren-Plateau-free regime, are there still classically-hard-to-sample instances?
+%     \item How can we prove /disprove the trainability of the warm-start training (by using data covariance information.)
+% \end{itemize}
+
+\subsection{Lie Algebra Approach}
+% In general, where $\{H_j\}$ don't commute, to simplify the computation with $\frac{\partial}{\partial_{\theta_i}}$, we may conveniently absorb the gates generated by $\{H_j|j\neq i\}$ into $\rho$ and $O$. 
+\subsubsection{General Formula}
+\begin{definition}[Parametrized instantaneous quantum polynomial (IQP) circuit]
+\label{def: IQP}
+Consider a parameterized unitary $U(\theta) = \prod_j e^{i\theta_j Z_{s_j}}$ with $\theta_j\in[0, 2\pi)$, where $Z_{s_j}$ is a tensor product of Pauli-$Z$ operators acting on a subset of qubits specified by the nonzero entries of $s_j \in \{0,1\}^n$. A parametrized IQP circuit on $n$ qubits is a quantum circuit that is initialized in the $\ket{+}^{\otimes n}$ state, evolved under the circuit $U(\theta)$, and measured in the $X$ basis.
+\end{definition}
+
+where \begin{equation}
+    U_\vttheta = \prod_{j}\exp(i\theta_j H_j).
+\end{equation} The MMD loss of the IQP-QCBM (Definition \ref{def: IQP}) can be decomposed as a weighted sum of the above cost function, where \begin{itemize}
+    \item $O=\bigotimes_j O_j, \quad O_j \in \{I,X\}$.
+    \item $\rho = \ket{+}\bra{+}^{\otimes n}$
+    \item $H_j =\bigotimes_k H_{jk}, \quad H_{jk} \in \{I,Z\}$. 
+\end{itemize}
+
+The fact that all generators mutually commute has three consequences: 
+\begin{itemize}
+    \item First, the partial derivatives are \begin{equation}
+    \frac{\partial U_\vttheta}{\partial \theta_l} = iH_l U_\vttheta = i U_\vttheta H_l.
+\end{equation}
+\item Second, the uniform distribution over $\vttheta$ forms the Haar measure on the reachable Lie group $G$, i.e., for any function $f(U)$:
+\begin{equation}
+    \mathbb{E}_{U\sim G}\left[f(U)\right] = \mathbb{E}_{\vttheta \sim [0,2\pi)^D}\left[f(U_\vttheta)\right].
+\end{equation}
+\item Third, since no new generators come from commutation, so the Lie group $G$ is just
+\begin{equation}
+    G = \left\{\exp\left(i \sum_{j}\theta_jH_j\right) \mid \theta_j \in [0,2\pi)\right\}
+\end{equation}
+\end{itemize}
+Then, we can compute that 
+\begin{align}
+\frac{\partial C(\vttheta)}{\partial {\theta_l}} & = i\Tr\left[OU_\vttheta H_l \rho U_\vttheta^\dagger - OU_\vttheta\rho H_l U_\vttheta^\dagger \right] \\
+&= i\Tr\left[U_\vttheta^\dagger OU_\vttheta \left[H_l,\rho\right]  \right] \\
+\mathbb{E}_\vttheta \left[\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right] &= i\Tr\left[\mathbb{E}_\vttheta \left[U_\vttheta^\dagger OU_\vttheta \right] \left[H_l,\rho\right]  \right] \\
+& = i\Tr\left[\mathbb{E}_U \left[U ^\dagger OU \right] \left[H_l,\rho\right]  \right] \\
+&= i\Tr\left[\Pi^1(O)\left[H_l,\rho\right]  \right],
+\end{align}
+where $\Pi^1(\cdot)$ denotes the first moment operator, which is the projector onto the commutant \begin{equation}
+    \text{Comm}(G,1)\coloneq \{A \mid \comm{A}{U} =0, \forall U \in G\}
+\end{equation} Also,
+\begin{align}
+\left(\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right)^2 &= -\left(\Tr\left[U_\vttheta^\dagger  OU_\vttheta \left[H_l,\rho\right]  \right]\right)^2 \\
+&= - \Tr\left[\left(U_\vttheta^\dagger \otimes U_\vttheta^\dagger \right) \left(O \otimes O\right) \left(U_\vttheta \otimes U_\vttheta \right)\left(\left[H_l,\rho\right] \otimes \left[H_l,\rho\right] \right) \right] \\
+\mathbb{E}_\vttheta\left[\left(\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right)^2 \right] &= -\Tr\left[\left(\mathbb{E}_U \left[\left(U^\dagger \otimes U^\dagger \right) \left(O \otimes O\right) \left(U \otimes U \right)\right]\right) \left(\left[H_l,\rho\right] \otimes \left[H_l,\rho\right] \right) \right] \\
+&= -\Tr\left[\Pi^2(O\otimes O) \left(\left[H_l,\rho\right] \otimes \left[H_l,\rho\right] \right)\right],
+\end{align}
+where $\Pi^2(\cdot)$ denotes the second moment operator, which is the projector onto the commutant \begin{equation}
+    \text{Comm}(G,2)\coloneq \{A \mid \comm{A}{U^{\otimes 2}} =0, \forall U \in G\}
+\end{equation}Putting the terms together, 
+\begin{align}
+\text{Var}_\vttheta \left[\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right] &= \left(\mathbb{E}_\vttheta \left[\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right]\right)^2 - \mathbb{E}_\vttheta \left[\left(\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right)^2\right] \\
+&= - \left(\Tr\left[\Pi^1(O)\left[H_l,\rho\right]  \right]\right)^2 + \Tr\left[\Pi^2(O\otimes O) \left(\left[H_l,\rho\right] \otimes \left[H_l,\rho\right] \right)\right]
+\end{align}
+The forms of the projectors $\Pi^1$ and $\Pi^2$ depend on generator set and are often heavy to compute. 
+\subsubsection{Case 1. All single qubit gates.}
+Consider now that $H_j = Z_j$, where $Z_j = I^{\otimes (j-1)} \otimes Z \otimes I^{\otimes (n-j)}$. Then, 
+\begin{align}
+    U_\vttheta & = \prod_{j}\exp(i\theta_j Z_j)  \\
+    & = \bigotimes_j \exp(i\theta_j Z_j)
+\end{align}
+Since we only consider single qubit gates, we can compute the term $\Pi^1(O)$ easily by:
+\begin{align}
+    \Pi^1(O) & = \mathbb{E}_\vttheta \left[U_\vttheta^\dagger OU_\vttheta \right] \\
+    &= \left(\frac{1}{2\pi}\right)^n\int_{[0,2\pi)^D}\left(\bigotimes_{j}\exp(-i\theta_j Z_j)\right) \left(\bigotimes_j O_j \right) \left(\bigotimes_{j}\exp(i\theta_j Z_j) \right) d\vttheta \\
+    & = \bigotimes_j\left(\mathcal{T}^1(O_j) \right) \end{align}
+where \begin{align}
+\mathcal{T}^1(O_j) &= 
+\frac{1}{2\pi}\int_{0}^{2\pi} \exp(-i\theta_j Z) O_j\exp(i\theta_j Z) d\theta_j\\
+\mathcal{T}^1(X) & = 
+\frac{1}{2\pi}\int_{0}^{2\pi} \cos{(2\theta_j)} X - \sin{(2\theta_j)}Y d\theta_j = 0\\
+\mathcal{T}^1(I) &= I
+\end{align}
+Now we compute the term $\Pi^2(O\otimes O)$:
+\begin{align}
+    \Pi^2(O\otimes O) &= \left(\frac{1}{2\pi}\right)^n\int_{[0,2\pi)^D} \left(\bigotimes_{j}e^{-i\theta_j Z_j} \otimes \bigotimes_{j}e^{-i\theta_j Z_j} \right) \left(\bigotimes_j O_j \otimes \bigotimes_j O_j\right) \left(\bigotimes_{j}e^{i\theta_j Z_j} \otimes \bigotimes_{j}e^{i\theta_j Z_j}\right) d\vttheta \\
+    &= \left(\frac{1}{2\pi}\right)^n\int_{[0,2\pi)^D} \bigotimes_{j} \left(e^{-i\theta_j Z_j} \otimes e^{-i\theta_k Z_j} \right)
+    \bigotimes_j\left(O_j \otimes O_j\right) \bigotimes_j\left(e^{i\theta_j Z_j} \otimes e^{i\theta_j Z_j} \right)  d\vttheta \\
+    &= \bigotimes_{j=1}^n\mathcal{T}^2(O_j \otimes O_j) 
+    \end{align}
+where \begin{align}
+    \mathcal{T}^2(O_j \otimes O_j) &=  \frac{1}{2\pi} \int_0^{2\pi} \left(e^{-i\theta_j Z} \otimes e^{-i\theta_j Z} \right)\left(O_j \otimes O_j \right) \left(e^{i\theta_j Z} \otimes e^{i\theta_j Z}\right) d\theta_j  \\
+    &= \frac{1}{2\pi} \int_0^{2\pi} \left(e^{-i\theta_j Z} O_j e^{i\theta_j Z} \right)^{\otimes 2} d\theta_j  \\
+    \mathcal{T}^2(X \otimes X) 
+    &= \frac{1}{2\pi} \int_0^{2\pi}\left( \cos^2(2\theta_j)X\otimes X + \sin^2(2\theta_j)Y\otimes Y - 2 \cos(2\theta_j) \sin(2\theta_j)X\otimes Y \right)d\theta_j  \\
+    & = \frac{1}{2} (X \otimes X + Y \otimes Y) \\
+    \mathcal{T}^2(I \otimes I) & = I \otimes I
+\end{align}
+Given $H_j = Z_j$ and $\rho = \ket{+}\bra{+}^{\otimes n}$,
+\begin{equation}
+    \comm{H_l}{\rho} = (\ket{+}\bra{+})^{\otimes (l-1)} \otimes iY \otimes (\ket{+}\bra{+})^{\otimes (n-l)} 
+\end{equation}
+For convenience, let us define \begin{equation}
+    A_j = \begin{cases}
+        \ket{+}\bra{+} \otimes \ket{+}\bra{+}, & j \neq l \\
+        -Y\otimes Y, & j=l
+    \end{cases}
+\end{equation}
+Then we can derive
+\begin{align}
+\begin{cases}
+    \Tr \left[\mathcal{T}^2(I \otimes I) A_l \right] &= \Tr \left[(I \otimes I) (Y\otimes Y) \right] = 0 \\
+    \Tr \left[\mathcal{T}^2(X \otimes X) A_l \right] &= \Tr \left[\frac{1}{2} (X \otimes X + Y \otimes Y) (Y\otimes Y) \right] = 2 \\
+    \Tr \left[\mathcal{T}^2(X \otimes X) A_{j \neq l} \right] &= \Tr \left[\frac{1}{2} (X \otimes X + Y \otimes Y)  (\ket{+}\bra{+} \otimes \ket{+}\bra{+}) \right] = \frac{1}{2}
+    \end{cases}
+\end{align}
+Combining the results, 
+\begin{align}
+\text{Var}_\vttheta \left[\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right] &= - \left(\Tr\left[\Pi^1(O)\left[H_l,\rho\right]  \right]\right)^2 + \Tr\left[\Pi^2(O\otimes O) \left(\left[H_l,\rho\right] \otimes \left[H_l,\rho\right] \right)\right] \\
+&= 0 + \Tr\left[\bigotimes_{j=1}^n\mathcal{T}^2(O_j \otimes O_j) A_j\right] \\
+& = \prod_{j=1}^n \Tr\left[\mathcal{T}^2(O_j \otimes O_j) A_j\right]  \\
+&= \begin{cases}
+    0, & O_l = I \\
+    2^{2-\abs{O}}, & O_l = X,
+\end{cases}
+\end{align}
+where $\abs{O} = \abs{\{j, O_j=X\}}$.
+% \subsubsection{General Case}
+% Let us compute the action of $\Pi^1$ on different Pauli basis elements $B$.
+% \begin{equation}
+% \Pi^1(X)
+% \end{equation}
+
+
+
+% We define a parity labeling function $\xi$ such that for each $n$-qubit Pauli basis element $B \in \mathcal{B}$, 
+% \begin{equation}
+%     \xi(B) = \left(\xi_i(B) \right)_{1\leq i\leq n}^T,
+% \end{equation}
+% where \begin{equation}
+%     \xi_i(B) = \begin{cases}
+%     1, & B_i \in \{X,Y\} \\
+%     0, & B_i \in \{Z,I\} 
+% \end{cases}
+% \end{equation}
+% It is now convenient to expand $O$ in Pauli basis grouped by $\xi$ values, i.e., 
+% \begin{equation}
+%     O = \sum_{\lambda \in \{0,1\}^n} O_\lambda,
+% \end{equation}
+% where \begin{equation}
+%     O_\lambda = \sum_{B\colon\xi(B)=\lambda} \Tr \left[O, B\right] B
+% \end{equation}
+% Note that a Pauli basis element $B$ vanishes under $\Pi^1$ if $\xi(B) \neq 0$, which by derivation will be averaging sinusoidal functions with uniformly random angles, \begin{equation} \Pi^1(B) = \begin{cases} B, &B\in\{Z^{\otimes n}, I^{\otimes n}\} \\
+% 0, &B\notin\{Z^{\otimes n}, I^{\otimes n}\}.
+% \end{cases}
+% \end{equation}
+% As a consequence, we can write that
+% \begin{equation}
+%         \Pi^1(O) = O_0
+% \end{equation}
+% Since $\comm{H_i}{\rho}$ will only have components with $\xi=1$, it will have $0$ overlap with $O_0$. Therefore, the first moment term vanishes: \begin{equation}
+% \Tr\left[\Pi^1(O)\left[H_i,\rho\right]  \right] = 0 
+% \end{equation}
+% Also note that a two copy Pauli basis element $B^1 \otimes B^2$ vanishes under $\Pi^2$ if $\exists i, \xi(B^1_i) \neq \xi(B^2_i)$ (similar reasoning as for Equations \ref{indicator eq1}, \ref{indicator eq2}). 
+% \begin{equation} \Pi^2(B^1 \otimes B^2) = \begin{cases} B^1 \otimes B^2, &B^1, B^2 \in \{Z^{\otimes n}, I^{\otimes n}\} \\
+% \frac{1}{2}(X\otimes X + Y \otimes Y), &B^1, B^2 \notin\{Z^{\otimes n},I^{\otimes n}\}, B_1 = B_2 \\
+% \frac{1}{2}(X\otimes Y - Y \otimes X), &B_1, B_2 \notin\{Z^{\otimes n},I^{\otimes n}\}, B_1 \neq B_2.
+% \end{cases}
+% \end{equation}
+
+% \begin{equation}
+%         \Pi^2(O\otimes O) = \sum_{\lambda \in \{0,1\}^n} O_\lambda \otimes O_\lambda
+% \end{equation}
+\subsection{Twirling approach}
+Starting from \begin{align}
+\text{Var}_\vttheta \left[\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right] &= \left(\mathbb{E}_\vttheta \left[\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right]\right)^2 - \mathbb{E}_\vttheta \left[\left(\frac{\partial C(\vttheta)}{\partial {\theta_l}}\right)^2\right] \\
+&= -\Tr\left[\mathbb{E}_\vttheta \left[U_\vttheta^\dagger OU_\vttheta \right] \left[H_l,\rho\right]  \right]^2 + \Tr\left[\left(\mathbb{E}_\vttheta \left[\left(U^\dagger_\vttheta \otimes U^\dagger_\vttheta \right) \left(O \otimes O\right) \left(U_\vttheta \otimes U_\vttheta \right)\right]\right) \left(\left[H_l,\rho\right] \otimes \left[H_l,\rho\right] \right) \right] 
+\end{align}
+We now view $\mathbb{E}_\vttheta \left[U_\vttheta^\dagger OU_\vttheta \right]$ and $\mathbb{E}_\vttheta \left[\left(U^\daggernot in set_\vttheta \otimes U^\dagger_\vttheta \right) \left(O \otimes O\right) \left(U_\vttheta \otimes U_\vttheta \right)\right]$ as sequences of $1$- and $2$-copy twirls. 
+
+\section{Examples}
+$O\lvert x\rangle = \lvert x \oplus a\rangle, \qquad
+O = \sum_x \lvert x \oplus a\rangle\langle x\rvert.$
+
+\subsection{All weight-1 generators}
+\subsection{All weight-2 generators}
+\subsection{All nearest-neighbor weight-2 generators}
+\subsection{Random arbitrary-weight generators}
+\subsection{Random weight-2 generators}
+
+
+\section{Relate to \cite{huang2025generativequantumadvantageclassical}}
+\begin{corollary}[Instantaneously-deep QNNs]
+The MMD loss function on Instantaneously-Deep QNNs \cite{huang2025generativequantumadvantageclassical} does not contain Barren Plateaus if the bandwidth $\sigma = \mathcal{O}(n)$.
+\end{corollary}
+\begin{proof}
+We need to prove several things. \begin{enumerate} \item IDQNN with input bitstring $0^{\otimes n}$ is an IQP-QCBM. \cmt{Note that the gates in IDQNN are trainable $R_Z(\theta_j)$ gates and $CZ = R_Z(-\pi/2) \otimes R_Z(-\pi/2) R_{ZZ}(\pi/2)$, which fits it into the definition of IQP-QCBM.}
+\item MMD loss on the above IQP-QCBM does not have Barren Plateau. \cmt{Since the CZ gates are fixed, the scaling of the gradient variance will be exactly the same as the 'all single qubit gates' case.} 
+\item MMD loss on the IDQNN with other input bitstrings do not have Barren Plateaus either. \cmt{By reordering the qubits, the input state of the IDQNN is written as $\bigotimes_{j:x_j=0} \ket{+} \bigoplus_{j:x_j=1}\ket{0}$. The CZ gates that act on the $\ket{0}$ qubits will be in active. Hence the. Note that the initial state will be a product of graph state and $\ket{0}$ states. The single qubit gates on the $\ket{0}$ qubits will be inactive.}
+\end{enumerate}
+\end{proof}
+
+% We want to compute \begin{equation}
+% \operatorname{Var}_\vttheta \left[\frac{\partial}{\partial \theta_i} \braket{0|U^\dagger(\theta)Z_aU(\theta)|0} \right]
+% \end{equation}
+% where \begin{align}
+%     U(\theta &)= \prod_j e^{i\theta_jX_j}, \text{(generated by gates $X_j$, which is a product of X on some qubits and I on other qubits.)}
+%     \\ Z_a&=\prod_{i =1}^n Z_i^{a_i}, \text{($Z_a$ is a product of Z on some qubits and I on other qubits.)}
+% \end{align}
+% Important thing here is that the dynamical lie algebra of the circuit (all X gates) does not contain the initial state or the measurement operator (which are diagonal).
+
+% The moment operator is the orthogonal projector onto the commutant of the unitary group. 
+% We now show that, the loss defined above is in general exponentially concentrated, by explicitly computing $\operatorname{Var}_\vttheta [\mathcal{L}_\vttheta]$. By Cauchy-Schwarz ineqaulity, we have
+% \begin{align}
+% \operatorname{Var}_\theta [\mathcal{L}_\theta] =& \operatorname{Var}_\theta \left[\operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p^2\right] + \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_{q_\theta}^2\right] - 2 \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right] \\
+% % =& \operatorname{Var}_\theta \left[\operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_{q_\theta}^2\right]\right] + 
+% % 4 \operatorname{Var}_\theta \left[ \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right]
+% % -4  \operatorname{Cov}_\theta \left[\operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_{q_\theta}^2\right], \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right] \\
+% \leq & \left(\sqrt{\operatorname{Var}_\theta \left[\operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_{q_\theta}^2\right] \right]} + \sqrt{\operatorname{Var}_\theta \left[2 \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right]} \right)^2
+% \end{align}
+
+% \section{Backup}
+% \begin{theorem} If the gate set $G$ contains all possible gates $G= \{0, 1\}^n$, then the Gaussian kernel MMD loss is exponentially concentrated. 
+% \end{theorem}
+% \begin{proof} It suffies to show that $\operatorname{Var}_\theta \left[ \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right]  = \mathcal{O}(1/\operatorname{exp}(n))$. \cmt{Show that the first term has the same scaling.}
+% Given $\forall a \in \{0,1\}^n, \abs{\braket{Z_{a}}_p} \leq 1$, 
+% \begin{align}
+% \operatorname{Var}_\theta \left[ \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right] \leq&
+% \operatorname{\mathbb{E}}_{a} \left[\operatorname{Var}_\theta \left[ \braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right] \\
+% \leq& \operatorname{\mathbb{E}}_{a} \left[\operatorname{Var}_\theta \left[\braket{Z_{a}}_{q_\theta}\right]\right]
+% \end{align}
+% For simplicity, define
+% \begin{equation}
+% v_g(a,z) := (-1)^{g\cdot z}\,\big(1-(-1)^{g\cdot a}\big)\in\{0,\pm2\},
+% \qquad
+% \vtv{(\vta,\vtz)} := \big(v_g(a,z)\big)_{g\in G},
+% \end{equation}
+% so that $\langle Z_\vta\rangle_{q_\theta}=\operatorname*{\mathbb{E}}_z[\cos(\vtv{(\vta,\vtz)}\!\cdot\!\vec{\theta})] = \frac{1}{2^n}\sum\limits_z \cos(\vtv{(\vta,\vtz)}\!\cdot\!\vec{\theta})$. Since $\theta \sim \mathcal{U}([0,2\pi)^D)$, we can compute that $\forall z \in \{0,1\}^n$, \begin{equation}
+% \mathbb{E}_\theta[\cos(\vtv{(\vta,\vtz)} \cdot \theta)]=\mathbf{1}\{a=0\},
+% \end{equation}
+% and that $\forall z,z' \in \{0,1\}^n$,
+% \begin{align}
+%     \operatorname{E}_\theta\left[\cos(\vtv{(\vta,\vtz)}\cdot\vec{\theta})\cos(\vtv{(\vta,\vtzp)}\cdot\vec{\theta}) \right] =&  \frac{1}{2} \operatorname{E}_\theta \left[\cos(\vtv{(\vta,\vtz)} - \vtv{(\vta,\vtzp)})\cdot\vec{\theta}) + \cos(\vtv{(\vta,\vtz)} + \vtv{(\vta,\vtzp)})\cdot\vec{\theta}) \right] \\ =& 
+%     \frac{1}{2}\left(\mathbf{1}\{\vtv{(\vta,\vtz)}=\vtv{(\vta,\vtzp)}\}+\mathbf{1}\{\vtv{(\vta,\vtz)}=-\vtv{(\vta,\vtzp)}\} \right) \\
+%     =& \begin{cases} \displaystyle
+%     \frac{1}{2} \mathbf{1}\{z=z'\},  & a \neq 0\\
+%     1 & a =0
+%     \end{cases}
+% \end{align} 
+% Continuing from Equation (12), \begin{align}
+% \operatorname{Var}_\theta\left[ \langle Z_\vta\rangle_{q_\theta} \right]
+% =& \frac{1}{2^{2n}}\sum_{z,z'} \operatorname{Cov}_\theta\left[\cos(\vtv{(\vta,\vtz)}\!\cdot\!\vec{\theta}),\cos(\vtv{(\vta,\vtzp)}\!\cdot\!\vec{\theta})\right] \\ 
+% =& \frac{1}{2^{2n}}\sum_{z,z'} \left[ \operatorname{E}_\theta\left[\cos(\vtv{(\vta,\vtz)}\!\cdot\!\vec{\theta})\cos(\vtv{(\vta,\vtzp)}\!\cdot\!\vec{\theta})\right] - \operatorname{E}_\theta\left[\cos(\vtv{(\vta,\vtzp)}\!\cdot\!\vec{\theta})\right]\operatorname{E}_\theta\left[\cos(\vtv{(\vta,\vtzp)}\!\cdot\!\vec{\theta})\right] \right] \\
+% =& \begin{cases} \displaystyle
+% \frac{1}{2^{2n}}\sum_{z,z'} \left[ \frac{1}{2} \mathbf{1}\{z=z'\}- 0  \right] = \frac{1}{2^{n+1}}, & a\neq 0\\
+% 0, &a=0
+% \end{cases}
+% \end{align}
+% Then, 
+% \begin{equation}
+% \operatorname{Var}_\theta \left[ \operatorname{\mathbb{E}}_{a} \left[\braket{Z_{a}}_p \braket{Z_{a}}_{q_\theta}\right]\right] \leq \operatorname{\mathbb{E}}_{a} \left[\operatorname{Var}_\theta \left[\braket{Z_{a}}_{q_\theta}\right]\right] \leq \frac{1}{2^{n+1}}
+% \end{equation}
+% \end{proof}
+
+% \begin{theorem}
+% If $\{e_i:\ 1\le i\le n\}\subseteq G$ (all single-qubit gates are included), then
+% \[
+% \operatorname{Var}_\theta[\mathcal{L}_\theta] \;=\; \mathcal{O}\!\big( (1-\tfrac{p}{2})^{\,n}\big),
+% \]
+% hence the loss is exponentially concentrated in $n$. Here $p=\tfrac{1-e^{-1/(2\sigma)}}{2}$ is the spectral bit-flip probability in $f_\sigma$.
+% \end{theorem}
+
+% \begin{proof}
+% As in the full-$G$ case,
+% \[
+% \operatorname{Var}_\theta[\mathcal{L}_\theta]
+% = \operatorname{Var}_\theta\!\left[\mathbb{E}_{a}\big[\langle Z_\vta\rangle_{q_\theta}^2\big]\right]
+% + 4\,\operatorname{Var}_\theta\!\left[\mathbb{E}_{a}\big[\langle Z_\vta\rangle_p\,\langle Z_\vta\rangle_{q_\theta}\big]\right]
+% - 4\,\operatorname{Cov}_\theta(\cdot,\cdot).
+% \]
+% We bound the two variance terms; the covariance can be upper bounded by Cauchy–Schwarz if desired, or we use the inequality
+% $\operatorname{Var}(X+Y)\le (\sqrt{\operatorname{Var}X}+\sqrt{\operatorname{Var}Y})^2$.
+
+% Let $Y_a(\theta):=\mathbb{E}_z[\cos(\vec \vtv(\vta,\vtz)\!\cdot\!\vec\theta)] = 2^{-n}\sum_{z}\cos(\vec \vtv(\vta,\vtz)\!\cdot\!\vec\theta)$.
+% As before,
+% \[
+% \operatorname{Var}_\theta\!\left[\mathbb{E}_{a}\big[\langle Z_\vta\rangle_p\,\langle Z_\vta\rangle_{q_\theta}\big]\right]
+% \le \mathbb{E}_a\!\left[ \operatorname{Var}_\theta\!\big(Y_a\big)\right].
+% \]
+
+% \paragraph{Geometry of collisions with singles.}
+% Fix $a\neq 0$. With singles in $G$, the active set is $S(a)=\{e_i:\ a_i=1\}$ and
+% for $g\in S(a)$ we have $v_g(a,z)=2(-1)^{z_i}$. For $z,z'$ define $s:=z\oplus z'$.
+% Then
+% \[
+% \vec \vtv(\vta,\vtz)=\vec v(a,z') \iff s_i=0\ \forall i\in\mathrm{supp}(a),
+% \qquad
+% \vec \vtv(\vta,\vtz)=-\vec v(a,z') \iff s_i=1\ \forall i\in\mathrm{supp}(a).
+% \]
+% Each condition fixes the $|a|$ coordinates on $\mathrm{supp}(a)$ and leaves the other $n-|a|$ bits free, giving exactly $2^{n-|a|}$ solutions $s$ in either case. For each fixed $z$, this is the number of $z'$ with $\vec v(a,z')=\pm\vec \vtv(\vta,\vtz)$, so the total number of ordered pairs $(z,z')$ in each case is $2^n\cdot 2^{n-|a|}$.
+
+% Using
+% \[
+% \mathbb{E}_\theta[\cos(u\cdot\theta)]=0\ (u\neq 0),\quad
+% \mathbb{E}_\theta[\cos(u\cdot\theta)\cos(w\cdot\theta)]
+% =\tfrac12\big(\mathbf{1}\{u=w\}+\mathbf{1}\{u=-w\}\big),
+% \]
+% we get
+% \[
+% \operatorname{Var}_\theta(Y_a)
+% =\frac{1}{2\cdot 2^{2n}}\Big(\#\{(z,z'):\ \vec v=\vec v'\}+\#\{(z,z'):\ \vec v=-\vec v'\}\Big)
+% = \frac{1}{2\cdot 2^{2n}}\cdot 2 \cdot 2^n \cdot 2^{n-|a|}
+% = 2^{-|a|},
+% \]
+% for $a\neq 0$ (and $\operatorname{Var}_\theta(Y_0)=0$).
+
+% \paragraph{Average over $a$.}
+% Under $f_\sigma$, the bits of $a$ are i.i.d.\ with $\Pr(a_i=1)=p$. Hence
+% \[
+% \mathbb{E}_a\!\left[\operatorname{Var}_\theta(Y_a)\right]
+% =\mathbb{E}_a[2^{-|a|}]
+% =\prod_{i=1}^n\big( (1-p) + p\cdot 2^{-1}\big)
+% =(1-\tfrac{p}{2})^{\,n}.
+% \]
+% Therefore
+% \[
+% \operatorname{Var}_\theta\!\left[\mathbb{E}_{a}\big[\langle Z_\vta\rangle_p\,\langle Z_\vta\rangle_{q_\theta}\big]\right]
+% \le (1-\tfrac{p}{2})^{\,n}.
+% \]
+
+% \paragraph{Quadratic term.}
+% On $[-1,1]$, $x\mapsto x^2$ is $2$-Lipschitz, so
+% \[
+% \operatorname{Var}_\theta\!\left[\mathbb{E}_a\big[\langle Z_\vta\rangle_{q_\theta}^2\big]\right]
+% \le \mathbb{E}_a\!\left[\operatorname{Var}_\theta\big(Y_a^2\big)\right]
+% \le 4\,\mathbb{E}_a\!\left[\operatorname{Var}_\theta(Y_a)\right]
+% = 4\,(1-\tfrac{p}{2})^{\,n}.
+% \]
+
+% \paragraph{Combine.}
+% By $\operatorname{Var}(X+Y)\le (\sqrt{\operatorname{Var}X}+\sqrt{\operatorname{Var}Y})^2$,
+% \[
+% \operatorname{Var}_\theta[\mathcal{L}_\theta]
+% \le \Big( \sqrt{4(1-\tfrac{p}{2})^{\,n}} + 2\,\sqrt{(1-\tfrac{p}{2})^{\,n}} \Big)^2
+% = \big(2+2\big)^2\,(1-\tfrac{p}{2})^{\,n}
+% = 16\,(1-\tfrac{p}{2})^{\,n},
+% \]
+% which is $\exp(-\Omega(n))$. This proves exponential concentration.
+% \end{proof}
+
+
+% \subsubsection*{Step 1 — General formula for $\operatorname{Var}_\theta[B]$ with uniform $\theta$}
+% Using $\theta_g\stackrel{\text{i.i.d.}}{\sim}\mathrm{Unif}[0,2\pi)$ and the identity
+% $\operatorname*{\mathbb{E}}_\theta[\cos(u\!\cdot\!\theta)\cos(w\!\cdot\!\theta)]
+% =\tfrac12\big(\mathbf{1}\{u=w\}+\mathbf{1}\{u=-w\}\big)$ together with
+% $\operatorname*{\mathbb{E}}_\theta[\cos(u\!\cdot\!\theta)]=\mathbf{1}\{u=0\}$, we obtain
+% \begin{equation}
+%   \operatorname{Var}_\theta[B]
+%   \;=\;
+%   \operatorname*{\mathbb{E}}_{a,z,a',z'}\!\left[
+%     c_a c_{a'}
+%     \left(
+%       \tfrac12\,\mathbf{1}\{\vtv(\vta,\vtz)=\pm v(a',z')\}
+%       - \mathbf{1}\{\vtv(\vta,\vtz)=0\}\,\mathbf{1}\{v(a',z')=0\}
+%     \right)
+%   \right].
+%   \label{eq:VarB-master}
+% \end{equation}
+
+% \subsubsection*{Step 2 — Geometry of the active set $J(a)$}
+% For $a\in\{0,1\}^n$ define
+% \[
+%   J(a) := \{\, g\in\{0,1\}^n : g\cdot a = 1 \ (\mathrm{mod}\ 2) \,\}.
+% \]
+% Then
+% \[
+%   v_g(a,z)
+%   =
+%   \begin{cases}
+%     0, & g\notin J(a),\\
+%     2(-1)^{g\cdot z}, & g\in J(a).
+%   \end{cases}
+% \]
+% Key facts:
+% \begin{itemize}
+%   \item If $a=0^n$, then $J(a)=\varnothing$ and $\vtv(\vta,\vtz)\equiv 0$ for all $z$.
+%   \item If $a\neq 0$, then $|J(a)|=2^{n-1}$.
+%   \item For $a\neq 0$, the map $a\mapsto J(a)$ is injective: $J(a)=J(a') \iff a=a'$.
+% \end{itemize}
+
+% \subsubsection*{Step 3 — When does $\vtv(\vta,\vtz)=\pm v(a',z')$ hold?}
+% \begin{itemize}
+%   \item If $a=a'=0$, then $\vtv(\vta,\vtz)=v(a',z')=0$, so $v=\pm v'$ always holds.
+%   \item If exactly one of $a,a'$ is zero, then $v\equiv 0$ while $v'\not\equiv 0$ (or vice versa), so $v=\pm v'$ is impossible.
+%   \item If $a\neq 0$ and $a'\neq 0$, equality up to sign requires equal supports, hence $J(a)=J(a')$, which implies $a=a'$. For $a=a'$, the condition becomes
+%   \[
+%     v_g(a,z)=\pm v_g(a,z')\ \ \forall g\in J(a)
+%     \quad\Longleftrightarrow\quad
+%     (-1)^{g\cdot z}=\pm(-1)^{g\cdot z'}\ \ \forall g\in J(a).
+%   \]
+%   Writing $s:=z\oplus z'$, this is $g\cdot s=0$ for all $g\in J(a)$ (``$+$'' case) or $g\cdot s=1$ for all $g\in J(a)$ (``$-$'' case). The linear functional $g\mapsto g\cdot s$ is constant on $J(a)$ iff $s=0$, hence the ``$+$'' case holds iff $z=z'$ and the ``$-$'' case never holds.
+% \end{itemize}
+% Therefore,
+% \begin{equation}
+%   \mathbf{1}\{\vtv(\vta,\vtz)=\pm v(a',z')\}
+%   \;=\;
+%   \mathbf{1}\{a=a'\neq 0\}\,\mathbf{1}\{z=z'\}
+%   \;+\;
+%   \mathbf{1}\{a=0\}\,\mathbf{1}\{a'=0\}.
+%   \label{eq:indicator-vpm}
+% \end{equation}
+% Moreover,
+% \begin{equation}
+%   \mathbf{1}\{\vtv(\vta,\vtz)=0\}=\mathbf{1}\{a=0\},
+%   \qquad
+%   \mathbf{1}\{v(a',z')=0\}=\mathbf{1}\{a'=0\}.
+%   \label{eq:indicator-vzero}
+% \end{equation}
+
+% \subsubsection*{Step 4 — Plugging \eqref{eq:indicator-vpm}–\eqref{eq:indicator-vzero} into \eqref{eq:VarB-master}}
+% Substituting \eqref{eq:indicator-vpm} and \eqref{eq:indicator-vzero} into \eqref{eq:VarB-master} yields
+% \[
+%   \operatorname{Var}_\theta[B]
+%   \;=\;
+%   \frac{1}{2}\,\operatorname*{\mathbb{E}}_{a,z,a',z'}\!\left[
+%     c_a c_{a'}\,
+%     \mathbf{1}\{a=a'\neq 0\}\,\mathbf{1}\{z=z'\}
+%   \right]
+%   \;-\;
+%   \frac{1}{2}\,\operatorname*{\mathbb{E}}_{a,a'}\!\left[
+%     c_a c_{a'}\,\mathbf{1}\{a=0,a'=0\}
+%   \right].
+% \]
+
+
+% \begin{equation}
+%     \mathcal{L}_\theta = \frac{1}{A} \sum_{j}(\hat{\braket{Z_{a_j}}}_p - \hat{\braket{Z_{a_j}}}_{q_\theta})^2
+% \end{equation}
+% where \begin{equation}
+% \hat{\braket{Z_{a_j}}}_p = \frac{1}{X}\sum_i(-1)^{x_i \cdot a} \end{equation}
+% and \begin{equation}
+% \hat{\braket{Z_{a_j}}}_{q_\theta} = \frac{1}{B}\sum_{i=1}^{B}\cos\Big(\sum_j \theta_j(-1)^{g_j\cdot z_i}(1-(-1)^{g_j\cdot a})\Big)\end{equation}
+
+
+
+% \section{Understanding of IQP paper}
+% \subsection{Equation (27)}
+% There are exponentially many terms in $\Omega$ because: There are in general superlinear number of gates in $S_a$ (the set of anticommuting gates with $Z_\vta$). By rank nullity theorem, (because the rank is at most $n$) the matrix $A$ with rows $a_k$ being the generators of $S_a$ gates, must have a superlinear-sized kernel. Therefore, $\dim(\Omega) = 2^{\dim(\ker(A))}$ is at least exponential in n. 
+
+% \section{Understanding Robert Huang's paper}
+% A generative problem exhibits quantum advantage when a quantum computer can learn to generate the desired outputs substantially better than any classical computer. Here,
+% better means achieving reduced sample complexity, higher accuracy, faster learning or generation time, or the capability to generate outputs that are practically infeasible for classical computers. The outputs may include classical
+% data, quantum states, circuits, algorithms, or other well-defined objects.
+
+% \section{Understanding of Trainability Barriers paper}
+% \subsection{Overview}
+% It discusses about the training of QCBM. They call QCBM an implicit generative model because it yields only samples efficiently, but not probabilities. They call MMD implicit loss because it uses samples instead of probabilities. (In this regard, the MMD in IQP is neither implicit nor explicit, because it involves neither probabilities nor samples, but expectation values.)
+
+% \section{On error mitigation}
+% 'Polynomial-Time Classical Simulation of Noisy IQP Circuits with Constant Depth'. This paper says that if there are noises (dephasing and bitflip), for IQP circuits with depth of $O(1)$, i.e., only inversely depending on noise level, but not on system size, the sampling becomes classically approximatable. The impact of this is that, if we are doing error mitigation, which means to construct a bigger circuit with diagonal gates, this is not going to work either. So we possibly need to use IQP circuits with non-commuting gates during sampling to do the error mitigation.
+
+% \section{Questions on Trainability}
+% \begin{enumerate}
+%     \item What is Barren Plateau's definition?
+%     \item Is it a must to use DLA to study barren Plateau or if it can be already seen from the MMD loss of IQP circuit?
+%     \item Does Barren Plateau only apply to quantum training because of measurement error, or also applies to IQP when it is classically trained?
+%     \item Is there also Barren Plateau in classical deep learning?
+% \end{enumerate}
+
+% \section{Side Notes}
+% There are other circuits that share the same property as IQP: intractable sample but efficient estimation of expectation values:
+% \begin{enumerate}
+%     \item 	arXiv:2206.05642 One layer QAOA.
+%     \item https://doi.org/10.22331/q-2020-01-13-223 Clifford.
+% \end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliography{ref.bib}
+
+
+\end{document}
