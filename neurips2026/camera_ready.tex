@@ -146,6 +146,7 @@
 \newcommand{\hw}[1]{\textcolor{red}{Hao: #1}}
 \newcommand{\ks}[1]{\textcolor{orange}{Kevin: #1}}
 \newcommand{\rev}[1]{{\color{red}#1}} % camera-ready revisions (rebuttal content)
+\newcommand{\revtwo}[1]{{\color{green!60!black}#1}} % camera-ready revisions (follow-up clarification)
 
 \begin{document}
 
@@ -904,6 +905,26 @@ Let $G$ be a graph on $[n]$ with connected components $G_1,\dots,G_m$, and let t
 (c) Let $N$ be the number of isolated vertices, so $m\ge N$. With $P_1=(1-p)^{n-1}$ we have $\mathbb{E}N=nP_1$, and $\ln(1-p)\ge-p-p^2$ gives $\mathbb{E}N\ge(1-o(1))n^{1-c}\to\infty$. For $u\ne v$, $\operatorname{Cov}=(1-p)^{2n-3}-P_1^2=P_1^2\,p/(1-p)$, so $\operatorname{Var}N\le\mathbb{E}N+(\mathbb{E}N)^2p/(1-p)$ and $\operatorname{Var}N/(\mathbb{E}N)^2\to0$. By Chebyshev, $N\ge\mathbb{E}N/2\ge n^{1-c}/3$ w.h.p.
 \end{proof}
 Combined with \cref{lem:parseval}, a typical graph with $c<1$ gives a non-anti-concentrated family. This only invalidates the assumption of the hardness proof of~\citet{Bremner17}; it does not imply classical simulability.
+
+\revtwo{
+\subsection{Tightness of the threshold $c=2$: failure of anti-concentration throughout $c<2$}
+\label{app:tight-threshold}
+\begin{proposition}
+Let $G\sim G(n,p)$ with $p=c\ln n/n$ for a fixed constant $c$. If $c<2$, then w.h.p.\ $\sum_{\vta}2^{-r^\vta(G)}\ge(1-o(1))T_n\notin\mathcal O(1)$, where $T_n=(1/2+o(1))n^{1-c/2}$ as in \cref{app:derivation-sparse}; hence anti-concentration fails. Combined with \cref{thm:ac_and_pst_exist} (which uses $c>2$), the threshold $c=2$ is tight, and the graph-connectivity threshold $c=1$ is not the relevant quantity for anti-concentration.
+\end{proposition}
+\begin{proof}
+Let $Y_v:=2^{-r^{\bm e_v}(G)}=\tfrac12\cdot2^{-\deg(v)}$ and $X:=\sum_vY_v\le\sum_\vta2^{-r^\vta}$. By \cref{app:derivation-sparse}, $\mathbb{E}_GX=T_n$. For $u\ne v$, write $\deg(u)=Z+D_u'$, $\deg(v)=Z+D_v'$ with $Z=\mathbb 1[(u,v)\in E]\sim\mathrm{Bernoulli}(p)$ and $D_u',D_v'\sim\mathrm{Bin}(n-2,p)$ mutually independent. Then
+\begin{equation*}
+\operatorname{Cov}(Y_u,Y_v)=\tfrac14(1-p/2)^{2n-4}\Big[(1-\tfrac34p)-(1-\tfrac p2)^2\Big]=\tfrac14(1-p/2)^{2n-4}\cdot\tfrac p4(1-p)=(\mathbb{E}Y_v)^2\cdot\mathcal O(p).
+\end{equation*}
+Since $Y_v\le\tfrac12$, $\operatorname{Var}(Y_v)\le\mathbb{E}Y_v^2\le\mathbb{E}Y_v$, so
+\begin{equation*}
+\operatorname{Var}(X)\le\sum_v\mathbb{E}Y_v+n(n-1)(\mathbb{E}Y_v)^2\mathcal O(p)\le\mathbb{E}X+(\mathbb{E}X)^2\mathcal O(p),\qquad\frac{\operatorname{Var}(X)}{(\mathbb{E}X)^2}\le\frac1{\mathbb{E}X}+\mathcal O(p)\to0,
+\end{equation*}
+because $\mathbb{E}X=T_n\to\infty$ for $c<2$ and $p\to0$. By Chebyshev, $X=(1-o(1))T_n$ w.h.p. The claim follows since $T_n\notin\mathcal O(1)$ for $c<2$.
+\end{proof}
+Unlike \cref{app:components}, this argument needs no connectivity structure and applies for every $c<2$, not only $c<1$: the weight-1 (single-qubit) frequencies alone already force failure of anti-concentration. At $c=2$, $T_n\to1/2$ stays finite, consistent with the requirement $c>2$ in \cref{thm:ac_and_pst_exist} being essentially tight.
+}
 
 \subsection{Robustness to the reference measure}
 \label{app:robust}
