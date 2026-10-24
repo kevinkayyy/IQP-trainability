@@ -449,7 +449,7 @@ From above, we can use the fact that each $v\in A$ has at most $4$ distinct neig
 \begin{equation}
 \abs{\vta}=\abs{A} \leq  r^\vta=\abs{N[A]} \leq \abs{A}+4\abs{A} = 5\abs{\vta}.
 \end{equation}
-Hence, low Hamming-weight Fourier frequencies with $\abs{\vta} \in \mathcal{O}(\log(n))$ will have polynomially decaying variances, while high Hamming-weight frequencies with $\abs{\vta} \in \Theta(n)$ will have exponential decay variances.
+Hence, low Hamming-weight Fourier frequencies with $\abs{\vta} \in \mathcal{O}(\log(n))$ will have polynomially decaying variances, while high Hamming-weight frequencies with $\abs{\vta} \in \Theta(n)$ will have exponentially decaying variances.
 \end{example}
 %%%%%%%%%
 The lattice architecture considered in \cref{eg:lattice} is already computationally interesting because the model becomes universal for quantum computation under postselection \cite{Fujii17}. Consequently, by standard postselection-based hardness arguments, the existence of an efficient zero-error classical weak simulator would imply a collapse of the polynomial hierarchy to its third level. As a side remark, if no single-qubit generators are included, then the output distributions would be efficiently classically simulable \cite{Fujii17}.
@@ -463,7 +463,7 @@ Also, the events $\{u\in B\}$ are independent for each $u \notin A$.
 Therefore, $\abs{B} \sim \mathrm{Binomial}(n-\abs{\vta},\,q)$, 
 where $q = 1-(1-p)^{\abs{\vta}}$ and \begin{equation}\operatorname*{\mathbb{E}}_G[r^\vta] = \abs{\vta} + (n-\abs{\vta})q. \label{eq:sparse ra}
 \end{equation}
-Using that $(1-p)^\abs{\vta} = \exp(-p\abs{\vta} + \mathcal{O}(p^2\abs{\vta}))$, we can get that $q=p\abs{\vta} + \mathcal{O}((p\abs{\vta})^2)$ and $\operatorname*{\mathbb{E}}_G[r^\vta] \in \mathcal{O}(\log(n)^2)$ if $\abs{\vta} \in \mathcal{O}(\log(n))$, while $q = \Theta(1)$ and $\operatorname*{\mathbb{E}}_G[r^\vta] \in \Theta(n)$ if $\abs{\vta} \in \Theta(n)$. By Chernoff's bound, with high probability, for a single Erd\H os-R\'enyi graph, low Hamming-weight Fourier frequencies with $\abs{\vta} \in \Theta(1)$ will have polynomial decay, ($\abs{\vta} \in \mathcal{O}(\log(n))$ gives subexponential but not polynomial), while high Hamming-weight frequencies with $\abs{\vta} \in \Theta(n)$ will have exponential decay variances.
+Using that $(1-p)^\abs{\vta} = \exp(-p\abs{\vta} + \mathcal{O}(p^2\abs{\vta}))$, we can get that $q=p\abs{\vta} + \mathcal{O}((p\abs{\vta})^2)$ and $\operatorname*{\mathbb{E}}_G[r^\vta] \in \mathcal{O}(\log(n)^2)$ if $\abs{\vta} \in \mathcal{O}(\log(n))$, while $q = \Theta(1)$ and $\operatorname*{\mathbb{E}}_G[r^\vta] \in \Theta(n)$ if $\abs{\vta} \in \Theta(n)$. By Chernoff's bound, with high probability, for a single Erd\H os-R\'enyi graph, low Hamming-weight Fourier frequencies with $\abs{\vta} \in \Theta(1)$ will have polynomially decaying variances, ($\abs{\vta} \in \mathcal{O}(\log(n))$ gives subexponential but not polynomial), while high Hamming-weight frequencies with $\abs{\vta} \in \Theta(n)$ will have exponentially decaying variances.
 \end{example}
 
 The architecture considered in \cref{eg:sparse} is closely related to the ``sparse IQP circuits'' introduced by\citet{Bremner17}, except that here the parameters $\vttheta$ are drawn from a continuous uniform distribution, whereas their construction samples $\vttheta$ uniformly from a discrete set. In particular, they showed that the existence of an efficient classical sampler that can output distributions within small total variation distance to the true distributions of a constant fraction of instances from their ensemble of ``sparse IQP circuits'' would imply a collapse of the polynomial hierarchy to its third level~\citep{Bremner17}.
@@ -527,16 +527,13 @@ To study the classical hardness of IQP-QCBMs, it is convenient to relate the $L^
     By Parseval's identity, $\E_\vttheta\left(\sum_{\vta\in \mathbb{F}_2^n}(C_\vttheta(\vta))^2\right)=2^n\E_\vttheta\left(\norm{q_\vttheta}^2_2\right)\in\mathcal{O}(1)$. By~\cref{thm:uniform}, we have $\sum_{\vta\in \mathbb{F}_2^n}\E(C_\vttheta(\vta))^2=\sum_{\vta\in\mathbb{F}_2^n}2^{-r^\vta}.$
 \end{proof}
 %%%%%%%%%%%%%%%%%%%%
-Using this proposition, we can check whether the examples of IQP architectures studied in~\cref{subsec:uniform} have the anti-concentration property or not. (See~\cref{app:derivation-sparse} for the detailed derivation.)
+Using this proposition, we can check whether the examples of IQP architectures studied in~\cref{subsec:uniform} have the anti-concentration property or not. 
 \begin{itemize}
     \item For~\cref{eg:product}, we have: $\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}=\sum_{k=0}^n \binom{n}{k}2^{-k}=(3/2)^n$ -- output distribution is not anti-concentrated.
-    \item For~\cref{eg:lattice}, we have: $\sum_{k=0}^n \binom{n}{k}2^{-5k}=\left(\frac{33}{32}\right)^n \leq \sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta} \leq 1.5^n$ --  not anticoncentrated.
-    \item In~\cref{eg:sparse}, the circuit connectivity graph $G$ is sampled from the Erd\H os-R\'enyi class, which we denote by $G\sim B(n,p)$. In this case, the critical rank $r^{\vta}$ is a function of $G$, which we denote by $r^{\vta}(G)$. \rev{In the case that the connectivity constant $c>2$}, over the Erd\H os-R\'enyi class, the average condition in~\cref{lem:parseval} is 
-    \begin{equation}\label{eq:anti-concentration-sparse}
-    \operatorname*{\mathbb{E}}_{G\sim B(n,p)}\left(\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta(G)}\right)
-    = 2 + o(1)\implies \text{ anti-concentration}
-    \end{equation} 
-    \item For~\cref{eg:complete}, we have: $\sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta}= 1+(2^n-1)2^{-n} = 2 - 2^{-n}$ -- anti-concentrated.
+    \item For~\cref{eg:lattice}, we have: $\sum_{k=0}^n \binom{n}{k}2^{-5k}=\left(\frac{33}{32}\right)^n \leq \sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta} \leq (\frac{3}{2})^n$ -- output distribution is not anticoncentrated. 
+    \item For~\cref{eg:sparse}, the critical rank $r^{\vta}(G)$ varies for each graph instance $G$, whose occurance depends on the connectivity constant $c$. In the case of $c \geq 2$, averaging over the Erd\H os-R\'enyi random graph distribution, we have:
+$\operatorname*{\mathbb{E}}_{G}\left(\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta(G)}\right) = 2 + o(1)$ -- output distribution is anti-concentrated. See~\cref{app:derivation-sparse} for the detailed derivation.
+\item For~\cref{eg:complete}, we have: $\sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta}= 1+(2^n-1)2^{-n} = 2 - 2^{-n}$ -- output distribution is anti-concentrated.
 \end{itemize}
 \rev{\begin{remark}[Choice of probability constant $p$ in ~\cref{eg:sparse}] The choice of $p=c\ln(n)/n$ at connectivity threshold is not a coincidence. For $p$ of smaller scale, the graph $G$ is with high probability disconnected, making the critical rank factorized over its connected components $G_1,\dots,G_m$, i.e., $r^\vta(G)=\sum_{i}r^{\vta_i}(G_i)$, where $\vta_i$ is the restriction of $\vta$ to $G_i$. Hence $\sum_{\vta}2^{-r^\vta}=\prod_{i=1}^m\sum_{\vta_i}2^{-r^{\vta_i}(G_i)}\ge(3/2)^m$, because each factor is at least $2-2^{-|G_i|}\ge 3/2$. Since $m\ge n^{1-c}/3\to\infty$ w.h.p., \cref{lem:parseval} shows that anti-concentration fails (\cref{app:components}). Failure of anti-concentration only means that the hardness proof of~\citet{Bremner17} does not apply in this regime; it does not imply that the model is classically simulable. \end{remark}}
 %%%%%%%%%%%%%%%%%%%%
