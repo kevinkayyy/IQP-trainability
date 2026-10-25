@@ -944,98 +944,22 @@ For a kernel $k$, $\operatorname{MMD}_k^2(p,q)=\mathbb{E}_{x,x'\sim p}k(x,x')-2\
 \endgroup
 
 \begingroup\color{blue}
-\section{Anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture: a self-contained analysis}
+\section{Closing the gap in \texorpdfstring{\cref{app:derivation-sparse}}{Appendix B.1}: sharp asymptotics for the sparse Erd\H{o}s--R\'enyi architecture}
 \label{app:er-full}
-This appendix gives a complete and self-contained treatment of anti-concentration for the architecture of \cref{eg:sparse}, refining \cref{app:derivation-sparse,app:components,app:tight-threshold}. We (i) derive exact identities valid for every graph (\cref{app:er-identities}); (ii) compute the exact expectation over $G(n,p)$ (\cref{app:er-expectation}) and its sharp asymptotics $2e^{T_n}+o(1)$ for all $c\ge2$, which in particular equals $2\sqrt e$ rather than $2$ at $c=2$ (\cref{app:er-sharp}); (iii) prove high-probability statements for typical graphs in each of the regimes $c>2$, $c=2$ and $c<2$ (\cref{app:er-typical}); (iv) explain why the anti-concentration threshold is $c=2$ and how it relates to the connectivity threshold $c=1$ (\cref{app:er-threshold}); (v) report numerics (\cref{app:er-numerics}); and (vi) draw the consequences for \cref{thm:ac_and_pst_exist} and for trainability (\cref{app:er-consequences}).
-
-\paragraph{Setting and notation.}
-Throughout, $G=(V,E)$ is a simple graph on $V=[n]$, and the generator set consists of all single-qubit generators $\bm e_v$, $v\in V$, together with all $\bm e_u+\bm e_v$, $(u,v)\in E$. For $\vta\in\mathbb F_2^n$ we write $A=\operatorname{supp}(\vta)$ and $k=\abs{\vta}=|A|$, $N[A]=A\cup\{u:\exists v\in A,\ (u,v)\in E\}$ for the closed neighbourhood, $W_A:=N[A]\setminus A$ for the outer boundary of $A$, and $\deg(v)$ for the degree of $v$. With the convention $r^{\bm 0}=0$ we set
-\begin{equation*}
-\mathcal Z(G):=\sum_{\vta\in\mathbb F_2^n}2^{-r^\vta(G)},
-\qquad\text{so that}\qquad
-\operatorname*{\mathbb{E}}_{\vttheta}\Big[\sum_{x}q_\vttheta(x)^2\Big]=2^{-n}\mathcal Z(G)
-\end{equation*}
-by Parseval's identity and \cref{thm:uniform} (proof of \cref{lem:parseval}). Hence the ensemble $\{q_\vttheta\}_\vttheta$ for a fixed graph $G$ is anti-concentrated iff $\mathcal Z(G)\in\mathcal O(1)$. For the random architecture, $G\sim G(n,p)$ with $p=c\ln n/n$ for a fixed constant $c>0$, and we set
-\begin{equation*}
-\lambda:=1-p,\qquad \omega_k:=\binom nk2^{-n},\qquad
-T_n:=n2^{-n}(2-p)^{n-1}=\frac{n}{2-p}\Big(1-\frac p2\Big)^{n}.
-\end{equation*}
-Using $e^{-x-x^2}\le1-x\le e^{-x}$ for $x\in[0,\tfrac12]$ and $\frac1{2-p}\le\frac{1+p}{2}$, we get the explicit bounds
+Let $\mathcal Z(G):=\sum_{\vta\in\mathbb F_2^n}2^{-r^\vta(G)}$. By \cref{lem:parseval}, the ensemble $\{q_\vttheta\}_\vttheta$ for a fixed graph $G$ is anti-concentrated iff $\mathcal Z(G)\in\mathcal O(1)$. With $p=c\ln n/n$, $\lambda=1-p$ and $\omega_k=\binom nk2^{-n}$, \cref{app:derivation-sparse} gives the exact formula
+\begin{equation}\label{eq:er-exact}
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=\sum_{k=0}^nt_k,\qquad t_k:=\omega_k\big(1+\lambda^k\big)^{n-k}=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k},
+\end{equation}
+with $t_0=1$ and $t_1=T_n:=n2^{-n}(2-p)^{n-1}=\frac{n}{2-p}\big(1-\frac p2\big)^{n}$. Using $e^{-x-x^2}\le1-x\le e^{-x}$ for $x\in[0,\tfrac12]$ and $\frac1{2-p}\le\frac{1+p}{2}$, we get
 \begin{equation}\label{eq:er-Tn-bounds}
 \frac{n^{1-c/2}}{2}\,e^{-np^2/4}\ \le\ T_n\ \le\ \frac{n^{1-c/2}}{2}\,(1+p),
 \qquad\text{so}\qquad
-T_n=\Big(\tfrac12+o(1)\Big)n^{1-c/2},
+T_n=\Big(\tfrac12+o(1)\Big)n^{1-c/2}.
 \end{equation}
-since $np^2=c^2\ln^2n/n\to0$. Thus $T_n\to\infty$ for $c<2$, $T_n\to\tfrac12$ for $c=2$, and $T_n\to0$ polynomially for $c>2$. All asymptotic statements are as $n\to\infty$ with $c$ fixed, and ``w.h.p.'' means with probability $1-o(1)$ over $G$.
 
-\subsection{Exact identities for an arbitrary graph}
-\label{app:er-identities}
+\paragraph{The gap.}
+\Cref{app:derivation-sparse} writes $(1+\lambda^k)^{n-k}-1=(n-k)\lambda^k+\Delta(k,n)$ and asserts that $\sum_{k\ge2}\omega_k\Delta(k,n)$ is dominated by the linear part $\sum_{k\ge2}\omega_k(n-k)\lambda^k$. This does not follow term by term, because the two sums live on different ranges of $k$. Since $(n-k)\binom nk=n\binom{n-1}{k}$, the linear summand is proportional to the $\mathrm{Bin}\big(n-1,\tfrac{\lambda}{1+\lambda}\big)$ mass function, so the linear part is carried by $k=\tfrac n2+\mathcal O(\sqrt n)$. The remainder, in contrast, has its leading contributions at small $k$. For example, $\omega_2\Delta(2,n)=(\tfrac12+o(1))T_n^2$, whereas $\omega_2(n-2)\lambda^2=\mathcal O(n^32^{-n})$. A direct estimate of all $t_k$ is therefore needed, and it is given below. It also shows that at $c=2$ the remainder is $\Theta(1)$, so the value $2+o(1)$ does not extend to $c=2$.
 
-\begin{lemma}[Critical rank]\label{lem:er-rank}
-For every graph $G$ and every $\vta\in\mathbb F_2^n$, $r^\vta(G)=|N[A]|$.
-\end{lemma}
-\begin{proof}
-We have $\vta\cdot\bm e_v=1$ iff $v\in A$, and $\vta\cdot(\bm e_u+\bm e_v)=1$ iff exactly one endpoint lies in $A$. Hence $S^\vta=\{\bm e_v:v\in A\}\cup\{\bm e_u+\bm e_v:(u,v)\in E,\ u\in A,\ v\notin A\}$. For such a cut edge, $\bm e_v=(\bm e_u+\bm e_v)+\bm e_u\in\operatorname{span}S^\vta$, so $\operatorname{span}S^\vta\supseteq\operatorname{span}\{\bm e_w:w\in N[A]\}$. Conversely, every element of $S^\vta$ is supported on $N[A]$. Therefore $\operatorname{span}S^\vta=\operatorname{span}\{\bm e_w:w\in N[A]\}$, which has dimension $|N[A]|$.
-\end{proof}
-
-\begin{lemma}[Exact identities and bounds]\label{lem:er-identities}
-For every graph $G$ on $n$ vertices:
-\begin{enumerate}
-\item[(a)] (Bipartite-hole representation)
-\begin{equation*}
-\mathcal Z(G)=2^{-n}\,\#\{(A,U):A,U\subseteq V,\ A\cap U=\emptyset,\ E(A,U)=\emptyset\},
-\end{equation*}
-where $E(A,U)$ is the set of edges between $A$ and $U$. In particular the right-hand side is symmetric under $A\leftrightarrow U$, and
-\begin{equation*}
-\mathcal Z(G)-\big(2-2^{-n}\big)=2^{-n}\,\#\{(A,U):A,U\neq\emptyset,\ A\cap U=\emptyset,\ E(A,U)=\emptyset\}\ \ge 0 .
-\end{equation*}
-\item[(b)] $2-2^{-n}\le\mathcal Z(G)\le(3/2)^n$, with equality on the left for the complete graph and on the right for the empty graph.
-\item[(c)] (Product lower bound) $\displaystyle \mathcal Z(G)\ \ge\ \prod_{v\in V}\big(1+2^{-1-\deg(v)}\big)$.
-\end{enumerate}
-\end{lemma}
-\begin{proof}
-(a) By \cref{lem:er-rank}, $2^{-r^\vta}=2^{-n}\cdot2^{\,n-|N[A]|}=2^{-n}\,\#\{U:U\subseteq V\setminus N[A]\}$, and $U\subseteq V\setminus N[A]$ iff $U\cap A=\emptyset$ and no edge joins $A$ and $U$. Summing over $A$ gives the identity. The pairs with $A=\emptyset$ or $U=\emptyset$ number $2^n+2^n-1$, which gives the second display.
-(b) The lower bound is (a). For the upper bound, $|N[A]|\ge|A|$ gives $\mathcal Z\le\sum_A2^{-|A|}=(3/2)^n$. For the complete graph $N[A]=V$ for all $A\ne\emptyset$, and for the empty graph $N[A]=A$.
-(c) Since $N[A]=\bigcup_{v\in A}N[v]$ and $|N[v]|=1+\deg(v)$, the union bound gives $|N[A]|\le\sum_{v\in A}(1+\deg(v))$. With $y_v:=2^{-1-\deg(v)}$ this yields $2^{-r^\vta}\ge\prod_{v\in A}y_v$, and $\sum_{A\subseteq V}\prod_{v\in A}y_v=\prod_{v\in V}(1+y_v)$.
-\end{proof}
-
-Note that $y_v=2^{-1-\deg(v)}=2^{-r^{\bm e_v}}=\operatorname{Var}_\vttheta[C_\vttheta(\bm e_v)]$ is exactly the weight-one contribution to $\mathcal Z$.
-
-\begin{corollary}[A necessary condition for anti-concentration]\label{cor:er-necessary}
-For any family of graphs, if $\mathcal Z(G)\in\mathcal O(1)$ then $\sum_{v}2^{-\deg(v)}\in\mathcal O(1)$. Consequently:
-(i) if $\max_v\deg(v)\le d$ then $\mathcal Z(G)\ge(1+2^{-1-d})^n$, so bounded-degree architectures are never anti-concentrated (for the 2D lattice, $d=4$ recovers the bound $(33/32)^n$ of the main text);
-(ii) by convexity, $\sum_v2^{-\deg(v)}\ge n\,2^{-2|E|/n}$, so anti-concentration requires average degree at least $\log_2n-\mathcal O(1)$, i.e.\ at least $\tfrac n2\log_2n-\mathcal O(n)$ two-qubit generators.
-\end{corollary}
-\begin{proof}
-$\prod_v(1+y_v)\ge1+\sum_vy_v$ and \cref{lem:er-identities}(c). For (ii), apply Jensen's inequality to the convex map $d\mapsto2^{-d}$.
-\end{proof}
-For comparison, $G(n,p)$ at $c=2$ has mean degree $\approx2\ln n=(2\ln2)\log_2n\approx1.39\log_2n$. The excess over $\log_2n$ is the price of degree fluctuations (\cref{app:er-threshold}).
-
-\subsection{Exact expectation over $G(n,p)$}
-\label{app:er-expectation}
-
-\begin{lemma}[Exact expectation]\label{lem:er-expectation}
-Let $G\sim G(n,p)$ and fix $A$ with $|A|=k$. Then $|W_A|\sim\mathrm{Bin}(n-k,1-\lambda^k)$ and
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G\big[2^{-r^\vta}\big]=2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}.
-\end{equation*}
-Consequently
-\begin{equation}\label{eq:er-exact}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=\sum_{k=0}^nt_k,\qquad t_k:=\omega_k\big(1+\lambda^k\big)^{n-k}=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}.
-\end{equation}
-In particular $t_0=1$ and $t_1=T_n$ exactly.
-\end{lemma}
-\begin{proof}
-For $u\notin A$, the event $\{u\in W_A\}$ depends only on the $k$ potential edges between $u$ and $A$, so these events are independent for distinct $u$, each with probability $1-\lambda^k$. By \cref{lem:er-rank}, $r^\vta=k+|W_A|$, and $\mathbb E\,2^{-\mathrm{Bin}(m,q)}=(1-q/2)^m$ with $1-\tfrac{1-\lambda^k}{2}=\tfrac{1+\lambda^k}{2}$. Summing over the $\binom nk$ sets $A$ of size $k$ gives \eqref{eq:er-exact}. Finally, $t_1=n2^{-1}\big(\tfrac{2-p}{2}\big)^{n-1}=T_n$.
-\end{proof}
-We also record the identity used in \cref{app:derivation-sparse}: since $(n-k)\binom nk=n\binom{n-1}{k}$,
-\begin{equation}\label{eq:er-linear}
-\sum_{k=0}^{n}\omega_k(n-k)\lambda^k=n2^{-n}\sum_{k=0}^{n-1}\binom{n-1}{k}\lambda^k=n2^{-n}(2-p)^{n-1}=T_n .
-\end{equation}
-The summand in \eqref{eq:er-linear} is proportional to the $\mathrm{Bin}\big(n-1,\tfrac{\lambda}{1+\lambda}\big)$ probability mass function, whose mean is $\tfrac n2(1+o(1))$. So this sum is carried by $k=\tfrac n2+\mathcal O(\sqrt n)$, not by small $k$.
-
-\subsection{Sharp asymptotics of the expected collision sum}
-\label{app:er-sharp}
 
 \begin{theorem}[Sharp asymptotics]\label{thm:er-sharp}
 Let $p=c\ln n/n$ with a fixed $c\ge2$. Then
@@ -1045,7 +969,6 @@ Let $p=c\ln n/n$ with a fixed $c\ge2$. Then
 More precisely:
 (a) if $c>2$, then $\mathbb{E}_G[\mathcal Z]=2+(2+o(1))T_n=2+(1+o(1))\,n^{1-c/2}$;
 (b) if $c=2$, then $\mathbb{E}_G[\mathcal Z]\to2\sqrt e\approx3.2974$.
-Moreover, for every fixed $c>0$, $\mathbb{E}_G[\mathcal Z]\ge(1-o(1))\exp\big((1-o(1))T_n\big)$.
 \end{theorem}
 
 \begin{proof}
@@ -1082,192 +1005,26 @@ For $c>2$ the left side with $K=1$ is $t_1=T_n$, so $\sum_{\rm I}=(1+o(1))T_n$. 
 \begin{equation*}
 (n-k)\lambda^k=T_n\big(1+o(1)\big),\qquad (n-k)\lambda^{2k}\le(n-k)\lambda^k\cdot n^{-c/2+o(1)}=o(T_n),
 \end{equation*}
-uniformly. By (E5), $(1+\lambda^k)^{n-k}=\exp\big(T_n(1+o(1))\big)$ uniformly, and by (E4) $\sum_{\rm V}\omega_k\ge1-2e^{-2n^{0.8}}$. Hence $\sum_{\rm V}=\big(1-\mathcal O(e^{-2n^{0.8}})\big)\exp\big(T_n(1+o(1))\big)$. This equals $1+(1+o(1))T_n+\mathcal O(e^{-2n^{0.8}})$ for $c>2$ and tends to $e^{1/2}$ for $c=2$. Only $p\to0$ and $pn^{0.9}\to0$ were used here, so this lower bound holds for every $c>0$.
+uniformly. By (E5), $(1+\lambda^k)^{n-k}=\exp\big(T_n(1+o(1))\big)$ uniformly, and by (E4) $\sum_{\rm V}\omega_k\ge1-2e^{-2n^{0.8}}$. Hence $\sum_{\rm V}=\big(1-\mathcal O(e^{-2n^{0.8}})\big)\exp\big(T_n(1+o(1))\big)$. This equals $1+(1+o(1))T_n+\mathcal O(e^{-2n^{0.8}})$ for $c>2$ and tends to $e^{1/2}$ for $c=2$.
 
 \emph{Region VI ($k>n/2+n^{0.9}$).} $(n-k)\lambda^k$ is decreasing in $k$, so it is at most $T_n(1+o(1))=\mathcal O(1)$ for $c\ge2$. Hence $t_k\le\omega_ke^{\mathcal O(1)}$ and $\sum_{\rm VI}\le e^{\mathcal O(1)}e^{-2n^{0.8}}$.
 
-\emph{Conclusion.} Adding $t_0=1$: for $c>2$ the exponentially small contributions of Regions II, III, IV and VI are $o(T_n)$, because $T_n$ is only polynomially small, so $\mathbb{E}_G[\mathcal Z]=1+(1+o(1))T_n+1+(1+o(1))T_n=2+(2+o(1))T_n$. For $c=2$, $\mathbb{E}_G[\mathcal Z]\to1+(e^{1/2}-1)+e^{1/2}=2\sqrt e$. In both cases this is $2e^{T_n}+o(1)$. The final claim follows from Region V and the nonnegativity of all $t_k$.
+\emph{Conclusion.} Adding $t_0=1$: for $c>2$ the exponentially small contributions of Regions II, III, IV and VI are $o(T_n)$, because $T_n$ is only polynomially small, so $\mathbb{E}_G[\mathcal Z]=1+(1+o(1))T_n+1+(1+o(1))T_n=2+(2+o(1))T_n$. For $c=2$, $\mathbb{E}_G[\mathcal Z]\to1+(e^{1/2}-1)+e^{1/2}=2\sqrt e$. In both cases this is $2e^{T_n}+o(1)$.
 \end{proof}
 
-\begin{remark}[Interpretation: two mirror-image sectors]
-By \cref{lem:er-identities}(a), $\mathcal Z(G)-2+2^{-n}$ counts (with weight $2^{-n}$) pairs of nonempty disjoint vertex sets $(A,U)$ with no edge between them. \Cref{thm:er-sharp} shows that, in expectation, these come from two sectors of equal weight $e^{T_n}-1$. In the \emph{small-$A$} sector (Region I), $t_k\approx T_n^k/k!$: a few vertices of $A$ are each poorly connected. In the \emph{small-$U$} sector (Region V), $A$ is a typical set of size $\approx n/2$, the number $n-|N[A]|\sim\mathrm{Bin}(n-k,\lambda^k)$ of vertices with no neighbour in $A$ is asymptotically $\mathrm{Poisson}(T_n)$, and $\mathbb E\,2^{\mathrm{Poisson}(T)}=e^{T}$. By the $A\leftrightarrow U$ symmetry the two sectors are mirror images, and
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G[\mathcal Z]\approx\underbrace{2}_{A=\emptyset\text{ or }U=\emptyset}+\underbrace{(e^{T_n}-1)}_{\text{small }A}+\underbrace{(e^{T_n}-1)}_{\text{small }U}=2e^{T_n}.
-\end{equation*}
+\begin{remark}[Consequences for \cref{app:derivation-sparse} and \cref{thm:ac_and_pst_exist}]
+For $c>2$, \cref{thm:er-sharp} confirms the conclusion $\mathbb{E}_G[\mathcal Z]=2+o(1)$ of \cref{app:derivation-sparse}, with the explicit rate $(1+o(1))n^{1-c/2}$. The excess over $2$ splits into two equal parts $e^{T_n}-1$: one from small supports (Region I, $t_k\approx T_n^k/k!$) and one from supports of size $\approx n/2$ (Region V, where the number of vertices with no neighbour in the support is approximately $\mathrm{Poisson}(T_n)$). Since every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$ (the $\vta=\bm 0$ term equals $1$ and each of the other $2^n-1$ terms is at least $2^{-n}$), Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le(2+o(1))T_n/\varepsilon$. With $\varepsilon=n^{-(c-2)/4}$ this shows $\mathcal Z(G)\le2+n^{-(c-2)/4}$ w.h.p. For $c=2$, anti-concentration still holds in expectation, but with constant $2\sqrt e$ instead of $2$.
 \end{remark}
 
-\begin{remark}[Relation to the expansion in \cref{app:derivation-sparse}]
-In the decomposition $\mathbb{E}_G[\mathcal Z]=1+(1-2^{-n})+R_n$ of \cref{app:derivation-sparse}, the term $R_{1,n}=t_1-n2^{-n}$ is the $k=1$ part of the small-$A$ sector. The ``linear part'' $\sum_{k\ge2}\omega_k(n-k)\lambda^k$ is supported on $k=n/2+\mathcal O(\sqrt n)$ by \eqref{eq:er-linear}, and it is the first-order term of the small-$U$ sector. The remainder is \emph{not} dominated by the linear part term by term. For example, at $k=2$, $\omega_2\Delta(2,n)=t_2-\omega_2-\omega_2(n-2)\lambda^2=(\tfrac12+o(1))T_n^2$, whereas $\omega_2(n-2)\lambda^2=\mathcal O(n^32^{-n})$. \Cref{thm:er-sharp} shows that only the \emph{aggregate} remainder is small, namely $\mathcal O(T_n^2)+o(T_n)$ for $c>2$. Hence the conclusion $2+o(1)$ of \cref{app:derivation-sparse} is correct for $c>2$. At $c=2$, however, the remainder is $\Theta(1)$ and the limit is $2\sqrt e$, not $2$. We also note that the set whose size is $\mathrm{Bin}(n-\abs{\vta},q)$ in \cref{eg:sparse} is the outer boundary $W_A=N[A]\setminus A$.
-\end{remark}
-
-\subsection{Typical graphs: high-probability statements in each regime}
-\label{app:er-typical}
-
-\begin{proposition}[Regime $c>2$: anti-concentration w.h.p.]\label{prop:er-whp}
-Let $c>2$. Then for every $\varepsilon_n>0$,
-$\Pr_G\big[\mathcal Z(G)>2+\varepsilon_n\big]\le(2+o(1))T_n/\varepsilon_n$. In particular, w.h.p.
-\begin{equation*}
-2-2^{-n}\ \le\ \mathcal Z(G)\ \le\ 2+n^{-(c-2)/4}.
-\end{equation*}
-\end{proposition}
-\begin{proof}
-By \cref{lem:er-identities}(b), $Y:=\mathcal Z(G)-(2-2^{-n})\ge0$, and $\mathbb E Y=(2+o(1))T_n$ by \cref{thm:er-sharp}(a). Apply Markov's inequality to $Y$. Choosing $\varepsilon_n=n^{-(c-2)/4}$ makes the failure probability $\mathcal O(n^{-(c-2)/4})\to0$, by \eqref{eq:er-Tn-bounds}.
-\end{proof}
-
-\begin{proposition}[Regime $c=2$: anti-concentration with constant probability]\label{prop:er-c2}
-Let $c=2$. For every $t>0$, $\Pr_G\big[\mathcal Z(G)\le2+t\big]\ge1-(2\sqrt e-2+o(1))/t$, where $2\sqrt e-2\approx1.297$. Thus $\mathcal Z(G)$ is bounded in probability: for every $\delta>0$, with probability at least $1-\delta-o(1)$, $\mathcal Z(G)\le2+1.3/\delta$.
-\end{proposition}
-\begin{proof}
-Markov's inequality applied to $Y=\mathcal Z(G)-(2-2^{-n})\ge0$, whose mean tends to $2\sqrt e-2$ by \cref{thm:er-sharp}(b).
-\end{proof}
-
-\begin{proposition}[Regime $c<2$: stretched-exponential failure w.h.p.]\label{prop:er-fail}
-Let $0<c<2$. Then w.h.p.
-\begin{equation*}
-\mathcal Z(G)\ \ge\ \exp\big((1-\mathcal O(1/\ln n))\,T_n\big)=\exp\Big(\big(\tfrac12-o(1)\big)\,n^{1-c/2}\Big)\notin\mathcal O(1).
-\end{equation*}
-\end{proposition}
-\begin{proof}
-Let $y_v:=2^{-1-\deg(v)}$, $X:=\sum_vy_v$ and $Q:=\sum_vy_v^2$. By \cref{lem:er-identities}(c) and (E5),
-\begin{equation*}
-\ln\mathcal Z(G)\ \ge\ \sum_v\ln(1+y_v)\ \ge\ X-\tfrac12Q .
-\end{equation*}
-\emph{First moment of $X$.} With $\deg(v)\sim\mathrm{Bin}(n-1,p)$, $\mathbb E X=\tfrac n2(1-p/2)^{n-1}=T_n$ exactly.
-\emph{Second moment of $X$.} For $u\neq v$ write $\deg(u)=Z+D_u'$ and $\deg(v)=Z+D_v'$, with $Z=\bm 1[(u,v)\in E]\sim\mathrm{Bernoulli}(p)$ and $D_u',D_v'\sim\mathrm{Bin}(n-2,p)$ mutually independent. Then
-\begin{equation*}
-\operatorname{Cov}(y_u,y_v)=\tfrac14(1-\tfrac p2)^{2n-4}\Big[(1-\tfrac34p)-(1-\tfrac p2)^2\Big]=\tfrac14(1-\tfrac p2)^{2n-4}\cdot\tfrac p4(1-p)=(\mathbb E y_v)^2\,\mathcal O(p).
-\end{equation*}
-Since $y_v\le\tfrac12$, $\operatorname{Var}(y_v)\le\tfrac12\mathbb E y_v$. Hence $\operatorname{Var}(X)\le\tfrac12\mathbb E X+(\mathbb E X)^2\mathcal O(p)$, and Chebyshev's inequality gives
-\begin{equation*}
-\Pr\Big[|X-T_n|>\frac{T_n}{\ln n}\Big]\le\ln^2n\Big(\frac1{2T_n}+\mathcal O(p)\Big)=\mathcal O\big(n^{-(1-c/2)}\ln^2n+p\ln^2n\big)\to0 .
-\end{equation*}
-\emph{The correction $Q$.} $\mathbb E Q=\tfrac n4\,\mathbb E\,4^{-\deg(v)}=\tfrac n4(1-\tfrac34p)^{n-1}=(\tfrac14+o(1))n^{1-3c/4}$. By Markov's inequality, $\Pr[Q>T_n/\ln n]\le\mathbb E Q\ln n/T_n=\mathcal O(n^{-c/4}\ln n)\to0$.
-Combining, w.h.p.\ $\ln\mathcal Z(G)\ge T_n(1-1/\ln n)-T_n/(2\ln n)$, and \eqref{eq:er-Tn-bounds} gives the second form.
-\end{proof}
-
-\begin{remark}[Comparison with \cref{app:components,app:tight-threshold}]
-\Cref{prop:er-fail} strengthens the polynomial lower bound $\mathcal Z(G)\ge(1-o(1))T_n$ of \cref{app:tight-threshold} to a stretched exponential with the same rate $T_n$ in the exponent. It also subsumes the isolated-vertex bound $(3/2)^{n^{1-c}/3}$ of \cref{app:components}: each isolated vertex contributes a factor $1+y_v=3/2$ to the product in \cref{lem:er-identities}(c), but $n^{1-c/2}\gg n^{1-c}$, so the dominant obstruction comes from vertices of small but nonzero degree, not from isolated ones. Note also that $\mathbb{E}_G[\mathcal Z]\ge(1-o(1))e^{(1-o(1))T_n}$ by \cref{thm:er-sharp}, consistent with \cref{prop:er-fail}.
-\end{remark}
-
-\subsection{Why the threshold is $c=2$, and the relation to the connectivity threshold $c=1$}
-\label{app:er-threshold}
-
-\paragraph{A one-parameter family of degree statistics.}
-For $z\in[0,1]$ let $L_z(G):=\sum_{v}z^{\deg(v)}$, with $0^0=1$. Since $\deg(v)\sim\mathrm{Bin}(n-1,p)$,
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G[L_z]=n\big(1-(1-z)p\big)^{n-1}=n^{\,1-c(1-z)+o(1)} .
-\end{equation*}
+\begin{remark}[Relation to the connectivity threshold $c=1$]
+For $z\in[0,1]$ let $L_z(G):=\sum_{v}z^{\deg(v)}$ (with $0^0=1$). Since $\deg(v)\sim\mathrm{Bin}(n-1,p)$, $\mathbb{E}_G[L_z]=n\big(1-(1-z)p\big)^{n-1}=n^{1-c(1-z)+o(1)}$.
 \begin{itemize}
-\item $z=0$: $L_0$ is the number of isolated vertices, and $\mathbb E L_0\to\infty$ iff $c<1$. This is the classical connectivity threshold of Erd\H{o}s and R\'enyi: for $c>1$, $G$ is connected w.h.p., while for $c<1$ it has $\Theta(n^{1-c})$ isolated vertices w.h.p. (\cref{app:components}).
-\item $z=\tfrac12$: $L_{1/2}=2X=2\sum_v\operatorname{Var}_\vttheta[C_\vttheta(\bm e_v)]$, with $\mathbb E L_{1/2}=2T_n$, which tends to $\infty$, $1$ and $0$ for $c<2$, $c=2$ and $c>2$ respectively. By \cref{cor:er-necessary}, boundedness of $L_{1/2}$ is necessary for anti-concentration in any graph. By \cref{thm:er-sharp,prop:er-whp,prop:er-fail}, it is also the deciding quantity for $G(n,p)$, with $\mathbb E\mathcal Z=2e^{\mathbb E X}+o(1)$ for $c\ge2$ and $\ln\mathcal Z\ge(1-o(1))X$ for $c<2$.
+\item $z=0$: $L_0$ counts isolated vertices, and $\mathbb E L_0\to\infty$ iff $c<1$. This is the classical Erd\H{o}s--R\'enyi connectivity threshold (\cref{app:components}).
+\item $z=\tfrac12$: since $2^{-r^{\bm e_v}}=2^{-1-\deg(v)}$, the weight-one frequencies contribute exactly $\tfrac12L_{1/2}$ to $\mathcal Z(G)$, and $\mathbb E\,\tfrac12L_{1/2}=T_n$. Thus $\mathbb E L_{1/2}\to\infty$ iff $c<2$, which is the anti-concentration threshold: for $c<2$, anti-concentration fails w.h.p.\ (\cref{app:tight-threshold}), and for $c\ge2$ it holds by \cref{thm:er-sharp}.
 \end{itemize}
-Connectivity is thus the ``hard'' constraint $L_0\in\mathcal O(1)$ (no vertex of degree zero), whereas anti-concentration is the ``soft'' constraint $L_{1/2}\in\mathcal O(1)$ (few vertices of low degree, each weighted by $2^{-\deg}$). Since $L_{1/2}\ge L_0$, anti-concentration implies $\mathcal O(1)$ isolated vertices, so the anti-concentration threshold is at least the connectivity threshold. Both are governed by a quantity of the form $n(1-\Theta(p))^{n}$, which explains why both live on the same scale $p=\Theta(\ln n/n)$. The constants, however, differ: $1$ versus $2$. In the window $1<c<2$, the circuit connectivity graph is connected w.h.p.\ but the output distribution is \emph{not} anti-concentrated.
+Connectivity is the \emph{hard} constraint $L_0\in\mathcal O(1)$ (no vertex of degree zero). Anti-concentration requires the \emph{soft} constraint $L_{1/2}\in\mathcal O(1)$ (few vertices of low degree, each weighted by $2^{-\deg}$). Since $L_{1/2}\ge L_0$, anti-concentration forces $\mathcal O(1)$ isolated vertices. Both thresholds live on the scale $p=\Theta(\ln n/n)$ because both quantities have the form $n(1-\Theta(p))^{n}$, but the constants differ: $1$ versus $2$. In the window $1<c<2$ the graph is connected w.h.p., yet the output distribution is not anti-concentrated.
 
-\paragraph{Which vertices obstruct anti-concentration.}
-The degree weighting $2^{-d}$ tilts the binomial law exactly: for $D\sim\mathrm{Bin}(n-1,p)$ and any $f$,
-\begin{equation*}
-\mathbb E\big[2^{-D}f(D)\big]=\Big(1-\frac p2\Big)^{n-1}\mathbb E\big[f(\tilde D)\big],\qquad \tilde D\sim\mathrm{Bin}\Big(n-1,\frac{p}{2-p}\Big),
-\end{equation*}
-since $\binom md p^d(1-p)^{m-d}2^{-d}=\binom md(p/2)^d(1-p)^{m-d}$. Hence $\mathbb E X$ is carried by vertices of degree $\tilde D\approx\tfrac c2\ln n$, i.e.\ half the mean degree $c\ln n$. By standard binomial large-deviation estimates, the expected number of vertices of degree $\lfloor\beta c\ln n\rfloor$ is $n^{1-cI(\beta)+o(1)}$, where $I(\beta)=\beta\ln\beta-\beta+1$. Each such vertex contributes $2^{-\beta c\ln n}=n^{-\beta c\ln2}$, and
-\begin{equation*}
-\max_{\beta}\big[1-cI(\beta)-\beta c\ln2\big]\quad\text{is attained at }\beta=\tfrac12,\ \text{with value }1-\tfrac c2,
-\end{equation*}
-which recovers $\mathbb E X\asymp n^{1-c/2}$. At $\beta=\tfrac12$, $I(\tfrac12)=\tfrac{1-\ln2}{2}\approx0.153$. So the obstructing vertices number $n^{1-0.153c+o(1)}$, which is $\gg1$ whenever $c<2/(1-\ln2)\approx6.52$, and in particular throughout $c<2$. This is why $X$ concentrates around its mean (\cref{prop:er-fail}) rather than being driven by rare events. A naive ``typical-vertex'' heuristic, which replaces every degree by its mean $c\ln n$, would give $X\approx n^{1-c\ln2}$ and hence the incorrect threshold $c=1/\ln2\approx1.44$. The true threshold is set by atypically low-degree (but not isolated) vertices.
-
-\paragraph{Phase diagram.} \Cref{tab:er-phases} summarizes the regimes.
-\begin{table}[h]
-\centering
-\small
-\caption{Anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture, $p=c\ln n/n$, $T_n=(\tfrac12+o(1))n^{1-c/2}$.}
-\label{tab:er-phases}
-\begin{tabular}{@{}l p{2.7cm} l p{2.8cm} p{2.5cm}@{}}
-\toprule
-regime & graph (w.h.p.) & $\mathbb E_G[\mathcal Z]$ & typical $\mathcal Z(G)$ & anti-concentrated?\\
-\midrule
-$0<c<1$ & disconnected, $\Theta(n^{1-c})$ isolated vertices & $\ge e^{(1-o(1))T_n}$ & $\ge e^{(1-o(1))T_n}$ w.h.p. & no\\
-$1<c<2$ & connected & $\ge e^{(1-o(1))T_n}$ & $\ge e^{(1-o(1))T_n}$ w.h.p. & no\\
-$c=2$ & connected & $2\sqrt e+o(1)$ & $\le2+1.3/\delta$ w.p.\ $\ge1-\delta$ & yes (in expectation; with constant probability)\\
-$c>2$ & connected & $2+(1+o(1))n^{1-c/2}$ & $\le2+n^{-(c-2)/4}$ w.h.p. & yes (w.h.p.)\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{remark}[Base of the logarithm]
-All thresholds above refer to $p=c\ln n/n$ with the natural logarithm. If one writes $p=c'\log_2n/n$, then $c=c'/\ln2$, and the anti-concentration threshold becomes $c'=2\ln2\approx1.39$.
-\end{remark}
-
-\subsection{Finite-size behaviour and numerical verification}
-\label{app:er-numerics}
-We evaluated the exact formula \eqref{eq:er-exact} in log-space, i.e.\ with $\ln\binom nk$ via log-gamma functions and a log-sum-exp over $k$. For $c\ge2$, \cref{tab:er-numerics-ac} compares $\mathbb E_G[\mathcal Z]$ with the prediction $2e^{T_n}$ of \cref{thm:er-sharp}. For $c<2$, \cref{tab:er-numerics-fail} compares $\ln\mathbb E_G[\mathcal Z]$ with $T_n$.
-\begin{table}[h]
-\centering
-\small
-\caption{Exact $\mathbb E_G[\mathcal Z]$ (left) versus $2e^{T_n}$ (right, in parentheses) for $c\ge2$.}
-\label{tab:er-numerics-ac}
-\begin{tabular}{@{}lllll@{}}
-\toprule
-$c$ & $n=784$ & $n=10^4$ & $n=10^5$ & $n=4\cdot10^5$\\
-\midrule
-$2.0$ & $3.296\ (3.265)$ & $3.296\ (3.292)$ & $3.297\ (3.297)$ & $3.297\ (3.297)$\\
-$2.1$ & $2.854\ (2.839)$ & $2.740\ (2.739)$ & $2.649\ (2.649)$ & $2.600\ (2.600)$\\
-$2.5$ & $2.192\ (2.191)$ & $2.102\ (2.102)$ & $2.057\ (2.057)$ & $2.040\ (2.040)$\\
-$3.0$ & $2.034\ (2.034)$ & $2.010\ (2.010)$ & $2.003\ (2.003)$ & $2.002\ (2.002)$\\
-\bottomrule
-\end{tabular}
-\end{table}
-\begin{table}[h]
-\centering
-\small
-\caption{Exact $\ln\mathbb E_G[\mathcal Z]$ (left) versus $T_n$ (right, in parentheses) for $c<2$.}
-\label{tab:er-numerics-fail}
-\begin{tabular}{@{}lllll@{}}
-\toprule
-$c$ & $n=784$ & $n=10^4$ & $n=10^5$ & $n=4\cdot10^5$\\
-\midrule
-$0.5$ & $110.1\ (74.1)$ & $755.0\ (500.0)$ & $3706\ (2812)$ & $9883\ (7953)$\\
-$1.0$ & $17.86\ (13.96)$ & $55.00\ (49.97)$ & $164.7\ (158.1)$ & $323.9\ (316.2)$\\
-$1.5$ & $3.488\ (2.621)$ & $5.763\ (4.992)$ & $9.618\ (8.889)$ & $13.29\ (12.57)$\\
-\bottomrule
-\end{tabular}
-\end{table}
-The agreement in \cref{tab:er-numerics-ac} confirms the constant $2\sqrt e\approx3.297$ at $c=2$. \Cref{tab:er-numerics-fail} confirms the growth $\ln\mathbb E_G[\mathcal Z]\ge(1-o(1))T_n$, with the ratio $\ln\mathbb E_G[\mathcal Z]/T_n$ decreasing slowly towards $1$. We also verified \cref{lem:er-rank} (by computing $\mathbb F_2$-ranks directly), \cref{lem:er-identities}(a) and \cref{lem:er-expectation} by exhaustive enumeration over all $2^{10}$ frequencies for $300$ random graphs at $n=10$. The empirical means of $\mathcal Z(G)$ were $8.54$, $3.21$ and $2.19$, against exact values $8.85$, $3.18$ and $2.19$ for $c=1,2,3$, respectively.
-
-\paragraph{Slow convergence near the threshold.}
-For $c=2+\eta$, \cref{thm:er-sharp} gives $\mathbb E_G[\mathcal Z]-2\approx n^{-\eta/2}$. Reaching $\mathbb E_G[\mathcal Z]\le2+\delta$ therefore requires $n\gtrsim\delta^{-2/\eta}$; for example, $c=2.1$ and $\delta=0.1$ require $n\approx10^{20}$. At practically relevant sizes, $2e^{T_n}$ rather than $2$ is the accurate description. For the experiments of \cref{sec:numerical-validation} at $n=784$: the architecture with $c=2$ is anti-concentrated with $\mathbb E_G[\mathcal Z]\approx3.30$, while for $c=0.5$ we get $\mathbb E_G[\mathcal Z]\approx6.4\times10^{47}$.
-
-\subsection{Consequences for \cref{thm:ac_and_pst_exist} and for trainability}
-\label{app:er-consequences}
-
-\begin{corollary}[Simultaneous anti-concentration and low-weight trainability w.h.p.]\label{cor:er-trainable}
-Let $c>2$ and fix $K\in\mathbb N$. Let $\beta_c>1$ solve $cI(\beta_c)=2$, where $I(\beta)=\beta\ln\beta-\beta+1$. Then w.h.p.\ over $G\sim G(n,p)$, both of the following hold simultaneously:
-\begin{enumerate}
-\item[(i)] $\mathcal Z(G)\le2+n^{-(c-2)/4}$. Consequently, for every $x\in\{0,1\}^n$ and $\alpha\in(0,1)$, $\Pr_\vttheta\big[q_\vttheta(x)\ge\alpha2^{-n}\big]\ge(1-\alpha)^2/(2+o(1))$.
-\item[(ii)] $\max_v\deg(v)\le\beta_cc\ln n$. Consequently, for every $\vta$ with $1\le\abs{\vta}\le K$ and every $\ell$ with $\vtsl\in S^\vta$,
-\begin{equation*}
-\operatorname{Var}_\vttheta\Big[\frac{\partial C_\vttheta(\vta)}{\partial\theta_\ell}\Big]=2^{2-r^\vta}\ \ge\ 2^{2-K}\,n^{-K\beta_cc\ln2}=\Omega\big(1/\mathrm{poly}(n)\big).
-\end{equation*}
-\end{enumerate}
-\end{corollary}
-\begin{proof}
-(i) The bound on $\mathcal Z(G)$ is \cref{prop:er-whp}. For the second statement, shifting the parameter of the single-qubit generator $\bm e_v$ by $\pi/2$ inserts a factor $iZ_v$, which conjugates to $X_v$ through the final Hadamard layer and maps $q_\vttheta(x)$ to $q_{\vttheta'}(x\oplus\bm e_v)$. Since the uniform measure is shift-invariant, $\mathbb E_\vttheta q_\vttheta(x)=2^{-n}$ and $\mathbb E_\vttheta q_\vttheta(x)^2=2^{-n}\,\mathbb E_\vttheta\sum_yq_\vttheta(y)^2=2^{-2n}\mathcal Z(G)$ for every $x$. The Paley--Zygmund inequality then gives $\Pr[q_\vttheta(x)\ge\alpha2^{-n}]\ge(1-\alpha)^2/\mathcal Z(G)$.
-(ii) By the Chernoff bound, $\Pr[\mathrm{Bin}(n-1,p)\ge\beta np]\le e^{-npI(\beta)}=n^{-cI(\beta)}$ for $\beta>1$. A union bound over the $n$ vertices gives $\Pr[\max_v\deg(v)>\beta_cc\ln n]\le n^{1-cI(\beta_c)}=n^{-1}$. On this event, \cref{lem:er-rank} gives $r^\vta=|N[A]|\le\sum_{v\in A}(1+\deg(v))\le K(1+\beta_cc\ln n)$, and the variance formula is \cref{thm:uniform}.
-Both events hold w.h.p., hence so does their intersection.
-\end{proof}
-\Cref{cor:er-trainable} upgrades the constant-probability statement in the proof of \cref{thm:ac_and_pst_exist} to a high-probability statement. It also makes explicit that the relevant trainability bound is the \emph{lower} bound $\Omega(1/\mathrm{poly}(n))$ on the variance, which holds uniformly over all bounded-weight frequencies because the maximum degree is $\mathcal O(\ln n)$.
-
-\begin{remark}[Anti-concentration caps the low-weight signal]
-For every architecture and every $\vta\neq\bm 0$, $\operatorname{Var}_\vttheta[C_\vttheta(\vta)]=2^{-r^\vta}$ and $\operatorname{Var}_\vttheta[\partial_\ell C_\vttheta(\vta)]=4\cdot2^{-r^\vta}$ whenever $\vtsl\in S^\vta$ (\cref{thm:uniform}). Hence, for each $k$,
-\begin{equation*}
-\sum_{\abs{\vta}=k}\operatorname{Var}_\vttheta[C_\vttheta(\vta)]\ \le\ \mathcal Z(G)-1 .
-\end{equation*}
-Anti-concentration therefore forces the \emph{average} variance over weight-$k$ frequencies to be $\mathcal O\big(1/\binom nk\big)$. Anti-concentration and trainability can coexist only at the polynomial level: low-weight gradient variances that are polynomially small, as in \cref{cor:er-trainable}(ii), are compatible with anti-concentration, while $\Theta(1)$ variances on most low-weight frequencies are not. For $G(n,p)$ with $c>2$ the weight-one budget is $\sum_v\operatorname{Var}[C_\vttheta(\bm e_v)]=X$, with $\mathbb E X=T_n\to0$, and a typical vertex has $\operatorname{Var}[C_\vttheta(\bm e_v)]\approx\tfrac12n^{-c\ln2}\ll1/n$.
-\end{remark}
-
-\begin{remark}[Summary of implications for the main text]
-(1) For \cref{eg:sparse}, $\mathbb E_G[\mathcal Z]=2e^{T_n}+o(1)$ for all $c\ge2$. It tends to $2$ for $c>2$ and to $2\sqrt e$ for $c=2$, so anti-concentration holds for all $c\ge2$, but with limiting constant $2$ only for $c>2$.
-(2) In the Markov step of the proof of \cref{thm:ac_and_pst_exist} the constant is $2+o(1)$, and by \cref{prop:er-whp} the conclusion holds w.h.p.\ rather than with constant probability.
-(3) The scale $p=\Theta(\ln n/n)$ is shared with the connectivity threshold, but the constants differ ($1$ versus $2$). Connectivity alone ($1<c<2$) does not suffice for anti-concentration (\cref{app:er-threshold}).
-(4) The sparse Erd\H{o}s--R\'enyi architecture with $c=2$ used in the numerics lies inside the anti-concentrated regime, with $\mathbb E_G[\mathcal Z]\approx3.30$ at $n=784$.
+The obstruction in this window comes from vertices of atypically low, but nonzero, degree. Indeed, $\binom md p^d(1-p)^{m-d}2^{-d}=\binom md(p/2)^d(1-p)^{m-d}$ gives $\mathbb E[2^{-D}f(D)]=(1-\tfrac p2)^{n-1}\,\mathbb E[f(\tilde D)]$ for $D\sim\mathrm{Bin}(n-1,p)$ and $\tilde D\sim\mathrm{Bin}\big(n-1,\tfrac{p}{2-p}\big)$. So $\mathbb E L_{1/2}$ is carried by vertices of degree $\approx\tfrac c2\ln n$, half the mean degree. By binomial large deviations there are $n^{1-cI(1/2)+o(1)}$ such vertices, where $I(\beta)=\beta\ln\beta-\beta+1$ and $I(\tfrac12)=\tfrac{1-\ln2}{2}\approx0.153$. This number diverges throughout $c<2$, whereas isolated vertices disappear already at $c=1$.
 \end{remark}
 \endgroup
 
