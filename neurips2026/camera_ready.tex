@@ -972,48 +972,45 @@ More precisely:
 \end{theorem}
 
 \begin{proof}
-Write $u_k:=1-\lambda^k$, so $t_k=\binom nk2^{-k}(1-u_k/2)^{n-k}$. We use the following elementary facts:
-(E1) $kp-\tfrac12k^2p^2\le u_k\le kp$, from $1-kp\le\lambda^k\le e^{-kp}\le1-kp+\tfrac12k^2p^2$;
-(E2) $u_k\ge1-e^{-kp}\ge(1-e^{-1})kp\ge\tfrac12kp$ for $kp\le1$, by concavity of $x\mapsto1-e^{-x}$;
-(E3) $\binom nk\le n^k/k!$ and $\binom nk2^{-k}\le\big(\tfrac{en}{2k}\big)^k$, the latter being increasing in $k$ for $k\le n/2$;
-(E4) Hoeffding: $\sum_{k:\,|k-n/2|\ge s}\omega_k\le2e^{-2s^2/n}$;
-(E5) $x-\tfrac12x^2\le\ln(1+x)\le x$ for $x\ge0$.
-We split $\{1,\dots,n\}$ into six regions with $k_1:=\lfloor n/\ln^3n\rfloor$ and $k_2:=\lfloor1/p\rfloor$, and take $n$ large enough that $k_1<k_2<n/10<n/2-n^{0.9}$.
+\emph{Symmetric form.} Expanding $(1+\lambda^k)^{n-k}$ binomially in \eqref{eq:er-exact} gives
+\begin{equation}\label{eq:er-symmetric}
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z\big]=\sum_{k+j\le n}F(k,j),\quad F(k,j):=\frac{2^{-n}\,n!\,\lambda^{kj}}{k!\,j!\,(n-k-j)!}=F(j,k),\quad \sum_jF(k,j)=t_k .
+\end{equation}
+We group each pair $(k,j)$ by its smaller index and set $s_k:=\sum_{j\ge k}F(k,j)\le t_k$. Then $s_0=2^{-n}\sum_j\binom nj=1$, and by the symmetry of $F$,
+\begin{equation}\label{eq:er-upper-s}
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z\big]\le2\sum_{k\ge0}s_k=2+2\sum_{k\ge1}s_k .
+\end{equation}
 
-\emph{Region I ($1\le k\le k_1$): small $A$.} By (E1),
+\emph{A bound on every $s_k$.} (A) Since $\lambda^k\le e^{-kp}$, $1-x\le e^{-x}$ and $1-e^{-x}\ge\frac{x}{1+x}$, we have $\frac{1+\lambda^k}{2}=1-\frac{1-\lambda^k}{2}\le\exp\big(-\frac{kp}{2(1+kp)}\big)$. Together with $\binom nk\le n^k/k!$, this gives $s_k\le t_k\le\frac1{k!}\big(\frac12n^{1-\alpha_k}\big)^k$ with $\alpha_k:=\frac c2\cdot\frac{1-k/n}{1+kp}$. (B) For $j\ge k$ we have $\lambda^{kj}\le\lambda^{k^2}$, and $\sum_j\binom{n-k}{j}\le2^{n-k}$, so $s_k\le\binom nk2^{-k}\lambda^{k^2}\le\frac1{k!}\big(\frac12n\lambda^k\big)^k\le\frac1{k!}\big(\frac12n^{1-ck/n}\big)^k$. Combining (A) and (B),
+\begin{equation}\label{eq:er-master}
+s_k\le\frac1{k!}\Big(\frac12\,n^{1-\beta_k}\Big)^k,\qquad \beta_k:=\max\Big\{\frac c2\cdot\frac{1-k/n}{1+kp},\ \frac{ck}{n}\Big\}.
+\end{equation}
+
+\emph{Small $k$: a Poisson series.} Let $k_1:=\lfloor n/\ln^3n\rfloor$. For $1\le k\le k_1$ we have $k/n+kp=\mathcal O(1/\ln^2n)$. Hence $\beta_k\ge\frac c2\big(1-\frac kn-kp\big)=\frac c2-\mathcal O(1/\ln^2n)$, and $n^{-\beta_k}\le n^{-c/2}(1+o(1))$ uniformly in $k$. By \eqref{eq:er-Tn-bounds}, $\frac12n^{1-c/2}=T_n(1+o(1))$. Therefore
 \begin{equation*}
--(n-k)\frac{u_k}{2}\le-\frac{(n-k)}{2}\Big(kp-\frac{k^2p^2}{2}\Big)\le-\frac{nkp}{2}+\frac{k^2p}{2}+\frac{nk^2p^2}{4}
-\le k\Big(-\frac{c\ln n}{2}+\varepsilon_n\Big),
+\sum_{k=1}^{k_1}s_k\le\sum_{k\ge1}\frac{\big(T_n(1+o(1))\big)^k}{k!}=\exp\big(T_n(1+o(1))\big)-1 .
 \end{equation*}
-with $\varepsilon_n:=\frac{c}{2\ln^2n}+\frac{c^2}{4\ln n}\to0$, using $k\le n/\ln^3n$. Together with (E3) and \eqref{eq:er-Tn-bounds},
+
+\emph{Large $k$: a geometric series.} Let $k>k_1$, so that $n/k<\ln^3n$. If $k\ge n/\sqrt{\ln n}$, then $\beta_k\ge ck/n\ge c/\sqrt{\ln n}$. If $k<n/\sqrt{\ln n}$, then $kp<c\sqrt{\ln n}$ and $\beta_k\ge\frac c2\cdot\frac{1-1/\sqrt{\ln n}}{1+c\sqrt{\ln n}}=\frac{1+o(1)}{2\sqrt{\ln n}}$. So $\beta_k\ge\frac{1+o(1)}{2\sqrt{\ln n}}$ uniformly in $k>k_1$. Using $k!\ge(k/e)^k$, \eqref{eq:er-master} gives
 \begin{equation*}
-t_k\le\frac1{k!}\Big(\frac{n^{1-c/2}}{2}e^{\varepsilon_n}\Big)^k\le\frac{\big(T_ne^{\varepsilon_n'}\big)^k}{k!},\qquad \varepsilon_n':=\varepsilon_n+\tfrac14np^2\to0 .
+s_k\le\Big(\frac e2\cdot\frac nk\cdot n^{-\beta_k}\Big)^k\le\Big(\frac e2\,\ln^3n\;e^{-(\frac12+o(1))\sqrt{\ln n}}\Big)^k\le2^{-k}
 \end{equation*}
-Conversely, for fixed $k$, (E1) gives $u_k\le kp$, so $(1-u_k/2)^{n-k}\ge(1-kp/2)^n\ge e^{-nkp/2-nk^2p^2/4}$. With $\binom nk\ge(n-k)^k/k!$ this gives $t_k\ge\big(T_n(1-o(1))\big)^k/k!$. Hence
+for large $n$, and hence $\sum_{k>k_1}s_k\le2^{-k_1}=e^{-\Omega(n/\ln^3n)}$.
+
+\emph{Lower bound.} Fix $k$. By the AM--GM inequality, $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$, so $t_k\ge\binom nk2^{-k}(1-p)^{nk/2}$. Moreover $(1-p)^{n/2}(1-\frac p2)^{-n}=\big(1-\frac{p^2}{(2-p)^2}\big)^{n/2}\to1$ because $np^2\to0$. Together with $\binom nk\ge(n-k)^k/k!$ and $T_n=\frac n2(1-\frac p2)^{n-1}$, this gives $t_k\ge\big(T_n(1-o(1))\big)^k/k!$. In \eqref{eq:er-symmetric}, count the pairs with $k\le K$ or $j\le K$ and subtract the overlap $\sum_{k,j\le K}F(k,j)\le(K+1)^2n^{2K}2^{-n}$. For every fixed $K$ this gives
 \begin{equation*}
-\sum_{k=1}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}\ \le\ \sum_{k=1}^{k_1}t_k\ \le\ \exp\big(T_ne^{\varepsilon_n'}\big)-1\qquad\text{for every fixed }K .
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z\big]\ \ge\ 2\sum_{k=0}^{K}t_k-\mathcal O\big(n^{2K}2^{-n}\big)\ \ge\ 2\sum_{k=0}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}-\mathcal O\big(n^{2K}2^{-n}\big).
 \end{equation*}
-For $c>2$ the left side with $K=1$ is $t_1=T_n$, so $\sum_{\rm I}=(1+o(1))T_n$. For $c=2$, letting $K\to\infty$ gives $\sum_{\rm I}\to e^{1/2}-1$.
 
-\emph{Region II ($k_1<k\le k_2$).} Since $n-k\ge n/2$ and $u_k\ge kp/2$ by (E2), $(1-u_k/2)^{n-k}\le e^{-nkp/8}=n^{-ck/8}$. By (E3), $\binom nk2^{-k}\le(\tfrac e2\ln^3n)^k$. Thus $t_k\le\big(\tfrac e2\ln^3n\cdot n^{-c/8}\big)^k\le n^{-ck/16}$ for large $n$, and $\sum_{\rm II}\le n\cdot n^{-ck_1/16}=\exp\big(-\Omega(n/\ln^2n)\big)$.
-
-\emph{Region III ($k_2<k\le n/10$).} Here $kp>1$, so $\tfrac{1+\lambda^k}{2}\le\tfrac{1+e^{-1}}{2}\le e^{-0.37}$. With $n-k\ge0.9n$ and (E3), $t_k\le(5e)^{n/10}e^{-0.333n}\le e^{0.261n-0.333n}=e^{-0.07n}$, so $\sum_{\rm III}\le ne^{-0.07n}$.
-
-\emph{Region IV ($n/10<k<n/2-n^{0.9}$).} $(1+\lambda^k)^{n-k}\le\exp(n\lambda^{n/10})\le\exp(ne^{-np/10})=\exp(n^{1-c/10})\le\exp(n^{0.8})$, using $c\ge2$. By (E4), $\sum_{\rm IV}\omega_k\le e^{-2n^{0.8}}$, so $\sum_{\rm IV}\le e^{-n^{0.8}}$.
-
-\emph{Region V ($|k-n/2|\le n^{0.9}$): small complement.} Write $k=n/2+s$. From $e^{-x-x^2}\le1-x\le e^{-x}$, $(1-p)^{n/2}=n^{-c/2}(1+o(1))$. Also $(1-p)^{s}=\exp(\mathcal O(pn^{0.9}))=1+o(1)$ and $\tfrac{n-k}{n/2}=1+\mathcal O(n^{-0.1})$, uniformly in the region. With \eqref{eq:er-Tn-bounds} this gives
+\emph{Conclusion.} Combining \eqref{eq:er-upper-s} with the two series bounds,
 \begin{equation*}
-(n-k)\lambda^k=T_n\big(1+o(1)\big),\qquad (n-k)\lambda^{2k}\le(n-k)\lambda^k\cdot n^{-c/2+o(1)}=o(T_n),
+2\sum_{k=0}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}-\mathcal O\big(n^{2K}2^{-n}\big)\ \le\ \operatorname*{\mathbb{E}}_G\big[\mathcal Z\big]\ \le\ 2\exp\big(T_n(1+o(1))\big)+2^{1-k_1}.
 \end{equation*}
-uniformly. By (E5), $(1+\lambda^k)^{n-k}=\exp\big(T_n(1+o(1))\big)$ uniformly, and by (E4) $\sum_{\rm V}\omega_k\ge1-2e^{-2n^{0.8}}$. Hence $\sum_{\rm V}=\big(1-\mathcal O(e^{-2n^{0.8}})\big)\exp\big(T_n(1+o(1))\big)$. This equals $1+(1+o(1))T_n+\mathcal O(e^{-2n^{0.8}})$ for $c>2$ and tends to $e^{1/2}$ for $c=2$.
-
-\emph{Region VI ($k>n/2+n^{0.9}$).} $(n-k)\lambda^k$ is decreasing in $k$, so it is at most $T_n(1+o(1))=\mathcal O(1)$ for $c\ge2$. Hence $t_k\le\omega_ke^{\mathcal O(1)}$ and $\sum_{\rm VI}\le e^{\mathcal O(1)}e^{-2n^{0.8}}$.
-
-\emph{Conclusion.} Adding $t_0=1$: for $c>2$ the exponentially small contributions of Regions II, III, IV and VI are $o(T_n)$, because $T_n$ is only polynomially small, so $\mathbb{E}_G[\mathcal Z]=1+(1+o(1))T_n+1+(1+o(1))T_n=2+(2+o(1))T_n$. For $c=2$, $\mathbb{E}_G[\mathcal Z]\to1+(e^{1/2}-1)+e^{1/2}=2\sqrt e$. In both cases this is $2e^{T_n}+o(1)$.
+By \eqref{eq:er-Tn-bounds}, $T_n$ is at most polynomially small, so both error terms are $o(T_n)$. For $c>2$, $T_n\to0$, and taking $K=1$ yields $\mathbb{E}_G[\mathcal Z]=2+(2+o(1))T_n$. For $c=2$, $T_n\to\frac12$. The upper bound then tends to $2\sqrt e$, and the lower bound tends to $2\sum_{k\le K}2^{-k}/k!$, which approaches $2\sqrt e$ as $K\to\infty$. In both cases $\mathbb{E}_G[\mathcal Z]=2e^{T_n}+o(1)$.
 \end{proof}
 
 \begin{remark}[Consequences for \cref{app:derivation-sparse} and \cref{thm:ac_and_pst_exist}]
-For $c>2$, \cref{thm:er-sharp} confirms the conclusion $\mathbb{E}_G[\mathcal Z]=2+o(1)$ of \cref{app:derivation-sparse}, with the explicit rate $(1+o(1))n^{1-c/2}$. The excess over $2$ splits into two equal parts $e^{T_n}-1$: one from small supports (Region I, $t_k\approx T_n^k/k!$) and one from supports of size $\approx n/2$ (Region V, where the number of vertices with no neighbour in the support is approximately $\mathrm{Poisson}(T_n)$). Since every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$ (the $\vta=\bm 0$ term equals $1$ and each of the other $2^n-1$ terms is at least $2^{-n}$), Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le(2+o(1))T_n/\varepsilon$. With $\varepsilon=n^{-(c-2)/4}$ this shows $\mathcal Z(G)\le2+n^{-(c-2)/4}$ w.h.p. For $c=2$, anti-concentration still holds in expectation, but with constant $2\sqrt e$ instead of $2$.
+For $c>2$, \cref{thm:er-sharp} confirms the conclusion $\mathbb{E}_G[\mathcal Z]=2+o(1)$ of \cref{app:derivation-sparse}, with the explicit rate $(1+o(1))n^{1-c/2}$. The excess over $2$ splits into two equal parts $e^{T_n}-1$, which come from the pairs in \eqref{eq:er-symmetric} with small $k$ (where $t_k\approx T_n^k/k!$) and, symmetrically, with small $j$. Since every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$ (the $\vta=\bm 0$ term equals $1$ and each of the other $2^n-1$ terms is at least $2^{-n}$), Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le(2+o(1))T_n/\varepsilon$. With $\varepsilon=n^{-(c-2)/4}$ this shows $\mathcal Z(G)\le2+n^{-(c-2)/4}$ w.h.p. For $c=2$, anti-concentration still holds in expectation, but with constant $2\sqrt e$ instead of $2$.
 \end{remark}
 
 \begin{remark}[Relation to the connectivity threshold $c=1$]
