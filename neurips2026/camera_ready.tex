@@ -828,6 +828,15 @@ Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^n | A \vt
 % \end{proof}
 
 \section{Derivation details}
+\subsection{Complexity of estimating the MMD and its gradient}
+\label{app:complexity}
+Let $L_k(\vttheta)=\sum_{1\le|\vta|\le k}\Lambda(\vta)(C_p(\vta)-C_\vttheta(\vta))^2=\operatorname*{\mathbb{E}}_{A\sim\Lambda}\big[\bm 1\{1\le|A|\le k\}(C_p(A)-C_\vttheta(A))^2\big]$ be the MMD truncated to low-weight frequencies ($k=n$ gives the full MMD). Following~\citet{recioarmengol25}, $C_\vttheta(\vta)=\operatorname*{\mathbb{E}}_{Z\sim\mathcal U(\mathbb F_2^n)}[f_{\vttheta,\vta}(Z)]$ with $f_{\vttheta,\vta}(z)=\cos\big(2\sum_{j}\theta_j(-1)^{\vts^j\cdot z}\bm 1\{\vts^j\cdot\vta=1\}\big)$, and $C_p(\vta)=\operatorname*{\mathbb{E}}_{X\sim p}[(-1)^{\vta\cdot X}]$. Define $R_{\vta}(X,Z)=(-1)^{\vta\cdot X}-f_{\vttheta,\vta}(Z)$, so $|R_\vta|\le2$ and $\mathbb{E}R_\vta=C_p(\vta)-C_\vttheta(\vta)$. Draw $A_t\sim\Lambda$, and independent $X_t,X_t'\sim p$, $Z_t,Z_t'\sim\mathcal U$, and set $\widehat L=\frac1N\sum_{t=1}^N\bm 1\{1\le|A_t|\le k\}R_{A_t}(X_t,Z_t)R_{A_t}(X_t',Z_t')$. It is unbiased for $L_k$, each summand lies in $[-4,4]$, and Hoeffding's inequality gives $\Pr(|\widehat L-L_k|\ge\varepsilon)\le2e^{-N\varepsilon^2/32}$. Hence $N\ge\frac{32}{\varepsilon^2}\ln\frac2\delta$ samples suffice, independently of $k$ (sampling $A\sim\Lambda$ directly avoids sampling from the truncated measure). Each evaluation of $f_{\vttheta,\vta}$ costs $\mathcal O(Dn)$ bit operations, so the total cost is $\mathcal O\big(\tfrac{Dn}{\varepsilon^2}\log\tfrac1\delta\big)$ (an upper bound, not a lower bound). The gradient is estimated analogously, since $|\partial_{\theta_\ell}f_{\vttheta,\vta}|\le2$, with different constants. In particular, restricting to low-weight frequencies does not change the complexity.
+
+\subsection{MMD: definition and motivation}
+\label{app:mmd}
+For a kernel $k$, $\operatorname{MMD}_k^2(p,q)=\mathbb{E}_{x,x'\sim p}k(x,x')-2\mathbb{E}_{x\sim p,y\sim q}k(x,y)+\mathbb{E}_{y,y'\sim q}k(y,y')=\|\mu_p-\mu_q\|^2_{\mathcal H}$. For $k(\vta,\vtb)=\phi(\vta\oplus\vtb)$ with $\phi(\vtx)=\sum_{\vta}\Lambda(\vta)(-1)^{\vta\cdot\vtx}$, $\Lambda\ge0$ and $\sum_\vta\Lambda(\vta)=1$, this equals the spectral form $\sum_{\vta}\Lambda(\vta)(C_p(\vta)-C_q(\vta))^2$ of \cref{prop:mmd-loss}. Three reasons it suits IQP-QCBMs: (i) the Fourier components $C_\vttheta(\vta)$ are Pauli-$X$ expectations, which admit the classical Monte-Carlo estimators above, enabling classical training and quantum deployment; (ii) the RKHS features are exactly the Fourier/parity quantities the model exposes; (iii) if $\Lambda(\vta)>0$ for all $\vta$ (a characteristic kernel, e.g.\ the Gaussian kernel), then $\operatorname{MMD}=0$ iff $p=q$. We note that $\operatorname{MMD}\le2\operatorname{TV}$ since $|C_p(\vta)-C_q(\vta)|\le2\operatorname{TV}(p,q)$, but not conversely: a small MMD, in particular with a low-weight kernel, does not imply a small total variation distance.
+
+
 \subsection{Complete derivation of anti-concentration in the sparse Erdos-Renyi graph (\cref{eg:sparse})}
 \label{app:derivation-sparse}
 Based on \cref{eq:sparse ra}, we 
@@ -889,60 +898,6 @@ When $c>2$, $T_n = o(1)$, and since the summation over remainders is dominated b
     \operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right] = 2 + o(1)
 \end{equation*}
 
-
-\begingroup\color{red}
-\subsection{Factorization over components and failure of anti-concentration for sparse ER with $c<1$}
-\label{app:components}
-\begin{proposition}
-Let $G$ be a graph on $[n]$ with connected components $G_1,\dots,G_m$, and let the generator set consist of all $\bm e_v$ and all $\bm e_u+\bm e_v$ with $(u,v)\in E(G)$. Then (a) $r^\vta(G)=\sum_i r^{\vta_i}(G_i)$; (b) $\sum_{\vta}2^{-r^\vta(G)}\ge(3/2)^m$; (c) if $G\sim G(n,p)$ with $p=c\ln n/n$ and $c<1$, then w.h.p.\ $m\ge n^{1-c}/3$, so $\sum_{\vta}2^{-r^\vta}\ge(3/2)^{n^{1-c}/3}\notin\mathcal{O}(1)$.
-\end{proposition}
-\begin{proof}
-(a) Every generator is supported inside one component and $\vts\cdot\vta=\vts\cdot\vta_i$ for $\vts$ supported on $G_i$. Hence $S^\vta=\bigsqcup_iS^{\vta_i}_i$, the spans of the parts live on disjoint coordinate blocks and are in direct sum, and the dimensions add.
-(b) By (a) the sum factorizes: $\sum_\vta 2^{-r^\vta}=\prod_i\sum_{\vta_i}2^{-r^{\vta_i}(G_i)}$. Since $r^{\vta_i}\le|G_i|$, the $\vta_i=\bm 0$ term contributes $1$ and the other $2^{|G_i|}-1$ terms contribute at least $2^{-|G_i|}$ each, so each factor is at least $2-2^{-|G_i|}\ge3/2$ (this uses only $|G_i|\ge1$).
-(c) Let $N$ be the number of isolated vertices, so $m\ge N$. With $P_1=(1-p)^{n-1}$ we have $\mathbb{E}N=nP_1$, and $\ln(1-p)\ge-p-p^2$ gives $\mathbb{E}N\ge(1-o(1))n^{1-c}\to\infty$. For $u\ne v$, $\operatorname{Cov}=(1-p)^{2n-3}-P_1^2=P_1^2\,p/(1-p)$, so $\operatorname{Var}N\le\mathbb{E}N+(\mathbb{E}N)^2p/(1-p)$ and $\operatorname{Var}N/(\mathbb{E}N)^2\to0$. By Chebyshev, $N\ge\mathbb{E}N/2\ge n^{1-c}/3$ w.h.p.
-\end{proof}
-Combined with \cref{lem:parseval}, a typical graph with $c<1$ gives a non-anti-concentrated family. This only invalidates the assumption of the hardness proof of~\citet{Bremner17}; it does not imply classical simulability.
-
-\revtwo{
-\subsection{Tightness of the threshold $c=2$: failure of anti-concentration throughout $c<2$}
-\label{app:tight-threshold}
-\begin{proposition}
-Let $G\sim G(n,p)$ with $p=c\ln n/n$ for a fixed constant $c$. If $c<2$, then w.h.p.\ $\sum_{\vta}2^{-r^\vta(G)}\ge(1-o(1))T_n\notin\mathcal O(1)$, where $T_n=(1/2+o(1))n^{1-c/2}$ as in \cref{app:derivation-sparse}; hence anti-concentration fails. Combined with \cref{thm:ac_and_pst_exist} (which uses $c>2$), the threshold $c=2$ is tight, and the graph-connectivity threshold $c=1$ is not the relevant quantity for anti-concentration.
-\end{proposition}
-\begin{proof}
-Let $Y_v:=2^{-r^{\bm e_v}(G)}=\tfrac12\cdot2^{-\deg(v)}$ and $X:=\sum_vY_v\le\sum_\vta2^{-r^\vta}$. By \cref{app:derivation-sparse}, $\mathbb{E}_GX=T_n$. For $u\ne v$, write $\deg(u)=Z+D_u'$, $\deg(v)=Z+D_v'$ with $Z=\mathbb 1[(u,v)\in E]\sim\mathrm{Bernoulli}(p)$ and $D_u',D_v'\sim\mathrm{Bin}(n-2,p)$ mutually independent. Then
-\begin{equation*}
-\operatorname{Cov}(Y_u,Y_v)=\tfrac14(1-p/2)^{2n-4}\Big[(1-\tfrac34p)-(1-\tfrac p2)^2\Big]=\tfrac14(1-p/2)^{2n-4}\cdot\tfrac p4(1-p)=(\mathbb{E}Y_v)^2\cdot\mathcal O(p).
-\end{equation*}
-Since $Y_v\le\tfrac12$, $\operatorname{Var}(Y_v)\le\mathbb{E}Y_v^2\le\mathbb{E}Y_v$, so
-\begin{equation*}
-\operatorname{Var}(X)\le\sum_v\mathbb{E}Y_v+n(n-1)(\mathbb{E}Y_v)^2\mathcal O(p)\le\mathbb{E}X+(\mathbb{E}X)^2\mathcal O(p),\qquad\frac{\operatorname{Var}(X)}{(\mathbb{E}X)^2}\le\frac1{\mathbb{E}X}+\mathcal O(p)\to0,
-\end{equation*}
-because $\mathbb{E}X=T_n\to\infty$ for $c<2$ and $p\to0$. By Chebyshev, $X=(1-o(1))T_n$ w.h.p. The claim follows since $T_n\notin\mathcal O(1)$ for $c<2$.
-\end{proof}
-Unlike \cref{app:components}, this argument needs no connectivity structure and applies for every $c<2$, not only $c<1$: the weight-1 (single-qubit) frequencies alone already force failure of anti-concentration. At $c=2$, $T_n\to1/2$ stays finite, consistent with the requirement $c>2$ in \cref{thm:ac_and_pst_exist} being essentially tight.
-}
-
-\subsection{Robustness to the reference measure}
-\label{app:robust}
-Let $\mu_n$ have density $\rho$ w.r.t.\ the uniform measure $\mathcal U$ with $1/q(n)\le\rho\le q(n)$. Then
-$\operatorname*{\mathbb{E}}_{\mu_n}[(\partial_\ell C_\vttheta(\vta))^2]=\operatorname*{\mathbb{E}}_{\mathcal U}[\rho\,(\partial_\ell C_\vttheta(\vta))^2]\in[q^{-1},q]\cdot2^{2-r^\vta}$, because $\operatorname*{\mathbb{E}}_{\mathcal U}[\partial_\ell C_\vttheta(\vta)]=0$ makes the uniform second moment equal to the variance in \cref{thm:uniform}. For polynomial $q$, the polynomial versus exponential classification of $r^\vta$ is unchanged. Since the barren-plateau definition is stated for the second moment, this covers the characteristic-function gradients; we do not extend \cref{prop:lower,prop:upper} (which use symmetry) beyond symmetric measures.
-
-\subsection{Hardness assumption for the sparse IQP ensemble}
-\label{app:hardness}
-We use the construction of~\citet{Bremner17}. Fix a sufficiently large constant $\gamma>0$ and let $\mathcal D_n$ be the distribution of circuits $C$ obtained as follows: for each unordered pair $(i,j)$ independently include a two-qubit diagonal gate with probability $p=\gamma\log n/n$, with phase $\operatorname{diag}(1,1,1,\omega^k)$, $\omega=i$, $k\in\{0,1,2,3\}$ uniform; independently draw each one-qubit phase $\operatorname{diag}(1,\zeta^k)$, $\zeta=e^{i\pi/4}$, $k\in\{0,\dots,7\}$ uniform. The graph is $G(n,\gamma\log n/n)$ with random labels and w.h.p.\ $\mathcal O(n\log n)$ two-qubit gates. Up to the factor $2^{-n}$, the zero-output amplitude is
-$Z_C(\zeta)=\sum_{x\in\{0,1\}^n}\zeta^{\sum_{i<j}w_{ij}x_ix_j+\sum_iv_ix_i}$ with $w_{ij}=2k_{ij}$ and $v_i$ the one-qubit labels.
-\emph{Assumption:} there is a universal constant $c_0>0$ such that approximating $|Z_C(\zeta)|^2$ to relative error $1/4+o(1)$ on a $c_0$ fraction of instances $C\sim\mathcal D_n$ is \#P-hard. We take the analogous hardness to apply to our ensemble with continuous uniform angles, as already done in the proof of \cref{thm:ac_and_pst_exist}.
-
-\subsection{Complexity of estimating the MMD and its gradient}
-\label{app:complexity}
-Let $L_k(\vttheta)=\sum_{1\le|\vta|\le k}\Lambda(\vta)(C_p(\vta)-C_\vttheta(\vta))^2=\operatorname*{\mathbb{E}}_{A\sim\Lambda}\big[\bm 1\{1\le|A|\le k\}(C_p(A)-C_\vttheta(A))^2\big]$ be the MMD truncated to low-weight frequencies ($k=n$ gives the full MMD). Following~\citet{recioarmengol25}, $C_\vttheta(\vta)=\operatorname*{\mathbb{E}}_{Z\sim\mathcal U(\mathbb F_2^n)}[f_{\vttheta,\vta}(Z)]$ with $f_{\vttheta,\vta}(z)=\cos\big(2\sum_{j}\theta_j(-1)^{\vts^j\cdot z}\bm 1\{\vts^j\cdot\vta=1\}\big)$, and $C_p(\vta)=\operatorname*{\mathbb{E}}_{X\sim p}[(-1)^{\vta\cdot X}]$. Define $R_{\vta}(X,Z)=(-1)^{\vta\cdot X}-f_{\vttheta,\vta}(Z)$, so $|R_\vta|\le2$ and $\mathbb{E}R_\vta=C_p(\vta)-C_\vttheta(\vta)$. Draw $A_t\sim\Lambda$, and independent $X_t,X_t'\sim p$, $Z_t,Z_t'\sim\mathcal U$, and set $\widehat L=\frac1N\sum_{t=1}^N\bm 1\{1\le|A_t|\le k\}R_{A_t}(X_t,Z_t)R_{A_t}(X_t',Z_t')$. It is unbiased for $L_k$, each summand lies in $[-4,4]$, and Hoeffding's inequality gives $\Pr(|\widehat L-L_k|\ge\varepsilon)\le2e^{-N\varepsilon^2/32}$. Hence $N\ge\frac{32}{\varepsilon^2}\ln\frac2\delta$ samples suffice, independently of $k$ (sampling $A\sim\Lambda$ directly avoids sampling from the truncated measure). Each evaluation of $f_{\vttheta,\vta}$ costs $\mathcal O(Dn)$ bit operations, so the total cost is $\mathcal O\big(\tfrac{Dn}{\varepsilon^2}\log\tfrac1\delta\big)$ (an upper bound, not a lower bound). The gradient is estimated analogously, since $|\partial_{\theta_\ell}f_{\vttheta,\vta}|\le2$, with different constants. In particular, restricting to low-weight frequencies does not change the complexity.
-
-\subsection{MMD: definition and motivation}
-\label{app:mmd}
-For a kernel $k$, $\operatorname{MMD}_k^2(p,q)=\mathbb{E}_{x,x'\sim p}k(x,x')-2\mathbb{E}_{x\sim p,y\sim q}k(x,y)+\mathbb{E}_{y,y'\sim q}k(y,y')=\|\mu_p-\mu_q\|^2_{\mathcal H}$. For $k(\vta,\vtb)=\phi(\vta\oplus\vtb)$ with $\phi(\vtx)=\sum_{\vta}\Lambda(\vta)(-1)^{\vta\cdot\vtx}$, $\Lambda\ge0$ and $\sum_\vta\Lambda(\vta)=1$, this equals the spectral form $\sum_{\vta}\Lambda(\vta)(C_p(\vta)-C_q(\vta))^2$ of \cref{prop:mmd-loss}. Three reasons it suits IQP-QCBMs: (i) the Fourier components $C_\vttheta(\vta)$ are Pauli-$X$ expectations, which admit the classical Monte-Carlo estimators above, enabling classical training and quantum deployment; (ii) the RKHS features are exactly the Fourier/parity quantities the model exposes; (iii) if $\Lambda(\vta)>0$ for all $\vta$ (a characteristic kernel, e.g.\ the Gaussian kernel), then $\operatorname{MMD}=0$ iff $p=q$. We note that $\operatorname{MMD}\le2\operatorname{TV}$ since $|C_p(\vta)-C_q(\vta)|\le2\operatorname{TV}(p,q)$, but not conversely: a small MMD, in particular with a low-weight kernel, does not imply a small total variation distance.
-\endgroup
-
 \begingroup\color{blue}
 \section{Closing the gap in \texorpdfstring{\cref{app:derivation-sparse}}{Appendix B.1}: sharp asymptotics for the sparse Erd\H{o}s--R\'enyi architecture}
 \label{app:er-full}
@@ -957,9 +912,8 @@ with $t_0=1$ and $t_1=T_n:=n2^{-n}(2-p)^{n-1}=\frac{n}{2-p}\big(1-\frac p2\big)^
 T_n=\Big(\tfrac12+o(1)\Big)n^{1-c/2}.
 \end{equation}
 
-\paragraph{The gap.}
-\Cref{app:derivation-sparse} writes $(1+\lambda^k)^{n-k}-1=(n-k)\lambda^k+\Delta(k,n)$ and asserts that $\sum_{k\ge2}\omega_k\Delta(k,n)$ is dominated by the linear part $\sum_{k\ge2}\omega_k(n-k)\lambda^k$. This does not follow term by term, because the two sums live on different ranges of $k$. Since $(n-k)\binom nk=n\binom{n-1}{k}$, the linear summand is proportional to the $\mathrm{Bin}\big(n-1,\tfrac{\lambda}{1+\lambda}\big)$ mass function, so the linear part is carried by $k=\tfrac n2+\mathcal O(\sqrt n)$. The remainder, in contrast, has its leading contributions at small $k$. For example, $\omega_2\Delta(2,n)=(\tfrac12+o(1))T_n^2$, whereas $\omega_2(n-2)\lambda^2=\mathcal O(n^32^{-n})$. A direct estimate of all $t_k$ is therefore needed, and it is given below. It also shows that at $c=2$ the remainder is $\Theta(1)$, so the value $2+o(1)$ does not extend to $c=2$.
-
+% \paragraph{The gap.}
+% \Cref{app:derivation-sparse} writes $(1+\lambda^k)^{n-k}-1=(n-k)\lambda^k+\Delta(k,n)$ and asserts that $\sum_{k\ge2}\omega_k\Delta(k,n)$ is dominated by the linear part $\sum_{k\ge2}\omega_k(n-k)\lambda^k$. This does not follow term by term, because the two sums live on different ranges of $k$. Since $(n-k)\binom nk=n\binom{n-1}{k}$, the linear summand is proportional to the $\mathrm{Bin}\big(n-1,\tfrac{\lambda}{1+\lambda}\big)$ mass function, so the linear part is carried by $k=\tfrac n2+\mathcal O(\sqrt n)$. The remainder, in contrast, has its leading contributions at small $k$. For example, $\omega_2\Delta(2,n)=(\tfrac12+o(1))T_n^2$, whereas $\omega_2(n-2)\lambda^2=\mathcal O(n^32^{-n})$. A direct estimate of all $t_k$ is therefore needed, and it is given below. It also shows that at $c=2$ the remainder is $\Theta(1)$, so the value $2+o(1)$ does not extend to $c=2$.
 
 \begin{theorem}[Sharp asymptotics]\label{thm:er-sharp}
 Let $p=c\ln n/n$ with a fixed $c\ge2$. Then
@@ -1014,16 +968,11 @@ For $c>2$, \cref{thm:er-sharp} confirms the conclusion $\mathbb{E}_G[\mathcal Z]
 \end{remark}
 
 \begin{remark}[Relation to the connectivity threshold $c=1$]
-For $z\in[0,1]$ let $L_z(G):=\sum_{v}z^{\deg(v)}$ (with $0^0=1$). Since $\deg(v)\sim\mathrm{Bin}(n-1,p)$, $\mathbb{E}_G[L_z]=n\big(1-(1-z)p\big)^{n-1}=n^{1-c(1-z)+o(1)}$.
-\begin{itemize}
-\item $z=0$: $L_0$ counts isolated vertices, and $\mathbb E L_0\to\infty$ iff $c<1$. This is the classical Erd\H{o}s--R\'enyi connectivity threshold (\cref{app:components}).
-\item $z=\tfrac12$: since $2^{-r^{\bm e_v}}=2^{-1-\deg(v)}$, the weight-one frequencies contribute exactly $\tfrac12L_{1/2}$ to $\mathcal Z(G)$, and $\mathbb E\,\tfrac12L_{1/2}=T_n$. Thus $\mathbb E L_{1/2}\to\infty$ iff $c<2$, which is the anti-concentration threshold: for $c<2$, anti-concentration fails w.h.p.\ (\cref{app:tight-threshold}), and for $c\ge2$ it holds by \cref{thm:er-sharp}.
-\end{itemize}
-Connectivity is the \emph{hard} constraint $L_0\in\mathcal O(1)$ (no vertex of degree zero). Anti-concentration requires the \emph{soft} constraint $L_{1/2}\in\mathcal O(1)$ (few vertices of low degree, each weighted by $2^{-\deg}$). Since $L_{1/2}\ge L_0$, anti-concentration forces $\mathcal O(1)$ isolated vertices. Both thresholds live on the scale $p=\Theta(\ln n/n)$ because both quantities have the form $n(1-\Theta(p))^{n}$, but the constants differ: $1$ versus $2$. In the window $1<c<2$ the graph is connected w.h.p., yet the output distribution is not anti-concentrated.
-
-The obstruction in this window comes from vertices of atypically low, but nonzero, degree. Indeed, $\binom md p^d(1-p)^{m-d}2^{-d}=\binom md(p/2)^d(1-p)^{m-d}$ gives $\mathbb E[2^{-D}f(D)]=(1-\tfrac p2)^{n-1}\,\mathbb E[f(\tilde D)]$ for $D\sim\mathrm{Bin}(n-1,p)$ and $\tilde D\sim\mathrm{Bin}\big(n-1,\tfrac{p}{2-p}\big)$. So $\mathbb E L_{1/2}$ is carried by vertices of degree $\approx\tfrac c2\ln n$, half the mean degree. By binomial large deviations there are $n^{1-cI(1/2)+o(1)}$ such vertices, where $I(\beta)=\beta\ln\beta-\beta+1$ and $I(\tfrac12)=\tfrac{1-\ln2}{2}\approx0.153$. This number diverges throughout $c<2$, whereas isolated vertices disappear already at $c=1$.
+Connectivity threshold.
+Both thresholds live on the scale $p=\Theta(\ln n/n)$ because both quantities have the form $n(1-\Theta(p))^{n}$, but the constants differ: $1$ versus $2$. In the window $1<c<2$ the graph is connected w.h.p., yet the output distribution is not anti-concentrated. 
 \end{remark}
 \endgroup
+
 
 \section{Setup for numerical validation}\label{sec:setup}
 \paragraph{Setup.} To train the models, we use MMD loss with a kernel that consists of weight-2 and weight-1 frequencies. We train all models with the Adam optimizer, learning rate 0.02 (obtained from hyperparameter search), $\beta_1=0.9, \beta_2=0.999$ (by default), where the initial parameters are sampled u.a.r.~in $[0, 2\pi)^D$. For each architecture, we trained for 5 resource budgets (sample sizes from 64 to 1024) using the MMD loss. If the sample size is too small, the Monte Carlo noise will be too large to be overcome by the gradient signal, thereby hindering training. The sample size cannot be too large, as this would increase training cost and cause an out-of-memory problem.  
