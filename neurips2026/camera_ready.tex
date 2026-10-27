@@ -891,37 +891,54 @@ When $c>2$, $T_n = o(1)$, and since the summation over remainders is dominated b
 
 % ===== Merged replacement for \cref{app:derivation-sparse} and \cref{app:er-full}. =====
 \begingroup\color{green!60!black}
-\subsection{Anti-concentration in the sparse Erd\H{o}s--R\'enyi graph (\texorpdfstring{\cref{eg:sparse}}{Example})}
+\subsection{Anti-concentration in the sparse Erd\H{o}s--R\'enyi graph architecture (\texorpdfstring{\cref{eg:sparse}}{Example})}
 \label{app:er-merged}
-Let $p=c\ln n/n$ for a fixed constant $c>0$, and write $\lambda:=1-p$, $\omega_k:=\binom nk2^{-n}$ and $\mathcal Z(G):=\sum_{\vta\in\mathbb F_2^n}2^{-r^\vta(G)}$. By \cref{lem:parseval}, the ensemble $\{q_\vttheta\}_\vttheta$ for a fixed graph $G$ is anti-concentrated iff $\mathcal Z(G)\in\mathcal O(1)$. We first derive an exact formula for $\mathbb{E}_G[\mathcal Z]$ and its asymptotics for every $c$, and then discuss the regimes $c>2$, $c=2$ and $c<2$.
+Recall that by \cref{lem:parseval}, the ensemble of the output distributions of a fixed graph $G$ is anti-concentrated iff $\mathcal Z(G)\in\mathcal O(1)$, where we write $\mathcal Z(G):=\sum_{\vta\in\mathbb F_2^n}2^{-r^\vta(G)}$. 
 
-\paragraph{Exact formula.}
-Fix $\vta$ with support $A$ and $|A|=k$. By \cref{eg:sparse}, $r^\vta=k+|B|$ with $|B|\sim\mathrm{Bin}(n-k,q)$ and $q=1-\lambda^k$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over the $\binom nk$ frequencies of weight $k$,
-\begin{equation}\label{eq:erm-exact}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=\sum_{k=0}^nt_k,\qquad t_k:=\omega_k\big(1+\lambda^k\big)^{n-k}=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}.
-\end{equation}
-The first two terms are $t_0=1$ and
-\begin{equation}\label{eq:erm-Tn}
-t_1=T_n:=n2^{-n}(2-p)^{n-1},\qquad \frac{n^{1-c/2}}{2}\,e^{-np^2/4}\ \le\ T_n\ \le\ \frac{n^{1-c/2}}{2}\,(1+p),
-\end{equation}
-where the bounds follow from $T_n=\frac{n}{2-p}(1-\frac p2)^n$, $e^{-x-x^2}\le1-x\le e^{-x}$ for $x\in[0,\frac12]$ and $\frac1{2-p}\le\frac{1+p}2$. Hence $T_n=(\frac12+o(1))n^{1-c/2}$, which tends to $0$, $\frac12$ or $\infty$ according to whether $c>2$, $c=2$ or $c<2$. The following theorem shows that, up to small errors, the sum \eqref{eq:erm-exact} behaves like $2e^{T_n}$: the terms with small $k$ behave like the Poisson series $\sum_kT_n^k/k!$, and by a symmetry of \eqref{eq:erm-exact} the remaining terms contribute the same amount again.
+Here we derive an exact formula for $\mathbb{E}_G[\mathcal Z(G)]$ for any connectivity constant $c>0$, which defines the edge probability $p=c\ln n/n$. We will see a threshold at $c=2$, i.e., the ensemble is anti-concentrated when $c\geq2$, and otherwise not.
 
 \begin{theorem}\label{thm:erm-sharp}
-Let $c>0$ be fixed. Then
+Let $c>0$ and $p=c\ln n/n$. Let $G\sim G(n,p)$ be an Erd\H{o}s--R\'enyi graph instance. The expected quantity $\mathbb{E}_G[\mathcal Z(G)]$ can be bounded by:
 \begin{equation}\label{eq:erm-bounds}
 2\sum_{k=0}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}-\mathcal O\big(n^{2K}2^{-n}\big)\ \le\ \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]\ \le\ 2\exp\big(T_n(1+o(1))\big)+e^{-\Omega(n/\ln^3n)}
 \end{equation}
-for every fixed $K\in\mathbb N$. The $o(1)$ in the upper bound does not depend on $K$.
+for every fixed $K\in\mathbb N$, where $T_n=n2^{-n}(2-p)^{n-1}$. In particular, sharp threshold occurs at $c=2$:
+\begin{equation}
+    \begin{cases}
+    c<2 & \lim\limits_{n\to \infty} T_n = \infty, \lim\limits_{n\to \infty}\mathcal Z(G) = \infty \\
+    c=2 & \lim\limits_{n\to \infty}T_n = \frac{1}{2}, \lim\limits_{n\to \infty}\mathcal Z(G) = 2\sqrt{e}\\
+    c>2 & \lim\limits_{n\to \infty}T_n = 0, \lim\limits_{n\to \infty}\mathcal Z(G) = 2 
+\end{cases}
+\end{equation}
 \end{theorem}
 
 \begin{proof}
-\emph{Symmetric form.} Expanding $(1+\lambda^k)^{n-k}$ binomially in \eqref{eq:erm-exact} gives
-\begin{equation}\label{eq:erm-symmetric}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z\big]=\sum_{k+j\le n}F(k,j),\quad F(k,j):=\frac{2^{-n}\,n!\,\lambda^{kj}}{k!\,j!\,(n-k-j)!}=F(j,k),\quad \sum_jF(k,j)=t_k .
-\end{equation}
-Let $s_k:=\sum_{j\ge k}F(k,j)\le t_k$, so that $s_0=2^{-n}\sum_j\binom nj=1$. The pairs with $k\le j$ contribute $\sum_ks_k$ to \eqref{eq:erm-symmetric}, and by the symmetry of $F$ so do the pairs with $j\le k$. Only the diagonal pairs are counted twice, so
+For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\bm{0}\}$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \ref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-(1-\lambda)^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies gives:
+\begin{equation}\label{eq:erm-exact}
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]
+=\sum_{\vta\in\mathbb F_2^n} \mathbb{E}_G[2^{-r^\vta}]=
+\sum_{k=0}^nt_k \end{equation}
+where $t_k=\omega_k\big(1+\lambda^k\big)^{n-k}$, $\omega_k:=\binom nk2^{-n}$. 
+
+The first two terms are $t_0=1$ and
+\begin{align}
+t_1=T_n&=n2^{-n}(2-p)^{n-1} \\
+&=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n \\
+&=\frac{n}{2-p} \exp\left(-\frac{np}{2} + \mathcal{O}(np^2)\right). \\
+&= (\frac{1}{2} + o(1))n^{1-c/2}, 
+\end{align}
+which tends to $0$, $\frac12$ or $\infty$ depending on whether $c>2$, $c=2$ or $c<2$. It remains to show that, up to small errors, $\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]$ behaves like $2e^{T_n}$. 
+
+To continue from \eqref{eq:erm-exact}, expanding $(1+\lambda^k)^{n-k}$ binomially gives
+\begin{align}\label{eq:erm-symmetric}
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]&= \sum_{k=0}^n \binom nk2^{-n} \sum_{j=0}^{n-k} \binom {n-k}j \lambda^{jk} \\
+&=\sum_{j+k\le n}F(j,k),
+\end{align}
+where $F(j,k):=\frac{2^{-n}\,n!\,\lambda^{kj}}{k!\,j!\,(n-k-j)!}=F(k,j)$ is symmetric. 
+
+Let $s_k:=\sum_{j\ge k}F(k,j)$ and note that $s_0=2^{-n}\sum\limits_{j=0}^n\binom nj=1$. Then, 
 \begin{equation}\label{eq:erm-upper}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z\big]=2\sum_{k\ge0}s_k-\sum_{k}F(k,k)\le2+2\sum_{k\ge1}s_k .
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2\sum_{k=0}^{n} s_k-\sum_{k=0}^{n}F(k,k)\le2+2\sum_{k=1}^{n}s_k .
 \end{equation}
 
 \emph{A bound on every $s_k$.} (A) Since $\lambda^k\le e^{-kp}$, $1-x\le e^{-x}$ and $1-e^{-x}\ge\frac{x}{1+x}$, we have $\frac{1+\lambda^k}{2}=1-\frac{1-\lambda^k}{2}\le\exp\big(-\frac{kp}{2(1+kp)}\big)$. Together with $\binom nk\le n^k/k!$, this gives $s_k\le t_k\le\frac1{k!}\big(\frac12n^{1-\alpha_k}\big)^k$ with $\alpha_k:=\frac c2\cdot\frac{1-k/n}{1+kp}$. (B) For $j\ge k$ we have $\lambda^{kj}\le\lambda^{k^2}$, and $\sum_j\binom{n-k}{j}\le2^{n-k}$, so $s_k\le\binom nk2^{-k}\lambda^{k^2}\le\frac1{k!}\big(\frac12n\lambda^k\big)^k\le\frac1{k!}\big(\frac12n^{1-ck/n}\big)^k$. Combining (A) and (B),
