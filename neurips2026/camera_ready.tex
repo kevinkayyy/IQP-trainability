@@ -913,7 +913,7 @@ for every fixed $K\in\mathbb N$, where $T_n=n2^{-n}(2-p)^{n-1}$. In particular, 
 \end{theorem}
 
 \begin{proof}
-For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\bm{0}\}$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \ref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-(1-\lambda)^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies gives:
+For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\bm{0}\}$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \ref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-\lambda^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies gives:
 \begin{equation}\label{eq:erm-exact}
 \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]
 =\sum_{\vta\in\mathbb F_2^n} \mathbb{E}_G[2^{-r^\vta}]=
