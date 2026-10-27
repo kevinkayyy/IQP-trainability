@@ -941,7 +941,45 @@ Let $s_k:=\sum_{j\ge k}F(k,j)$ and note that $s_0=2^{-n}\sum\limits_{j=0}^n\bino
 \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2\sum_{k=0}^{n} s_k-\sum_{k=0}^{n}F(k,k)\le2+2\sum_{k=1}^{n}s_k .
 \end{equation}
 
-\emph{A bound on every $s_k$.} (A) Since $\lambda^k\le e^{-kp}$, $1-x\le e^{-x}$ and $1-e^{-x}\ge\frac{x}{1+x}$, we have $\frac{1+\lambda^k}{2}=1-\frac{1-\lambda^k}{2}\le\exp\big(-\frac{kp}{2(1+kp)}\big)$. Together with $\binom nk\le n^k/k!$, this gives $s_k\le t_k\le\frac1{k!}\big(\frac12n^{1-\alpha_k}\big)^k$ with $\alpha_k:=\frac c2\cdot\frac{1-k/n}{1+kp}$. (B) For $j\ge k$ we have $\lambda^{kj}\le\lambda^{k^2}$, and $\sum_j\binom{n-k}{j}\le2^{n-k}$, so $s_k\le\binom nk2^{-k}\lambda^{k^2}\le\frac1{k!}\big(\frac12n\lambda^k\big)^k\le\frac1{k!}\big(\frac12n^{1-ck/n}\big)^k$. Combining (A) and (B),
+\emph{A bound on every $s_k$.} We bound $s_k$ in two different ways and keep the better of the two. Throughout, recall $\lambda=1-p\in(0,1]$ and $np=c\ln n$.
+
+\emph{(A) Bound via $t_k$.} Since all $F(k,j)\ge0$ and $\sum_{j}F(k,j)=t_k$, dropping the restriction $j\ge k$ gives $s_k\le t_k$, where
+\begin{equation*}
+t_k=\binom nk2^{-n}\big(1+\lambda^k\big)^{n-k}=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}.
+\end{equation*}
+To bound the last factor, write $\frac{1+\lambda^k}{2}=1-\frac{1-\lambda^k}{2}$. We have $\lambda^k=(1-p)^k\le e^{-kp}$, and $1-e^{-x}\ge\frac{x}{1+x}$ for $x\ge0$ (this is equivalent to $e^{x}\ge1+x$). Hence
+\begin{equation*}
+1-\lambda^k\ \ge\ 1-e^{-kp}\ \ge\ \frac{kp}{1+kp},
+\qquad\text{so}\qquad
+\frac{1+\lambda^k}{2}\ \le\ 1-\frac{kp}{2(1+kp)}\ \le\ \exp\Big(-\frac{kp}{2(1+kp)}\Big),
+\end{equation*}
+where the last step uses $1-x\le e^{-x}$. Raising this to the power $n-k$ and using $(n-k)p=c\ln n\,(1-\frac kn)$ gives
+\begin{equation*}
+\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}\ \le\ \exp\Big(-k\cdot\frac{(n-k)p}{2(1+kp)}\Big)
+=\exp\Big(-k\cdot\frac c2\cdot\frac{1-k/n}{1+kp}\,\ln n\Big)=n^{-k\alpha_k},
+\qquad \alpha_k:=\frac c2\cdot\frac{1-k/n}{1+kp}.
+\end{equation*}
+Finally, $\binom nk\le\frac{n^k}{k!}$, so
+\begin{equation*}
+s_k\ \le\ t_k\ \le\ \frac{n^k}{k!}\,2^{-k}\,n^{-k\alpha_k}=\frac1{k!}\Big(\frac12\,n^{1-\alpha_k}\Big)^k .
+\end{equation*}
+This bound is sharp when $kp$ is small, since then $\alpha_k\approx\frac c2$. It becomes weak once $kp\gtrsim1$, because $\alpha_k\to0$ as $kp\to\infty$.
+
+\emph{(B) Bound via the restriction $j\ge k$.} Since $\frac{n!}{k!\,j!\,(n-k-j)!}=\binom nk\binom{n-k}{j}$,
+\begin{equation*}
+s_k=\binom nk2^{-n}\sum_{j=k}^{n-k}\binom{n-k}{j}\lambda^{kj}
+\end{equation*}
+(an empty sum, so $s_k=0$, if $k>n/2$). For $j\ge k$ and $\lambda\le1$ we have $\lambda^{kj}\le\lambda^{k^2}$. Moreover $\sum_{j=k}^{n-k}\binom{n-k}{j}\le\sum_{j=0}^{n-k}\binom{n-k}{j}=2^{n-k}$. Therefore
+\begin{equation*}
+s_k\ \le\ \binom nk2^{-n}\,2^{n-k}\,\lambda^{k^2}=\binom nk2^{-k}\big(\lambda^k\big)^k\ \le\ \frac{n^k}{k!}\,2^{-k}\big(\lambda^k\big)^k=\frac1{k!}\Big(\frac12\,n\lambda^k\Big)^k .
+\end{equation*}
+Since $\lambda^k\le e^{-kp}=e^{-ck\ln n/n}=n^{-ck/n}$, this gives
+\begin{equation*}
+s_k\ \le\ \frac1{k!}\Big(\frac12\,n^{1-ck/n}\Big)^k .
+\end{equation*}
+This bound is useful exactly where (A) is weak: when $k$ is a constant fraction of $n$, the exponent $ck/n$ is of order one. It is here that the symmetric splitting matters. The term $t_k$ itself is not small for $k\approx n/2$: there $\big(1+\lambda^{k}\big)^{n-k}\approx e^{T_n}$, so these $t_k$ carry total mass of order $e^{T_n}$, which mirrors the small-$j$ terms. Restricting to $j\ge k$ removes this mass and produces the factor $\lambda^{k^2}$.
+
+\emph{Combining (A) and (B).} Both bounds hold for every $k$, so $s_k$ is at most their minimum. This is the bound with the larger exponent:
 \begin{equation}\label{eq:erm-master}
 s_k\le\frac1{k!}\Big(\frac12\,n^{1-\beta_k}\Big)^k,\qquad \beta_k:=\max\Big\{\frac c2\cdot\frac{1-k/n}{1+kp},\ \frac{ck}{n}\Big\}.
 \end{equation}
