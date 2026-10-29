@@ -1047,14 +1047,14 @@ Let $G\sim G(n,p)$ with $p=c\ln n/n$.
 \end{corollary}
 
 \begin{proof}
-Every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$, since the $\vta=\bm 0$ term equals $1$ and each of the other $2^n-1$ terms is at least $2^{-n}$. Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives, for every $\varepsilon>0$,
+Every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$, since the $\vta=\bm 0$ term equals $1$ and each of the other $2^n-1$ terms is at least $2^{-n}$. Markov's inequality gives, for every $\varepsilon>0$,
 \begin{equation}\label{eq:erm-markov}
-\Pr_G\big[\mathcal Z(G)>2+\varepsilon\big]\ \le\ \frac{\mathbb{E}_G[\mathcal Z(G)]-2+2^{-n}}{\varepsilon}.
+\Pr_G\big[\mathcal Z(G)>2+\varepsilon\big] \leq \Pr_G\big[\mathcal Z(G)>2-2^{-n}+\varepsilon\big] \leq \frac{\mathbb{E}_G[\mathcal Z(G)]-2+2^{-n}}{\varepsilon}.
 \end{equation}
 
-(a) By \eqref{eq:erm-Tn}, $T_n=\Theta(n^{1-c/2})\to0$, so the upper bound in \eqref{eq:erm-bounds} gives $\mathbb{E}_G[\mathcal Z(G)]-2\le 2\big(e^{T_n(1+o(1))}-1\big)+e^{-\Omega(n/\ln^3n)}=\mathcal O(n^{1-c/2})$. With $\varepsilon=n^{-(c-2)/4}$, \eqref{eq:erm-markov} gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]=\mathcal O(n^{-(c-2)/4})\to0$.
+(a) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]-2 = \mathcal O(n^{1-c/2})$. Let $\varepsilon=n^{-(c-2)/4}$. Then, $\Pr_G[\mathcal Z(G)>2+\varepsilon]=\mathcal O(n^{-(c-2)/4})\to0$.
 
-(b) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]-2\to2\sqrt e-2$. With $\varepsilon=(2\sqrt e-2)/\delta$, \eqref{eq:erm-markov} gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le\delta+o(1)$.
+(b) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]\to2\sqrt e$. Let $\varepsilon=(2\sqrt e-2)/\delta$. Then, $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le\delta+o(1)$.
 
 (c) Keeping only the weight-one frequencies, $\mathcal Z(G)\ge X(G):=\sum_v2^{-r^{\bm e_v}(G)}=\sum_v2^{-1-\deg(v)}$. By \cref{app:tight-threshold}, $X(G)\ge(1-o(1))T_n$ w.h.p., and $T_n\to\infty$ by \eqref{eq:erm-Tn}.
 \end{proof}
