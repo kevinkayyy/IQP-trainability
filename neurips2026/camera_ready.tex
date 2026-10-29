@@ -1013,7 +1013,26 @@ Combining \eqref{eq:region 1}, \eqref{eq:region 2}, \eqref{eq:region 3} and \eqr
 \end{equation}
 which is the upper bound of \cref{thm:erm-sharp}.
 
-Now we prove the lower bound part. For any $0 \geq k n$. By the AM--GM inequality, $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$, so $t_k\ge\binom nk2^{-k}(1-p)^{nk/2}$. Moreover $(1-p)^{n/2}(1-\frac p2)^{-n}=\big(1-\frac{p^2}{(2-p)^2}\big)^{n/2}\to1$ because $np^2\to0$. Together with $\binom nk\ge(n-k)^k/k!$ and $T_n=\frac n2(1-\frac p2)^{n-1}$, this gives $t_k\ge\big(T_n(1-o(1))\big)^k/k!$. In \eqref{eq:erm-symmetric}, count the pairs with $k\le K$ or $j\le K$; by symmetry these contribute $2\sum_{k\le K}t_k$ minus the overlap $\sum_{k,j\le K}F(k,j)\le(K+1)^2n^{2K}2^{-n}$. Since all $F(k,j)\ge0$, this gives $\mathbb{E}_G[\mathcal Z]\ge2\sum_{k\le K}t_k-\mathcal O(n^{2K}2^{-n})$, which is the lower bound in \eqref{eq:erm-bounds}.
+Now we prove the lower bound part. For any fixed $k$, AM--GM gives $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$, hence
+\begin{equation*}
+ t_k=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}
+ \ge \binom nk2^{-k}(1-p)^{nk/2}.
+\end{equation*}
+Since $(1-p)^{n/2}(1-\frac p2)^{-n}\to1$ because $np^2\to0$, and $\binom nk\ge(n-k)^k/k!$, we obtain
+\begin{equation*}
+ t_k\ge \frac{\big(T_n(1-o(1))\big)^k}{k!},
+\qquad T_n=\frac n2\Big(1-\frac p2\Big)^{n-1}.
+\end{equation*}
+Now count the terms in \eqref{eq:erm-symmetric} with $k\le K$ or $j\le K$: by symmetry they contribute $2\sum_{k\le K}t_k$, and the overlap is at most
+\begin{equation*}
+\sum_{k,j\le K}F(k,j)\le (K+1)^2n^{2K}2^{-n}.
+\end{equation*}
+Since all $F(k,j)\ge0$, this yields
+\begin{equation*}
+\mathbb{E}_G[\mathcal Z]\ge 2\sum_{k=0}^{K}t_k-\mathcal O(n^{2K}2^{-n})
+\ge 2\sum_{k=0}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}-\mathcal O(n^{2K}2^{-n}),
+\end{equation*}
+which is the lower bound in \eqref{eq:erm-bounds}.
 \end{proof}
 
 \paragraph{The three regimes.}
