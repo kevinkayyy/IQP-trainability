@@ -1034,21 +1034,16 @@ Then, we have
 which is the lower bound of \cref{thm:erm-sharp}.
 \end{proof}
 
-\paragraph{From the average graph to a typical graph.}
-\Cref{thm:erm-sharp} controls only the average of $\mathcal Z(G)$ over $G$. If, as in~\citet{Bremner17}, the random graph is regarded as part of the circuit ensemble, i.e.\ $(G,\vttheta)$ is drawn jointly, then the expected collision probability equals $2^{-n}\,\mathbb{E}_G[\mathcal Z(G)]$, and \cref{thm:erm-sharp} directly gives anti-concentration for all $c\ge2$. However, \cref{lem:parseval} and \cref{thm:ac_and_pst_exist} concern a \emph{fixed} graph $G$, and a bound on the mean does not by itself say what happens for a typical graph. The following corollary makes this step explicit; each regime requires a different argument.
+\Cref{thm:erm-sharp} controls the average of $\mathcal Z(G)$ over $G$. The following corollary extends the results to a fixed graph.
 
 \begin{corollary}[Typical graphs]\label{cor:erm-typical}
 Let $G\sim G(n,p)$ with $p=c\ln n/n$.
 
-\noindent\textup{(a)} If $c>2$, then
-\begin{equation}\label{eq:erm-supercritical}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2+(2+o(1))T_n=2+(1+o(1))\,n^{1-c/2},
-\end{equation}
-and w.h.p.\ $2-2^{-n}\le\mathcal Z(G)\le2+n^{-(c-2)/4}$.
+\noindent\textup{(a)} If $c>2$, then with high probability $2-2^{-n}\le\mathcal Z(G)\le2+n^{-(c-2)/4}$.
 
-\noindent\textup{(b)} If $c=2$, then $\mathcal Z(G)$ is bounded in probability: for every fixed $\delta\in(0,1)$, $\Pr_G\big[\mathcal Z(G)\le2+(2\sqrt e-2)/\delta\big]\ge1-\delta-o(1)$.
+\noindent\textup{(b)} If $c=2$, then for every fixed $\delta\in(0,1)$, $\Pr_G\big[\mathcal Z(G)\le2+(2\sqrt e-2)/\delta\big]\ge1-\delta-o(1)$.
 
-\noindent\textup{(c)} If $c<2$, then w.h.p.\ $\mathcal Z(G)\ge(1-o(1))\,T_n=(\frac12-o(1))\,n^{1-c/2}\to\infty$.
+\noindent\textup{(c)} If $c<2$, then with high probability $\mathcal Z(G)\ge(1-o(1))\,T_n\to\infty$.
 \end{corollary}
 
 \begin{proof}
