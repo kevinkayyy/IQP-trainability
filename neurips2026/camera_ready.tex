@@ -828,66 +828,66 @@ Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^n | A \vt
 % \end{proof}
 
 \section{Derivation details}
-\subsection{Complete derivation of anti-concentration in the sparse Erdos-Renyi graph (\cref{eg:sparse})}
-\label{app:derivation-sparse}
-Based on \cref{eq:sparse ra}, we 
-get that 
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G\big[2^{-r^\vta}\big]
-=
-2^{-\abs{\vta}}\mathbb{E}\big[2^{-|B|}\big]
-=
-2^{-\abs{\vta}}\left(1-\frac{q}{2}\right)^{n-\abs{\vta}},
-\end{equation*} where the last equality is obtained by the formula of generating function of the binomial random variable $\abs{B}$. Then,
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right]
-=
-\sum_{k=0}^n \omega_k\left(1+\lambda^k\right)^{n-k}, \qquad \omega_k=\binom{n}{k}2^{-n}, \qquad \lambda=1-p.
-\end{equation*}
-We can rewrite this as three parts:
-\begin{align*}
-\operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right] &= \omega_0 \cdot 2^n + \sum_{k=1}^n \omega_k + \sum_{k=1}^n \omega_k \left((1+\lambda^k)^{n-k} - 1 \right) \\
-&=1+(1-2^{-n})+R_n
-\end{align*}
-where $R_n:=\sum_{k=1}^n w_k\Bigl[(1+\lambda^k)^{n-k}-1\Bigr].$
-We split $R_n=R_{1,n}+R_{\ge2,n}$ with
-\begin{equation*}
-R_{1,n}=w_1\bigl[(1+\lambda)^{n-1}-1\bigr]
-= n2^{-n}\bigl[(2-p)^{n-1}-1\bigr].
-\end{equation*}
+% \subsection{Complete derivation of anti-concentration in the sparse Erdos-Renyi graph (\cref{eg:sparse})}
+% \label{app:derivation-sparse}
+% Based on \cref{eq:sparse ra}, we 
+% get that 
+% \begin{equation*}
+% \operatorname*{\mathbb{E}}_G\big[2^{-r^\vta}\big]
+% =
+% 2^{-\abs{\vta}}\mathbb{E}\big[2^{-|B|}\big]
+% =
+% 2^{-\abs{\vta}}\left(1-\frac{q}{2}\right)^{n-\abs{\vta}},
+% \end{equation*} where the last equality is obtained by the formula of generating function of the binomial random variable $\abs{B}$. Then,
+% \begin{equation*}
+% \operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right]
+% =
+% \sum_{k=0}^n \omega_k\left(1+\lambda^k\right)^{n-k}, \qquad \omega_k=\binom{n}{k}2^{-n}, \qquad \lambda=1-p.
+% \end{equation*}
+% We can rewrite this as three parts:
+% \begin{align*}
+% \operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right] &= \omega_0 \cdot 2^n + \sum_{k=1}^n \omega_k + \sum_{k=1}^n \omega_k \left((1+\lambda^k)^{n-k} - 1 \right) \\
+% &=1+(1-2^{-n})+R_n
+% \end{align*}
+% where $R_n:=\sum_{k=1}^n w_k\Bigl[(1+\lambda^k)^{n-k}-1\Bigr].$
+% We split $R_n=R_{1,n}+R_{\ge2,n}$ with
+% \begin{equation*}
+% R_{1,n}=w_1\bigl[(1+\lambda)^{n-1}-1\bigr]
+% = n2^{-n}\bigl[(2-p)^{n-1}-1\bigr].
+% \end{equation*}
 
-Define the shorthand
-\begin{equation*}
-T_n:=n2^{-n}(2-p)^{n-1}=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n = \frac{n}{2-p} \exp\left(-\frac{np}{2} + \mathcal{O}(np^2)\right). \label{eq:Tn}
-\end{equation*}
-With $p=c \ln(n)/n$, we have \begin{equation*}
-T_n = (1/2 + o(1))n^{1-c/2}
-\end{equation*}
+% Define the shorthand
+% \begin{equation*}
+% T_n:=n2^{-n}(2-p)^{n-1}=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n = \frac{n}{2-p} \exp\left(-\frac{np}{2} + \mathcal{O}(np^2)\right). \label{eq:Tn}
+% \end{equation*}
+% With $p=c \ln(n)/n$, we have \begin{equation*}
+% T_n = (1/2 + o(1))n^{1-c/2}
+% \end{equation*}
 
-\noindent
-Moreover,
-\begin{equation*}\label{eq:R1-asymp}
-R_{1,n}=T_n+o(T_n).
-\end{equation*}
+% \noindent
+% Moreover,
+% \begin{equation*}\label{eq:R1-asymp}
+% R_{1,n}=T_n+o(T_n).
+% \end{equation*}
 
-Now it is left to deal with $R_{\ge2,n}$. For each $k$, we can separate the term inside as a linear part and a remainder part. \begin{equation*}
-(1+\lambda^k)^{n-k} - 1 = (n-k)\lambda^k + \Delta(k,n)
-\end{equation*}
-Then \begin{equation*}
-    R_{\ge2,n} = \sum_{k\geq 2} \omega_k (n-k)\lambda^k + \sum_{k\geq 2} \omega_k\Delta(k,n)
-\end{equation*}
-For the summation over linear parts, using that $(n-k)\binom{n}{k} = n \binom{n-1}{k}$, we get 
-\begin{equation*}
-    \sum_{k=0} \omega_k (n-k)\lambda^k = n2^{-n} \sum_{k=0}^{n-1} \binom{n-1}{k} \lambda^k = n2^{-n}(2-p)^{n-1} = T_n
-\end{equation*}
-Removing the terms for $k=0$ and $k=1$ gives
-\begin{equation*}
-    \sum_{k\geq 2} \omega_k (n-k)\lambda^k = T_n + o(T_n)
-\end{equation*}
-When $c>2$, $T_n = o(1)$, and since the summation over remainders is dominated by the summation over linear parts. Putting everything together gives
-\begin{equation*}
-    \operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right] = 2 + o(1)
-\end{equation*}
+% Now it is left to deal with $R_{\ge2,n}$. For each $k$, we can separate the term inside as a linear part and a remainder part. \begin{equation*}
+% (1+\lambda^k)^{n-k} - 1 = (n-k)\lambda^k + \Delta(k,n)
+% \end{equation*}
+% Then \begin{equation*}
+%     R_{\ge2,n} = \sum_{k\geq 2} \omega_k (n-k)\lambda^k + \sum_{k\geq 2} \omega_k\Delta(k,n)
+% \end{equation*}
+% For the summation over linear parts, using that $(n-k)\binom{n}{k} = n \binom{n-1}{k}$, we get 
+% \begin{equation*}
+%     \sum_{k=0} \omega_k (n-k)\lambda^k = n2^{-n} \sum_{k=0}^{n-1} \binom{n-1}{k} \lambda^k = n2^{-n}(2-p)^{n-1} = T_n
+% \end{equation*}
+% Removing the terms for $k=0$ and $k=1$ gives
+% \begin{equation*}
+%     \sum_{k\geq 2} \omega_k (n-k)\lambda^k = T_n + o(T_n)
+% \end{equation*}
+% When $c>2$, $T_n = o(1)$, and since the summation over remainders is dominated by the summation over linear parts. Putting everything together gives
+% \begin{equation*}
+%     \operatorname*{\mathbb{E}}_G\left[\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}\right] = 2 + o(1)
+% \end{equation*}
 
 % ===== Merged replacement for \cref{app:derivation-sparse} and \cref{app:er-full}. =====
 \begingroup\color{green!60!black}
@@ -913,116 +913,107 @@ for every fixed $K\in\mathbb N$, where $T_n=n2^{-n}(2-p)^{n-1}$. In particular, 
 \end{theorem}
 
 \begin{proof}
-For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\bm{0}\}$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \ref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-\lambda^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies gives:
-\begin{equation}\label{eq:erm-exact}
+For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\bm{0}\}$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \ref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-\lambda^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies gives, and binomially expanding $(1+\lambda^k)^{n-k}$ gives
+\begin{align}\label{eq:erm-exact}
 \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]
-=\sum_{\vta\in\mathbb F_2^n} \mathbb{E}_G[2^{-r^\vta}]=
-\sum_{k=0}^nt_k \end{equation}
-where $t_k=\omega_k\big(1+\lambda^k\big)^{n-k}$, $\omega_k:=\binom nk2^{-n}$. 
-
-The first two terms are $t_0=1$ and
-\begin{align}
-t_1=T_n&=n2^{-n}(2-p)^{n-1} \\
-&=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n \\
-&=\frac{n}{2-p} \exp\left(-\frac{np}{2} + \mathcal{O}(np^2)\right). \\
-&= (\frac{1}{2} + o(1))n^{1-c/2}, \label{eq:erm-Tn}
-\end{align}
-which tends to $0$, $\frac12$ or $\infty$ depending on whether $c>2$, $c=2$ or $c<2$. It remains to show that, up to small errors, $\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]$ behaves like $2e^{T_n}$. 
-
-To continue from \eqref{eq:erm-exact}, expanding $(1+\lambda^k)^{n-k}$ binomially gives
-\begin{align}\label{eq:erm-symmetric}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]&= \sum_{k=0}^n \binom nk2^{-n} \sum_{j=0}^{n-k} \binom {n-k}j \lambda^{jk} \\
-&=\sum_{j+k\le n}F(j,k),
+&= \sum_{\vta\in\mathbb F_2^n} \mathbb{E}_G[2^{-r^\vta}] \\
+&=\sum_{k=0}^n \binom nk2^{-n} \big(1+\lambda^k\big)^{n-k} \label{eq:t_k sum}\\
+&= \sum_{k=0}^n \binom nk2^{-n} \sum_{j=0}^{n-k} \binom {n-k}j \lambda^{jk} \\
+&=\sum_{j+k\le n}F(j,k), \label{eq:s_k sum}
 \end{align}
 where $F(j,k):=\frac{2^{-n}\,n!\,\lambda^{kj}}{k!\,j!\,(n-k-j)!}=F(k,j)$ is symmetric. 
 
-Let $s_k:=\sum_{j\ge k}F(k,j)$ and note that $s_0=2^{-n}\sum\limits_{j=0}^n\binom nj=1$. Then, 
+For convenience, let $t_k=\binom nk2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$ such that \eqref{eq:t_k sum} writes $\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big] = \sum\limits_{k=0}^n t_k$. Let $s_k:=\sum_{j\ge k}F(k,j)$ and note that $s_0=2^{-n}\sum\limits_{j=0}^n\binom nj=1$. Then following from \eqref{eq:s_k sum}, 
 \begin{equation}\label{eq:erm-upper}
 \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2\sum_{k=0}^{n} s_k-\sum_{k=0}^{n}F(k,k)\le2+2\sum_{k=1}^{n}s_k .
 \end{equation}
+Now we prove the upper bound part of \cref{thm:erm-sharp}. Let $k_1:=\lfloor n/\ln^3n\rfloor$ and $k_2:=\lfloor n/\sqrt{\ln n}\rfloor$. We will split the series $\sum\limits_{k=1}^{n} s_k$ into three parts and bound each part separately. 
 
-\emph{Splitting into two regions.} Recall $\lambda=1-p\in(0,1]$ and $np=c\ln n$. Let $k_2:=\lfloor n/\sqrt{\ln n}\rfloor$ and split
-\begin{equation*}
-\sum_{k=1}^{n}s_k=\underbrace{\sum_{k=1}^{k_2}s_k}_{\text{region I}}+\underbrace{\sum_{k>k_2}s_k}_{\text{region II}} .
-\end{equation*}
-In region I we have $kp\le c\sqrt{\ln n}$, and we bound $s_k$ via $t_k$ (bound (A) below). In region II we have $k/n>1/\sqrt{\ln n}$, and we bound $s_k$ using the restriction $j\ge k$ (bound (B) below).
+\medskip
+\noindent
+For $1\leq k \leq k_1$, it is simpler to bound $t_k$ and then use $s_k\leq t_k$. Using the standard inequalities $\lambda^k=(1-p)^k\le e^{-kp}$, $1-e^{-x}\ge\frac{x}{1+x}$ for $x\ge0$, and $1-x\le e^{-x}$, we have that
+\begin{equation}
+\frac{1+\lambda^k}{2}\ = 1- \frac{1-\lambda^k}{2} \le 1- \frac{1-e^{-kp}}{2} \le\ 1-\frac{kp}{2(1+kp)}\ \le\ \exp\Big(-\frac{kp}{2(1+kp)}\Big),
+\end{equation}
+Raising this to the power $n-k$ and using $(n-k)p=c\ln n\,(1-\frac kn)$ gives
+\begin{equation}
+\Big(\frac{1+\lambda^k}{2}\Big)^{n-k} \leq
+\exp\Big(-k\cdot\frac c2\cdot\frac{1-k/n}{1+kp},\ln n\Big)=n^{-k\alpha_k}, \quad \alpha_k=\frac c2\cdot\frac{1-k/n}{1+kp}.
+\end{equation}
 
-\emph{Region I: bound (A) via $t_k$.} Since all $F(k,j)\ge0$ and $\sum_{j}F(k,j)=t_k$, dropping the restriction $j\ge k$ gives $s_k\le t_k$, where
-\begin{equation*}
-t_k=\binom nk2^{-n}\big(1+\lambda^k\big)^{n-k}=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}.
-\end{equation*}
-To bound the last factor, write $\frac{1+\lambda^k}{2}=1-\frac{1-\lambda^k}{2}$. We have $\lambda^k=(1-p)^k\le e^{-kp}$, and $1-e^{-x}\ge\frac{x}{1+x}$ for $x\ge0$ (this is equivalent to $e^{x}\ge1+x$). Hence
-\begin{equation*}
-1-\lambda^k\ \ge\ 1-e^{-kp}\ \ge\ \frac{kp}{1+kp},
-\qquad\text{so}\qquad
-\frac{1+\lambda^k}{2}\ \le\ 1-\frac{kp}{2(1+kp)}\ \le\ \exp\Big(-\frac{kp}{2(1+kp)}\Big),
-\end{equation*}
-where the last step uses $1-x\le e^{-x}$. Raising this to the power $n-k$ and using $(n-k)p=c\ln n\,(1-\frac kn)$ gives
-\begin{equation*}
-\Big(\frac{1+\lambda^k}{2}\Big)^{n-k}\ \le\ \exp\Big(-k\cdot\frac{(n-k)p}{2(1+kp)}\Big)
-=\exp\Big(-k\cdot\frac c2\cdot\frac{1-k/n}{1+kp}\,\ln n\Big)=n^{-k\alpha_k},
-\qquad \alpha_k:=\frac c2\cdot\frac{1-k/n}{1+kp}.
-\end{equation*}
-Finally, $\binom nk\le\frac{n^k}{k!}$, so
+Then, using that $\binom nk\le\frac{n^k}{k!}$ gives
 \begin{equation}\label{eq:erm-boundA}
 s_k\ \le\ t_k\ \le\ \frac{n^k}{k!}\,2^{-k}\,n^{-k\alpha_k}=\frac1{k!}\Big(\frac12\,n^{1-\alpha_k}\Big)^k .
 \end{equation}
-This bound is sharp when $kp$ is small, since then $\alpha_k\approx\frac c2$. It weakens as $kp$ grows, because $\alpha_k\to0$ as $kp\to\infty$. To sum \eqref{eq:erm-boundA} over region I, let $k_1:=\lfloor n/\ln^3n\rfloor\le k_2$ and split region I once more.
 
-\emph{(I.a) $1\le k\le k_1$: a Poisson series.} Here $k/n\le1/\ln^3n$ and $kp\le c/\ln^2n$. Using $\frac1{1+x}\ge1-x$,
-\begin{equation*}
+We have that $k/n\le1/\ln^3n$ and $kp\le c/\ln^2n$. Using $\frac1{1+x}\ge1-x$ for $x>0$,
+\begin{equation}
 \alpha_k\ \ge\ \frac c2\Big(1-\frac kn\Big)(1-kp)\ \ge\ \frac c2\Big(1-\frac kn-kp\Big)\ \ge\ \frac c2-\varepsilon_n,
-\qquad \varepsilon_n:=\frac c2\Big(\frac1{\ln^3n}+\frac c{\ln^2n}\Big).
-\end{equation*}
-Hence $n^{1-\alpha_k}\le n^{1-c/2}\,e^{\varepsilon_n\ln n}=n^{1-c/2}\big(1+o(1)\big)$, because $\varepsilon_n\ln n=\mathcal O(1/\ln n)\to0$. The $o(1)$ does not depend on $k$. By \eqref{eq:erm-Tn}, $\frac12n^{1-c/2}\le T_n(1+o(1))$. Inserting this into \eqref{eq:erm-boundA} gives
-\begin{equation*}
-\sum_{k=1}^{k_1}s_k\ \le\ \sum_{k\ge1}\frac{\big(T_n(1+o(1))\big)^k}{k!}=\exp\big(T_n(1+o(1))\big)-1 .
-\end{equation*}
-
-\emph{(I.b) $k_1<k\le k_2$: a geometric series.} Here $k\le n/\sqrt{\ln n}$, so $1-\frac kn\ge1-\frac1{\sqrt{\ln n}}$ and $1+kp\le1+c\sqrt{\ln n}$. Therefore
-\begin{equation*}
-\alpha_k\ \ge\ \frac c2\cdot\frac{1-1/\sqrt{\ln n}}{1+c\sqrt{\ln n}}=\frac{1+o(1)}{2\sqrt{\ln n}}\ \ge\ \frac1{3\sqrt{\ln n}}
-\end{equation*}
-for large $n$, so $n^{-\alpha_k}\le e^{-\sqrt{\ln n}/3}$. Moreover $k\ge k_1+1>n/\ln^3n$, so $n/k<\ln^3n$. Using $k!\ge(k/e)^k$ in \eqref{eq:erm-boundA},
-\begin{equation*}
-s_k\ \le\ \Big(\frac e2\cdot\frac nk\cdot n^{-\alpha_k}\Big)^k\ \le\ \Big(\frac e2\,\ln^3n\;e^{-\sqrt{\ln n}/3}\Big)^k\ \le\ 2^{-k}
-\end{equation*}
-for large $n$, since $e^{-\sqrt{\ln n}/3}$ decays faster than any power of $\ln n$. Hence $\sum_{k=k_1+1}^{k_2}s_k\le2^{-k_1}$.
-
-Combining (I.a) and (I.b),
-\begin{equation}\label{eq:erm-regionI}
-\sum_{k=1}^{k_2}s_k\ \le\ \exp\big(T_n(1+o(1))\big)-1+2^{-k_1}.
+\qquad \varepsilon_n=\frac c2\Big(\frac1{\ln^3n}+\frac c{\ln^2n}\Big).
+\end{equation}
+Then, on one hand
+\begin{equation}
+n^{1-\alpha_k}\le n^{1-c/2}\,e^{\varepsilon_n\ln n}=n^{1-c/2}\big(1+o(1)\big).
+\label{eq:erm-Sk}
 \end{equation}
 
-\emph{Region II: bound (B) via the restriction $j\ge k$.} For $k>k_2$, bound (A) is no longer sufficient. The term $t_k$ itself is not small for $k\approx n/2$: there $\big(1+\lambda^{k}\big)^{n-k}\approx e^{T_n}$, so these $t_k$ carry total mass of order $e^{T_n}$, which mirrors the small-$j$ terms. We therefore keep the restriction $j\ge k$, which removes this mass. Since $\frac{n!}{k!\,j!\,(n-k-j)!}=\binom nk\binom{n-k}{j}$,
+On the other hand, define $T_n=t_1$ and 
+\begin{align}
+T_n&=n2^{-n}(2-p)^{n-1} \\
+&=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n \\
+&=\frac{n}{2-p} \exp\left(-\frac{np}{2} + \mathcal{O}(np^2)\right). \\
+&= (\frac{1}{2} + o(1))n^{1-c/2}
+\label{eq:erm-Tn}
+\end{align}
+% which tends to $0$, $\frac12$ or $\infty$ depending on whether $c>2$, $c=2$ or $c<2$. It remains to show that, up to small errors, $\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]$ behaves like $2e^{T_n}$. 
+Inserting \eqref{eq:erm-Sk} and \eqref{eq:erm-Tn} into \eqref{eq:erm-boundA} gives, for large $n$,
+\begin{equation}
+\sum_{k=1}^{k_1}s_k\ \le\ \sum_{k=1}^{k_1}\frac{\big(T_n(1+o(1))\big)^k}{k!}=\exp\big(T_n(1+o(1))\big)-1. \label{eq:region 1}
+\end{equation}
+
+\medskip
+\noindent
+For $k_1 \leq k \leq k_2$, \eqref{eq:erm-boundA} still holds, and we will bound $t_k$ with a different method. We have that $k\le n/\sqrt{\ln n}$, so $1-\frac kn\ge1-\frac1{\sqrt{\ln n}}$, and $1+kp\le1+c\sqrt{\ln n}$. Hence, for large $n$,
+\begin{equation}
+\alpha_k\ \ge\ \frac c2\cdot\frac{1-1/\sqrt{\ln n}}{1+c\sqrt{\ln n}}=\frac{1+o(1)}{2\sqrt{\ln n}}\ \ge\ \frac1{3\sqrt{\ln n}} \implies n^{-\alpha_k}\le e^{-\sqrt{\ln n}/3}.
+\end{equation} Moreover, using that $n/k<\ln^3n$ and $k!\ge(k/e)^k$, for large $n$, \eqref{eq:erm-boundA} leads to
+\begin{equation}
+s_k \leq \Big(\frac e2 \frac nk n^{-\alpha_k}\Big)^k \leq \Big(\frac e2 \ln^3n e^{-\sqrt{\ln n}/3}\Big)^k \leq 2^{-k}
+\end{equation}
+The last inequality comes from that $e^{-\sqrt{\ln n}/3}$ decays faster than $\ln^3 n$ grows. Hence, for large $n$, \begin{equation}
+    \sum_{k=k_1+1}^{k_2}s_k\le2^{-k_1} \label{eq:region 2}
+\end{equation}
+
+\medskip
+\noindent
+For $k>k_2$, we bound $s_k$ directly. Note that
+\begin{equation}
+s_k=\binom nk2^{-n}\sum_{j=k}^{n-k}\binom{n-k}{j}\lambda^{kj}.
+\end{equation}
+For $j\geq k$ and $\lambda\leq 1$, we have that $\lambda^{kj}\leq\lambda^{k^2}$. Moreover, $\sum\limits_{j=k}^{n-k}\binom{n-k}{j}\leq \sum\limits_{j=0}^{n-k}\binom{n-k}{j}=2^{n-k}$. Hence,
+\begin{equation}
+s_k \leq \binom nk2^{-n}\,2^{n-k}\,\lambda^{k^2}=\binom nk2^{-k}\big(\lambda^k\big)^k\ \le\ \frac{n^k}{k!}\,2^{-k}\big(\lambda^k\big)^k=\frac1{k!}\Big(\frac12\,n\lambda^k\Big)^k .
+\end{equation}
+Using $\lambda^k\le e^{-kp}=e^{-ck\ln n/n}$, we have
 \begin{equation*}
-s_k=\binom nk2^{-n}\sum_{j=k}^{n-k}\binom{n-k}{j}\lambda^{kj}
+s_k\ \le\ \frac1{k!}\Big(\frac12 n e^{-ck\ln n/n}\Big)^k .
 \end{equation*}
-(an empty sum, so $s_k=0$, if $k>n/2$). For $j\ge k$ and $\lambda\le1$ we have $\lambda^{kj}\le\lambda^{k^2}$. Moreover $\sum_{j=k}^{n-k}\binom{n-k}{j}\le\sum_{j=0}^{n-k}\binom{n-k}{j}=2^{n-k}$. Therefore
-\begin{equation*}
-s_k\ \le\ \binom nk2^{-n}\,2^{n-k}\,\lambda^{k^2}=\binom nk2^{-k}\big(\lambda^k\big)^k\ \le\ \frac{n^k}{k!}\,2^{-k}\big(\lambda^k\big)^k=\frac1{k!}\Big(\frac12\,n\lambda^k\Big)^k .
-\end{equation*}
-Since $\lambda^k\le e^{-kp}=e^{-ck\ln n/n}=n^{-ck/n}$, this gives
-\begin{equation*}
-s_k\ \le\ \frac1{k!}\Big(\frac12\,n^{1-ck/n}\Big)^k .
-\end{equation*}
-For $k>k_2$ we have $k\ge k_2+1>n/\sqrt{\ln n}$. Hence $n/k<\sqrt{\ln n}$ and $n^{-ck/n}=e^{-c(k/n)\ln n}<e^{-c\sqrt{\ln n}}$. Using $k!\ge(k/e)^k$,
-\begin{equation*}
-s_k\ \le\ \Big(\frac e2\cdot\frac nk\cdot n^{-ck/n}\Big)^k\ \le\ \Big(\frac e2\,\sqrt{\ln n}\;e^{-c\sqrt{\ln n}}\Big)^k\ \le\ 2^{-k}
-\end{equation*}
-for large $n$. Therefore
-\begin{equation}\label{eq:erm-regionII}
+Using $k > n/\sqrt{\ln n}$, so $e^{-c(k/n)\ln n}<e^{-c\sqrt{\ln n}}$, and $k!\ge(k/e)^k$, for large $n$, we have 
+\begin{equation}
+s_k \leq \Big(\frac e2\cdot\frac nk\cdot n^{-ck/n}\Big)^k \leq \Big(\frac e2\sqrt{\ln n} e^{-c\sqrt{\ln n}}\Big)^k \leq 2^{-k}.
+\end{equation} Hence, for large $n$,
+\begin{equation}\label{eq:region 3}
 \sum_{k>k_2}s_k\ \le\ 2^{-k_2}.
 \end{equation}
 
-\emph{Combining the two regions.} Inserting \eqref{eq:erm-regionI} and \eqref{eq:erm-regionII} into \eqref{eq:erm-upper}, and using $k_1\le k_2$, gives
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]\ \le\ 2+2\sum_{k=1}^{k_2}s_k+2\sum_{k>k_2}s_k\ \le\ 2\exp\big(T_n(1+o(1))\big)+2^{1-k_1}+2^{1-k_2}
-\ \le\ 2\exp\big(T_n(1+o(1))\big)+e^{-\Omega(n/\ln^3n)},
-\end{equation*}
-which is the upper bound in \eqref{eq:erm-bounds}.
+Combining \eqref{eq:region 1}, \eqref{eq:region 2}, \eqref{eq:region 3} and \eqref{eq:erm-upper} gives
+\begin{equation}
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big] \leq 2\exp\big(T_n(1+o(1))\big)+2^{1-k_1}+2^{1-k_2}
+\leq 2\exp\big(T_n(1+o(1))\big)+e^{-\Omega(n/\ln^3n)},
+\end{equation}
+which is the upper bound of \cref{thm:erm-sharp}.
 
-\emph{Lower bound.} Fix $k$. By the AM--GM inequality, $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$, so $t_k\ge\binom nk2^{-k}(1-p)^{nk/2}$. Moreover $(1-p)^{n/2}(1-\frac p2)^{-n}=\big(1-\frac{p^2}{(2-p)^2}\big)^{n/2}\to1$ because $np^2\to0$. Together with $\binom nk\ge(n-k)^k/k!$ and $T_n=\frac n2(1-\frac p2)^{n-1}$, this gives $t_k\ge\big(T_n(1-o(1))\big)^k/k!$. In \eqref{eq:erm-symmetric}, count the pairs with $k\le K$ or $j\le K$; by symmetry these contribute $2\sum_{k\le K}t_k$ minus the overlap $\sum_{k,j\le K}F(k,j)\le(K+1)^2n^{2K}2^{-n}$. Since all $F(k,j)\ge0$, this gives $\mathbb{E}_G[\mathcal Z]\ge2\sum_{k\le K}t_k-\mathcal O(n^{2K}2^{-n})$, which is the lower bound in \eqref{eq:erm-bounds}.
+Now we prove the lower bound part. For any $0 \geq k n$. By the AM--GM inequality, $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$, so $t_k\ge\binom nk2^{-k}(1-p)^{nk/2}$. Moreover $(1-p)^{n/2}(1-\frac p2)^{-n}=\big(1-\frac{p^2}{(2-p)^2}\big)^{n/2}\to1$ because $np^2\to0$. Together with $\binom nk\ge(n-k)^k/k!$ and $T_n=\frac n2(1-\frac p2)^{n-1}$, this gives $t_k\ge\big(T_n(1-o(1))\big)^k/k!$. In \eqref{eq:erm-symmetric}, count the pairs with $k\le K$ or $j\le K$; by symmetry these contribute $2\sum_{k\le K}t_k$ minus the overlap $\sum_{k,j\le K}F(k,j)\le(K+1)^2n^{2K}2^{-n}$. Since all $F(k,j)\ge0$, this gives $\mathbb{E}_G[\mathcal Z]\ge2\sum_{k\le K}t_k-\mathcal O(n^{2K}2^{-n})$, which is the lower bound in \eqref{eq:erm-bounds}.
 \end{proof}
 
 \paragraph{The three regimes.}
