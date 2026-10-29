@@ -913,7 +913,7 @@ for every fixed $K\in\mathbb N$, where $T_n=n2^{-n}(2-p)^{n-1}$. In particular, 
 \end{theorem}
 
 \begin{proof}
-For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \cref{eg:sparse} (the case $\vta=\bm 0$ is included with $k=0$, $B=\emptyset$, $r^{\bm 0}=0$), $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-\lambda^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies and binomially expanding $(1+\lambda^k)^{n-k}$ gives
+For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \cref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-\lambda^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies and binomially expanding $(1+\lambda^k)^{n-k}$ gives
 \begin{align}\label{eq:erm-exact}
 \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]
 &= \sum_{\vta\in\mathbb F_2^n} \mathbb{E}_G[2^{-r^\vta}] \\
@@ -957,7 +957,7 @@ n^{1-\alpha_k}\le n^{1-c/2}\,e^{\varepsilon_n\ln n}=n^{1-c/2}\big(1+o(1)\big).
 \label{eq:erm-Sk}
 \end{equation}
 
-On the other hand, $T_n=t_1$ satisfies (using $np^2\to0$)
+On the other hand, using $np^2\to0$, $T_n=t_1$ satisfies
 \begin{align}
 T_n&=n2^{-n}(2-p)^{n-1} \\
 &=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n \\
@@ -968,7 +968,7 @@ T_n&=n2^{-n}(2-p)^{n-1} \\
 % which tends to $0$, $\frac12$ or $\infty$ depending on whether $c>2$, $c=2$ or $c<2$. It remains to show that, up to small errors, $\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]$ behaves like $2e^{T_n}$. 
 Inserting \eqref{eq:erm-Sk} and \eqref{eq:erm-Tn} into \eqref{eq:erm-boundA} gives, for large $n$,
 \begin{equation}
-\sum_{k=1}^{k_1}s_k\ \le\ \sum_{k=1}^{k_1}\frac{\big(T_n(1+o(1))\big)^k}{k!}\le\exp\big(T_n(1+o(1))\big)-1. \label{eq:region 1}
+\sum_{k=1}^{k_1}s_k\ \le\ \sum_{k=1}^{k_1}\frac{\big(T_n(1+o(1))\big)^k}{k!}\leq\exp\big(T_n(1+o(1))\big)-1. \label{eq:region 1}
 \end{equation}
 
 \medskip
@@ -980,7 +980,7 @@ For $k_1 < k \leq k_2$, \eqref{eq:erm-boundA} still holds, and we will bound $t_
 \begin{equation}
 s_k \leq \Big(\frac e2 \frac nk n^{-\alpha_k}\Big)^k \leq \Big(\frac e2 \ln^3n e^{-\sqrt{\ln n}/3}\Big)^k \leq 2^{-k}
 \end{equation}
-The last inequality holds for large $n$ because, with $x=\sqrt{\ln n}$, we have $\frac e2\ln^3n\,e^{-\sqrt{\ln n}/3}=\frac e2x^6e^{-x/3}\to0$. Hence, for large $n$, \begin{equation}
+The last inequality holds for large $n$ because $\frac e2\ln^3n\,e^{-\sqrt{\ln n}/3}\to0$. Hence, for large $n$, \begin{equation}
     \sum_{k=k_1+1}^{k_2}s_k\le2^{-k_1} \label{eq:region 2}
 \end{equation}
 
@@ -1013,7 +1013,7 @@ Combining \eqref{eq:region 1}, \eqref{eq:region 2}, \eqref{eq:region 3} and \eqr
 \end{equation}
 which is the upper bound of \cref{thm:erm-sharp}.
 
-Now we prove the lower bound part. For every $0 \leq k \leq n$, the AM--GM inequality gives $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$. Hence,
+Now we prove the lower bound part. For every $0 \leq k \leq n$, the arithmetic-mean-geometric-mean inequality gives $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$. Hence,
 \begin{equation}
  t_k=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k} \geq \binom nk2^{-k}(1-p)^{(n-k)k/2}
  \geq \binom nk2^{-k}(1-p)^{nk/2}.
@@ -1068,166 +1068,6 @@ Applying Markov's inequality to $\mathcal Z(G)$ itself would only give $\Pr_G[\m
 Consequently, a typical graph yields an anti-concentrated ensemble for $c>2$ (this is the property used in \cref{thm:ac_and_pst_exist}) and fails to do so for $c<2$, so $c=2$ is the threshold for anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture. At $c=2$, \cref{cor:erm-typical}(b) gives $\mathcal Z(G)\in\mathcal O(1)$ with probability arbitrarily close to $1$, but not w.h.p.; whether $\mathcal Z(G)$ concentrates around $2\sqrt e$ would require a second-moment estimate for the full sum $\mathcal Z(G)$, which we do not pursue.
 \endgroup
 
-% ===== Original (unrevised) version of the subsection above, kept for reference. Labels suffixed with -orig. =====
-\begingroup\color{blue}
-\subsection*{[Original version, for reference] Anti-concentration in the sparse Erd\H{o}s--R\'enyi graph architecture (\texorpdfstring{\cref{eg:sparse}}{Example})}
-Recall that by \cref{lem:parseval}, the ensemble of the output distributions of a fixed graph $G$ is anti-concentrated iff $\mathcal Z(G)\in\mathcal O(1)$, where we write $\mathcal Z(G):=\sum_{\vta\in\mathbb F_2^n}2^{-r^\vta(G)}$. 
-
-Here we derive an exact formula for $\mathbb{E}_G[\mathcal Z(G)]$ for any connectivity constant $c>0$, which defines the edge probability $p=c\ln n/n$. We will see a threshold at $c=2$, i.e., the ensemble is anti-concentrated when $c\geq2$, and otherwise not.
-
-\begin{theorem}\label{thm:erm-sharp-orig}
-Let $c>0$ and $p=c\ln n/n$. Let $G\sim G(n,p)$ be an Erd\H{o}s--R\'enyi graph instance. The expected quantity $\mathbb{E}_G[\mathcal Z(G)]$ can be bounded by:
-\begin{equation}\label{eq:erm-bounds-orig}
-2\sum_{k=0}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}-\mathcal O\big(n^{2K}2^{-n}\big)\ \le\ \operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]\ \le\ 2\exp\big(T_n(1+o(1))\big)+e^{-\Omega(n/\ln^3n)}
-\end{equation}
-for every fixed $K\in\mathbb N$, where $T_n=n2^{-n}(2-p)^{n-1}$. In particular, sharp threshold occurs at $c=2$:
-\begin{equation}
-    \begin{cases}
-    c<2 & \lim\limits_{n\to \infty} T_n = \infty, \lim\limits_{n\to \infty}\mathcal Z(G) = \infty \\
-    c=2 & \lim\limits_{n\to \infty}T_n = \frac{1}{2}, \lim\limits_{n\to \infty}\mathcal Z(G) = 2\sqrt{e}\\
-    c>2 & \lim\limits_{n\to \infty}T_n = 0, \lim\limits_{n\to \infty}\mathcal Z(G) = 2 
-\end{cases}
-\end{equation}
-\end{theorem}
-
-\begin{proof}
-For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\bm{0}\}$, let $A$ be the support of the observable $X^\vta$, and write $\abs{A}=k$. We denote its open neighborhood by $B$. As detailed in \ref{eg:sparse}, $\abs{B} \sim \mathrm{Binomial}(n-k,\,q)$, where we write $q = 1-\lambda^{k}$ and $\lambda=1-p$. Note that $r^\vta = k + \abs{B}$. Evaluating the probability generating function $\mathbb E[x^{|B|}]=(1-q+qx)^{n-k}$ at $x=\frac12$ gives $\mathbb{E}_G[2^{-r^\vta}]=2^{-k}(1-\frac q2)^{n-k}=2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$. Summing over all frequencies gives, and binomially expanding $(1+\lambda^k)^{n-k}$ gives
-\begin{align}\label{eq:erm-exact-orig}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]
-&= \sum_{\vta\in\mathbb F_2^n} \mathbb{E}_G[2^{-r^\vta}] \\
-&=\sum_{k=0}^n \binom nk2^{-n} \big(1+\lambda^k\big)^{n-k} \label{eq:t_k sum-orig}\\
-&= \sum_{k=0}^n \binom nk2^{-n} \sum_{j=0}^{n-k} \binom {n-k}j \lambda^{jk} \\
-&=\sum_{j+k\le n}F(j,k), \label{eq:s_k sum-orig}
-\end{align}
-where $F(j,k):=\frac{2^{-n}\,n!\,\lambda^{kj}}{k!\,j!\,(n-k-j)!}=F(k,j)$ is symmetric. 
-
-For convenience, let $t_k=\binom nk2^{-k}\big(\frac{1+\lambda^k}{2}\big)^{n-k}$ such that \eqref{eq:t_k sum-orig} writes $\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big] = \sum\limits_{k=0}^n t_k$. Let $s_k:=\sum_{j\ge k}F(k,j)$ and note that $s_0=2^{-n}\sum\limits_{j=0}^n\binom nj=1$. Then following from \eqref{eq:s_k sum-orig}, 
-\begin{equation}\label{eq:erm-upper-orig}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2\sum_{k=0}^{n} s_k-\sum_{k=0}^{n}F(k,k)\le2+2\sum_{k=1}^{n}s_k .
-\end{equation}
-Now we prove the upper bound part of \cref{thm:erm-sharp-orig}. Let $k_1:=\lfloor n/\ln^3n\rfloor$ and $k_2:=\lfloor n/\sqrt{\ln n}\rfloor$. We will split the series $\sum\limits_{k=1}^{n} s_k$ into three parts and bound each part separately. 
-
-\medskip
-\noindent
-For $1\leq k \leq k_1$, it is simpler to bound $t_k$ and then use $s_k\leq t_k$. Using the standard inequalities $\lambda^k=(1-p)^k\le e^{-kp}$, $1-e^{-x}\ge\frac{x}{1+x}$ for $x\ge0$, and $1-x\le e^{-x}$, we have that
-\begin{equation}
-\frac{1+\lambda^k}{2}\ = 1- \frac{1-\lambda^k}{2} \le 1- \frac{1-e^{-kp}}{2} \le\ 1-\frac{kp}{2(1+kp)}\ \le\ \exp\Big(-\frac{kp}{2(1+kp)}\Big),
-\end{equation}
-Raising this to the power $n-k$ and using $(n-k)p=c\ln n\,(1-\frac kn)$ gives
-\begin{equation}
-\Big(\frac{1+\lambda^k}{2}\Big)^{n-k} \leq
-\exp\Big(-k\cdot\frac c2\cdot\frac{1-k/n}{1+kp},\ln n\Big)=n^{-k\alpha_k}, \quad \alpha_k=\frac c2\cdot\frac{1-k/n}{1+kp}.
-\end{equation}
-
-Then, using that $\binom nk\le\frac{n^k}{k!}$ gives
-\begin{equation}\label{eq:erm-boundA-orig}
-s_k\ \le\ t_k\ \le\ \frac{n^k}{k!}\,2^{-k}\,n^{-k\alpha_k}=\frac1{k!}\Big(\frac12\,n^{1-\alpha_k}\Big)^k .
-\end{equation}
-
-We have that $k/n\le1/\ln^3n$ and $kp\le c/\ln^2n$. Using $\frac1{1+x}\ge1-x$ for $x>0$,
-\begin{equation}
-\alpha_k\ \ge\ \frac c2\Big(1-\frac kn\Big)(1-kp)\ \ge\ \frac c2\Big(1-\frac kn-kp\Big)\ \ge\ \frac c2-\varepsilon_n,
-\qquad \varepsilon_n=\frac c2\Big(\frac1{\ln^3n}+\frac c{\ln^2n}\Big).
-\end{equation}
-Then, on one hand
-\begin{equation}
-n^{1-\alpha_k}\le n^{1-c/2}\,e^{\varepsilon_n\ln n}=n^{1-c/2}\big(1+o(1)\big).
-\label{eq:erm-Sk-orig}
-\end{equation}
-
-On the other hand, define $T_n=t_1$ and 
-\begin{align}
-T_n&=n2^{-n}(2-p)^{n-1} \\
-&=\frac{n}{2-p}\Bigl(1-\frac{p}{2}\Bigr)^n \\
-&=\frac{n}{2-p} \exp\left(-\frac{np}{2} + \mathcal{O}(np^2)\right). \\
-&= (\frac{1}{2} + o(1))n^{1-c/2}
-\label{eq:erm-Tn-orig}
-\end{align}
-Inserting \eqref{eq:erm-Sk-orig} and \eqref{eq:erm-Tn-orig} into \eqref{eq:erm-boundA-orig} gives, for large $n$,
-\begin{equation}
-\sum_{k=1}^{k_1}s_k\ \le\ \sum_{k=1}^{k_1}\frac{\big(T_n(1+o(1))\big)^k}{k!}=\exp\big(T_n(1+o(1))\big)-1. \label{eq:region 1-orig}
-\end{equation}
-
-\medskip
-\noindent
-For $k_1 \leq k \leq k_2$, \eqref{eq:erm-boundA-orig} still holds, and we will bound $t_k$ with a different method. We have that $k\le n/\sqrt{\ln n}$, so $1-\frac kn\ge1-\frac1{\sqrt{\ln n}}$, and $1+kp\le1+c\sqrt{\ln n}$. Hence, for large $n$,
-\begin{equation}
-\alpha_k\ \ge\ \frac c2\cdot\frac{1-1/\sqrt{\ln n}}{1+c\sqrt{\ln n}}=\frac{1+o(1)}{2\sqrt{\ln n}}\ \ge\ \frac1{3\sqrt{\ln n}} \implies n^{-\alpha_k}\le e^{-\sqrt{\ln n}/3}.
-\end{equation} Moreover, using that $n/k<\ln^3n$ and $k!\ge(k/e)^k$, for large $n$, \eqref{eq:erm-boundA-orig} leads to
-\begin{equation}
-s_k \leq \Big(\frac e2 \frac nk n^{-\alpha_k}\Big)^k \leq \Big(\frac e2 \ln^3n e^{-\sqrt{\ln n}/3}\Big)^k \leq 2^{-k}
-\end{equation}
-The last inequality comes from that $e^{-\sqrt{\ln n}/3}$ decays faster than $\ln^3 n$ grows. Hence, for large $n$, \begin{equation}
-    \sum_{k=k_1+1}^{k_2}s_k\le2^{-k_1} \label{eq:region 2-orig}
-\end{equation}
-
-\medskip
-\noindent
-For $k>k_2$, we bound $s_k$ directly. Note that
-\begin{equation}
-s_k=\binom nk2^{-n}\sum_{j=k}^{n-k}\binom{n-k}{j}\lambda^{kj}.
-\end{equation}
-For $j\geq k$ and $\lambda\leq 1$, we have that $\lambda^{kj}\leq\lambda^{k^2}$. Moreover, $\sum\limits_{j=k}^{n-k}\binom{n-k}{j}\leq \sum\limits_{j=0}^{n-k}\binom{n-k}{j}=2^{n-k}$. Hence,
-\begin{equation}
-s_k \leq \binom nk2^{-n}\,2^{n-k}\,\lambda^{k^2}=\binom nk2^{-k}\big(\lambda^k\big)^k\ \le\ \frac{n^k}{k!}\,2^{-k}\big(\lambda^k\big)^k=\frac1{k!}\Big(\frac12\,n\lambda^k\Big)^k .
-\end{equation}
-Using $\lambda^k\le e^{-kp}=e^{-ck\ln n/n}$, we have
-\begin{equation*}
-s_k\ \le\ \frac1{k!}\Big(\frac12 n e^{-ck\ln n/n}\Big)^k .
-\end{equation*}
-Using $k > n/\sqrt{\ln n}$, so $e^{-c(k/n)\ln n}<e^{-c\sqrt{\ln n}}$, and $k!\ge(k/e)^k$, for large $n$, we have 
-\begin{equation}
-s_k \leq \Big(\frac e2\cdot\frac nk\cdot n^{-ck/n}\Big)^k \leq \Big(\frac e2\sqrt{\ln n} e^{-c\sqrt{\ln n}}\Big)^k \leq 2^{-k}.
-\end{equation} Hence, for large $n$,
-\begin{equation}\label{eq:region 3-orig}
-\sum_{k>k_2}s_k\ \le\ 2^{-k_2}.
-\end{equation}
-
-Combining \eqref{eq:region 1-orig}, \eqref{eq:region 2-orig}, \eqref{eq:region 3-orig} and \eqref{eq:erm-upper-orig} gives
-\begin{equation}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big] \leq 2\exp\big(T_n(1+o(1))\big)+2^{1-k_1}+2^{1-k_2}
-\leq 2\exp\big(T_n(1+o(1))\big)+e^{-\Omega(n/\ln^3n)},
-\end{equation}
-which is the upper bound of \cref{thm:erm-sharp-orig}.
-
-Now we prove the lower bound part. For any fixed $0 \leq k \leq n$, $\frac{1+\lambda^k}{2}\ge\lambda^{k/2}$. Hence,
-\begin{equation}
- t_k=\binom nk2^{-k}\Big(\frac{1+\lambda^k}{2}\Big)^{n-k} \geq \binom nk2^{-k}(1-p)^{(n-k)k/2}
- \geq \binom nk2^{-k}(1-p)^{nk/2}.
-\end{equation}
-Using $(1-p)^{n/2} = (1-\frac p2)^{n}(1+o(1))$ and $\binom nk\geq(n-k)^k/k!$, we have
-\begin{equation}
- t_k\geq \frac{(n-k)^k}{k!}2^{-k} ((1-\frac p2)^{n}(1+o(1)))^k = \frac{\big(T_n(1-o(1))\big)^k}{k!}.
-\end{equation}
-Now we let $K\leq n$ be a cutoff index and sum over $F(j,k)$ for $k\leq K$ or $j \leq K$. By symmetry, they contribute $2\sum\limits_{k=0}^Kt_k$, and their overlap is at most
-\begin{equation}
-\sum_{j=0}^K\sum_{k=0}^KF(k,j)\leq (K+1)^2n^{2K}2^{-n}.
-\end{equation}
-Then, we have
-\begin{equation}
-\operatorname*{\mathbb{E}}_G[\mathcal Z]\geq 2\sum_{k=0}^{K}t_k-\mathcal O(n^{2K}2^{-n})
-\geq 2\sum_{k=0}^{K}\frac{\big(T_n(1-o(1))\big)^k}{k!}-\mathcal O(n^{2K}2^{-n}),
-\end{equation}
-which is the lower bound of \cref{thm:erm-sharp-orig}.
-\end{proof}
-
-\paragraph{The three regimes.}
-By \eqref{eq:erm-Tn-orig}, $T_n\ge n^{1-c/2}/3$ for large $n$, so the additive errors in \eqref{eq:erm-bounds-orig} are $o(T_n)$ for every $c$. Recall also that every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$: the $\vta=\bm 0$ term equals $1$, and each of the other $2^n-1$ terms is at least $2^{-n}$.
-
-\emph{$c>2$: anti-concentration w.h.p.} Here $T_n\to0$. The upper bound in \eqref{eq:erm-bounds-orig} and the lower bound with $K=1$ give
-\begin{equation}\label{eq:erm-supercritical-orig}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2+(2+o(1))T_n=2+(1+o(1))\,n^{1-c/2}.
-\end{equation}
-Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le(2+o(1))T_n/\varepsilon$. With $\varepsilon=n^{-(c-2)/4}$, this shows $\mathcal Z(G)\le2+n^{-(c-2)/4}$ w.h.p. This is the anti-concentration used in \cref{thm:ac_and_pst_exist}. For this conclusion only the upper bound in \eqref{eq:erm-bounds-orig} is needed; the lower bound shows that the rate $n^{1-c/2}$ is sharp.
-
-\emph{$c=2$: anti-concentration with a larger constant.} Here $T_n\to\frac12$. The upper bound in \eqref{eq:erm-bounds-orig} tends to $2\sqrt e$, and the lower bound tends to $2\sum_{k\le K}2^{-k}/k!$, which approaches $2\sqrt e$ as $K\to\infty$. Hence
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]\to2\sqrt e\approx3.297 .
-\end{equation*}
-The ensemble is still anti-concentrated in expectation, but the limit is not $2$. By Markov's inequality as above, for every fixed $\delta\in(0,1)$, $\mathcal Z(G)\le2+(2\sqrt e-2)/\delta$ with probability at least $1-\delta-o(1)$ over $G$.
-
-\emph{$c<2$: no anti-concentration.} Here $T_n\to\infty$. The lower bound in \eqref{eq:erm-bounds-orig}, for any fixed $K$, gives $\mathbb{E}_G[\mathcal Z]\ge n^{K(1-c/2)-o(1)}$, so $\mathbb{E}_G[\mathcal Z]$ grows faster than any polynomial in $n$. The upper bound gives $\mathbb{E}_G[\mathcal Z]\le\exp\big((\frac12+o(1))n^{1-c/2}\big)$. The divergence is already caused by the weight-one frequencies: they contribute $\sum_v2^{-1-\deg(v)}$ to $\mathcal Z(G)$, whose expectation is exactly $t_1=T_n$, and which concentrates around $T_n$. Hence $\mathcal Z(G)\ge(1-o(1))T_n\to\infty$ w.h.p.\ (\cref{app:tight-threshold}). Together with the case $c>2$, this shows that $c=2$ is the sharp threshold for anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture.
-\endgroup
 
 \begingroup\color{red}
 \subsection{Factorization over components and failure of anti-concentration for sparse ER with $c<1$}
