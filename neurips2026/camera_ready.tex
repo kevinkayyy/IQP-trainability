@@ -1056,7 +1056,11 @@ Every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$, since the $\vta=\bm 0$ term eq
 
 (b) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]-2\to2\sqrt e-2$. With $\varepsilon=(2\sqrt e-2)/\delta$, \eqref{eq:erm-markov} gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le\delta+o(1)$.
 
-(c) Keeping only the weight-one frequencies, $\mathcal Z(G)\ge X(G):=\sum_v2^{-r^{\bm e_v}(G)}=\sum_v2^{-1-\deg(v)}$. By \cref{app:tight-threshold}, $X(G)\ge(1-o(1))T_n$ w.h.p., and $T_n\to\infty$ by \eqref{eq:erm-Tn}.
+(c) Keeping only the weight-one frequencies, $\mathcal Z(G)\ge X(G):=\sum_vY_v$ with $Y_v:=2^{-r^{\bm e_v}(G)}=2^{-1-\deg(v)}$, since $S^{\bm e_v}$ consists of $\bm e_v$ and the edges at $v$. Let $\beta:=1-\frac p2$. Since $\deg(v)\sim\mathrm{Bin}(n-1,p)$, $\mathbb{E}_G[X]=\frac n2\beta^{n-1}=T_n$ and $\mathbb{E}_G[Y_v^2]=\frac14(1-\frac{3p}4)^{n-1}\le\frac12\mathbb{E}_G[Y_v]$. For $u\ne v$, splitting off the shared edge $(u,v)$ gives $\mathbb{E}_G[Y_uY_v]=\frac14(1-\frac{3p}4)\beta^{2n-4}$, so $\operatorname{Cov}(Y_u,Y_v)=\frac14\beta^{2n-4}\cdot\frac p4(1-p)\le p\,(\mathbb{E}_G[Y_v])^2$. Hence $\operatorname{Var}_G[X]\le\frac{T_n}2+p\,T_n^2$, and Chebyshev's inequality gives, for every $\eta\in(0,1)$,
+\begin{equation*}
+\Pr_G\big[X(G)\le(1-\eta)T_n\big]\le\frac1{\eta^2}\Big(\frac1{2T_n}+p\Big).
+\end{equation*}
+By \eqref{eq:erm-Tn}, $T_n\to\infty$ for $c<2$, and $p\to0$. Choosing $\eta=(1/T_n+p)^{1/3}\to0$ yields $\mathcal Z(G)\ge X(G)\ge(1-o(1))\,T_n$ w.h.p.
 \end{proof}
 
 Consequently, a typical graph yields an anti-concentrated ensemble for $c>2$ (this is the property used in \cref{thm:ac_and_pst_exist}) and fails to do so for $c<2$, so $c=2$ is the threshold for anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture. At $c=2$, \cref{cor:erm-typical}(b) gives $\mathcal Z(G)\in\mathcal O(1)$ with probability arbitrarily close to $1$, but not w.h.p.; whether $\mathcal Z(G)$ concentrates around $2\sqrt e$ would require a second-moment estimate for the full sum $\mathcal Z(G)$, which we do not pursue.
