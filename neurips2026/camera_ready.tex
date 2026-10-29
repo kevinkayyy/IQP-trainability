@@ -531,8 +531,8 @@ Using this proposition, we can check whether the examples of IQP architectures s
 \begin{itemize}
     \item For~\cref{eg:product}, we have: $\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}=\sum_{k=0}^n \binom{n}{k}2^{-k}=(3/2)^n$ -- output distribution is not anti-concentrated.
     \item For~\cref{eg:lattice}, we have: $\sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta} \geq \sum_{k=0}^n \binom{n}{k}2^{-5k}=\left(\frac{33}{32}\right)^n$ -- output distribution is not anticoncentrated. 
-    \item For~\cref{eg:sparse}, the critical rank $r^{\vta}(G)$ varies for each graph instance $G$, whose occurance depends on the connectivity constant $c$. In the case of $c \geq 2$, averaging over the Erd\H os-R\'enyi random graph distribution, we have:
-$\operatorname*{\mathbb{E}}_{G}\left(\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta(G)}\right) = 2 + o(1)$ -- output distribution is anti-concentrated. See~\cref{app:derivation-sparse} for the detailed derivation.
+    \item For~\cref{eg:sparse}, the critical rank $r^{\vta}(G)$ varies for each graph instance $G$, whose occurance depends on the connectivity constant $c$. In the case of $c > 2$, averaging over the Erd\H os-R\'enyi random graph distribution, we have:
+$\operatorname*{\mathbb{E}}_{G}\left(\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta(G)}\right) = 2 + o(1)$ -- output distribution is anti-concentrated. See~\cref{app:er-merged} for the detailed derivation.
 \item For~\cref{eg:complete}, we have: $\sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta}= 1+(2^n-1)2^{-n} = 2 - 2^{-n}$ -- output distribution is anti-concentrated.
 \end{itemize}
 \rev{\begin{remark}[Choice of probability constant $p$ in ~\cref{eg:sparse}] The choice of $p=c\ln(n)/n$ at connectivity threshold is not a coincidence. For $p$ of smaller scale, the graph $G$ is with high probability disconnected, making the critical rank factorized over its connected components $G_1,\dots,G_m$, i.e., $r^\vta(G)=\sum_{i}r^{\vta_i}(G_i)$, where $\vta_i$ is the restriction of $\vta$ to $G_i$. Hence $\sum_{\vta}2^{-r^\vta}=\prod_{i=1}^m\sum_{\vta_i}2^{-r^{\vta_i}(G_i)}\ge(3/2)^m$, because each factor is at least $2-2^{-|G_i|}\ge 3/2$. Since $m\ge n^{1-c}/3\to\infty$ w.h.p., \cref{lem:parseval} shows that anti-concentration fails (\cref{app:components}). Failure of anti-concentration only means that the hardness proof of~\citet{Bremner17} does not apply in this regime; it does not imply that the model is classically simulable. \end{remark}}
@@ -1047,17 +1047,16 @@ Let $G\sim G(n,p)$ with $p=c\ln n/n$.
 \end{corollary}
 
 \begin{proof}
-Every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$: the $\vta=\bm 0$ term equals $1$, and each of the other $2^n-1$ terms is at least $2^{-n}$. Hence $W(G):=\mathcal Z(G)-(2-2^{-n})\ge0$, and Markov's inequality applied to $W$ gives, for every $\varepsilon>0$,
+Every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$, since the $\vta=\bm 0$ term equals $1$ and each of the other $2^n-1$ terms is at least $2^{-n}$. Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives, for every $\varepsilon>0$,
 \begin{equation}\label{eq:erm-markov}
 \Pr_G\big[\mathcal Z(G)>2+\varepsilon\big]\ \le\ \frac{\mathbb{E}_G[\mathcal Z(G)]-2+2^{-n}}{\varepsilon}.
 \end{equation}
-Applying Markov's inequality to $\mathcal Z(G)$ itself would only give $\Pr_G[\mathcal Z(G)>\alpha]\le(2+o(1))/\alpha$, i.e.\ a constant failure probability; the shift by the deterministic lower bound is what turns $\mathbb{E}_G[\mathcal Z]\to2$ into a high-probability statement.
 
-(a) By \eqref{eq:erm-Tn}, $T_n\to0$ and $T_n\ge n^{1-c/2}/3$ for large $n$, so the additive errors in \eqref{eq:erm-bounds} are $o(T_n)$. The upper bound in \eqref{eq:erm-bounds} with $e^x=1+x+\mathcal O(x^2)$, and the lower bound with $K=1$, give \eqref{eq:erm-supercritical}. Inserting \eqref{eq:erm-supercritical} into \eqref{eq:erm-markov} with $\varepsilon=n^{-(c-2)/4}$ bounds the failure probability by $\mathcal O\big(n^{1-c/2}/\varepsilon\big)=\mathcal O\big(n^{-(c-2)/4}\big)\to0$.
+(a) By \eqref{eq:erm-Tn}, $T_n=\Theta(n^{1-c/2})\to0$, so the upper bound in \eqref{eq:erm-bounds} gives $\mathbb{E}_G[\mathcal Z(G)]-2\le 2\big(e^{T_n(1+o(1))}-1\big)+e^{-\Omega(n/\ln^3n)}=\mathcal O(n^{1-c/2})$. With $\varepsilon=n^{-(c-2)/4}$, \eqref{eq:erm-markov} gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]=\mathcal O(n^{-(c-2)/4})\to0$.
 
-(b) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]\to2\sqrt e$. Take $\varepsilon=(2\sqrt e-2)/\delta$ in \eqref{eq:erm-markov}.
+(b) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]-2\to2\sqrt e-2$. With $\varepsilon=(2\sqrt e-2)/\delta$, \eqref{eq:erm-markov} gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le\delta+o(1)$.
 
-(c) Here Markov's inequality is of no use, since it bounds only the upper tail. Moreover, $\mathbb{E}_G[\mathcal Z(G)]\to\infty$ alone does not imply that $\mathcal Z(G)$ is large for a typical graph: the upper bound in \eqref{eq:erm-bounds} allows $\mathbb{E}_G[\mathcal Z(G)]$ to be as large as $\exp\big((\frac12+o(1))n^{1-c/2}\big)$, so the mean could a priori be carried by a vanishing fraction of graphs. Instead, we use the weight-one frequencies, which contribute $X(G):=\sum_v2^{-1-\deg(v)}\le\mathcal Z(G)$ with $\mathbb{E}_G[X]=t_1=T_n\to\infty$. The second-moment computation in \cref{app:tight-threshold} gives $\operatorname{Var}(X)/(\mathbb{E}X)^2\to0$, so by Chebyshev's inequality $X\ge(1-o(1))T_n$ w.h.p.
+(c) Keeping only the weight-one frequencies, $\mathcal Z(G)\ge X(G):=\sum_v2^{-r^{\bm e_v}(G)}=\sum_v2^{-1-\deg(v)}$. By \cref{app:tight-threshold}, $X(G)\ge(1-o(1))T_n$ w.h.p., and $T_n\to\infty$ by \eqref{eq:erm-Tn}.
 \end{proof}
 
 Consequently, a typical graph yields an anti-concentrated ensemble for $c>2$ (this is the property used in \cref{thm:ac_and_pst_exist}) and fails to do so for $c<2$, so $c=2$ is the threshold for anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture. At $c=2$, \cref{cor:erm-typical}(b) gives $\mathcal Z(G)\in\mathcal O(1)$ with probability arbitrarily close to $1$, but not w.h.p.; whether $\mathcal Z(G)$ concentrates around $2\sqrt e$ would require a second-moment estimate for the full sum $\mathcal Z(G)$, which we do not pursue.
@@ -1081,10 +1080,10 @@ Combined with \cref{lem:parseval}, a typical graph with $c<1$ gives a non-anti-c
 \subsection{Tightness of the threshold $c=2$: failure of anti-concentration throughout $c<2$}
 \label{app:tight-threshold}
 \begin{proposition}
-Let $G\sim G(n,p)$ with $p=c\ln n/n$ for a fixed constant $c$. If $c<2$, then w.h.p.\ $\sum_{\vta}2^{-r^\vta(G)}\ge(1-o(1))T_n\notin\mathcal O(1)$, where $T_n=(1/2+o(1))n^{1-c/2}$ as in \cref{app:derivation-sparse}; hence anti-concentration fails. Combined with \cref{thm:ac_and_pst_exist} (which uses $c>2$), the threshold $c=2$ is tight, and the graph-connectivity threshold $c=1$ is not the relevant quantity for anti-concentration.
+Let $G\sim G(n,p)$ with $p=c\ln n/n$ for a fixed constant $c$. If $c<2$, then w.h.p.\ $\sum_{\vta}2^{-r^\vta(G)}\ge(1-o(1))T_n\notin\mathcal O(1)$, where $T_n=(1/2+o(1))n^{1-c/2}$ as in \eqref{eq:erm-Tn}; hence anti-concentration fails. Combined with \cref{thm:ac_and_pst_exist} (which uses $c>2$), the threshold $c=2$ is tight, and the graph-connectivity threshold $c=1$ is not the relevant quantity for anti-concentration.
 \end{proposition}
 \begin{proof}
-Let $Y_v:=2^{-r^{\bm e_v}(G)}=\tfrac12\cdot2^{-\deg(v)}$ and $X:=\sum_vY_v\le\sum_\vta2^{-r^\vta}$. By \cref{app:derivation-sparse}, $\mathbb{E}_GX=T_n$. For $u\ne v$, write $\deg(u)=Z+D_u'$, $\deg(v)=Z+D_v'$ with $Z=\mathbb 1[(u,v)\in E]\sim\mathrm{Bernoulli}(p)$ and $D_u',D_v'\sim\mathrm{Bin}(n-2,p)$ mutually independent. Then
+Let $Y_v:=2^{-r^{\bm e_v}(G)}=\tfrac12\cdot2^{-\deg(v)}$ and $X:=\sum_vY_v\le\sum_\vta2^{-r^\vta}$. By \cref{app:er-merged}, $\mathbb{E}_GX=t_1=T_n$. For $u\ne v$, write $\deg(u)=Z+D_u'$, $\deg(v)=Z+D_v'$ with $Z=\mathbb 1[(u,v)\in E]\sim\mathrm{Bernoulli}(p)$ and $D_u',D_v'\sim\mathrm{Bin}(n-2,p)$ mutually independent. Then
 \begin{equation*}
 \operatorname{Cov}(Y_u,Y_v)=\tfrac14(1-p/2)^{2n-4}\Big[(1-\tfrac34p)-(1-\tfrac p2)^2\Big]=\tfrac14(1-p/2)^{2n-4}\cdot\tfrac p4(1-p)=(\mathbb{E}Y_v)^2\cdot\mathcal O(p).
 \end{equation*}
