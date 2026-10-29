@@ -1034,22 +1034,38 @@ Then, we have
 which is the lower bound of \cref{thm:erm-sharp}.
 \end{proof}
 
-\paragraph{The three regimes.}
-By \eqref{eq:erm-Tn}, $T_n\ge n^{1-c/2}/3$ for large $n$, so the additive errors in \eqref{eq:erm-bounds} are $o(T_n)$ for every $c$. Recall also that every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$: the $\vta=\bm 0$ term equals $1$, and each of the other $2^n-1$ terms is at least $2^{-n}$.
+\paragraph{From the average graph to a typical graph.}
+\Cref{thm:erm-sharp} controls only the average of $\mathcal Z(G)$ over $G$. If, as in~\citet{Bremner17}, the random graph is regarded as part of the circuit ensemble, i.e.\ $(G,\vttheta)$ is drawn jointly, then the expected collision probability equals $2^{-n}\,\mathbb{E}_G[\mathcal Z(G)]$, and \cref{thm:erm-sharp} directly gives anti-concentration for all $c\ge2$. However, \cref{lem:parseval} and \cref{thm:ac_and_pst_exist} concern a \emph{fixed} graph $G$, and a bound on the mean does not by itself say what happens for a typical graph. The following corollary makes this step explicit; each regime requires a different argument.
 
-\emph{$c>2$: anti-concentration w.h.p.} Here $T_n\to0$. The upper bound in \eqref{eq:erm-bounds} and the lower bound with $K=1$ give
+\begin{corollary}[Typical graphs]\label{cor:erm-typical}
+Let $G\sim G(n,p)$ with $p=c\ln n/n$.
+
+\noindent\textup{(a)} If $c>2$, then
 \begin{equation}\label{eq:erm-supercritical}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2+(2+o(1))T_n=2+(1+o(1))\,n^{1-c/2}.
+\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]=2+(2+o(1))T_n=2+(1+o(1))\,n^{1-c/2},
 \end{equation}
-Markov's inequality applied to $\mathcal Z(G)-(2-2^{-n})\ge0$ gives $\Pr_G[\mathcal Z(G)>2+\varepsilon]\le(2+o(1))T_n/\varepsilon$. With $\varepsilon=n^{-(c-2)/4}$, this shows $\mathcal Z(G)\le2+n^{-(c-2)/4}$ w.h.p. This is the anti-concentration used in \cref{thm:ac_and_pst_exist}. For this conclusion only the upper bound in \eqref{eq:erm-bounds} is needed; the lower bound shows that the rate $n^{1-c/2}$ is sharp.
+and w.h.p.\ $2-2^{-n}\le\mathcal Z(G)\le2+n^{-(c-2)/4}$.
 
-\emph{$c=2$: anti-concentration with a larger constant.} Here $T_n\to\frac12$. The upper bound in \eqref{eq:erm-bounds} tends to $2\sqrt e$, and the lower bound tends to $2\sum_{k\le K}2^{-k}/k!$, which approaches $2\sqrt e$ as $K\to\infty$. Hence
-\begin{equation*}
-\operatorname*{\mathbb{E}}_G\big[\mathcal Z(G)\big]\to2\sqrt e\approx3.297 .
-\end{equation*}
-The ensemble is still anti-concentrated in expectation, but the limit is not $2$. By Markov's inequality as above, for every fixed $\delta\in(0,1)$, $\mathcal Z(G)\le2+(2\sqrt e-2)/\delta$ with probability at least $1-\delta-o(1)$ over $G$.
+\noindent\textup{(b)} If $c=2$, then $\mathcal Z(G)$ is bounded in probability: for every fixed $\delta\in(0,1)$, $\Pr_G\big[\mathcal Z(G)\le2+(2\sqrt e-2)/\delta\big]\ge1-\delta-o(1)$.
 
-\emph{$c<2$: no anti-concentration.} Here $T_n\to\infty$. The lower bound in \eqref{eq:erm-bounds}, for any fixed $K$, gives $\mathbb{E}_G[\mathcal Z]\ge n^{K(1-c/2)-o(1)}$, so $\mathbb{E}_G[\mathcal Z]$ grows faster than any polynomial in $n$. The upper bound gives $\mathbb{E}_G[\mathcal Z]\le\exp\big((\frac12+o(1))n^{1-c/2}\big)$. The divergence is already caused by the weight-one frequencies: they contribute $\sum_v2^{-1-\deg(v)}$ to $\mathcal Z(G)$, whose expectation is exactly $t_1=T_n$, and which concentrates around $T_n$. Hence $\mathcal Z(G)\ge(1-o(1))T_n\to\infty$ w.h.p.\ (\cref{app:tight-threshold}). Together with the case $c>2$, this shows that $c=2$ is the sharp threshold for anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture.
+\noindent\textup{(c)} If $c<2$, then w.h.p.\ $\mathcal Z(G)\ge(1-o(1))\,T_n=(\frac12-o(1))\,n^{1-c/2}\to\infty$.
+\end{corollary}
+
+\begin{proof}
+Every graph satisfies $\mathcal Z(G)\ge2-2^{-n}$: the $\vta=\bm 0$ term equals $1$, and each of the other $2^n-1$ terms is at least $2^{-n}$. Hence $W(G):=\mathcal Z(G)-(2-2^{-n})\ge0$, and Markov's inequality applied to $W$ gives, for every $\varepsilon>0$,
+\begin{equation}\label{eq:erm-markov}
+\Pr_G\big[\mathcal Z(G)>2+\varepsilon\big]\ \le\ \frac{\mathbb{E}_G[\mathcal Z(G)]-2+2^{-n}}{\varepsilon}.
+\end{equation}
+Applying Markov's inequality to $\mathcal Z(G)$ itself would only give $\Pr_G[\mathcal Z(G)>\alpha]\le(2+o(1))/\alpha$, i.e.\ a constant failure probability; the shift by the deterministic lower bound is what turns $\mathbb{E}_G[\mathcal Z]\to2$ into a high-probability statement.
+
+(a) By \eqref{eq:erm-Tn}, $T_n\to0$ and $T_n\ge n^{1-c/2}/3$ for large $n$, so the additive errors in \eqref{eq:erm-bounds} are $o(T_n)$. The upper bound in \eqref{eq:erm-bounds} with $e^x=1+x+\mathcal O(x^2)$, and the lower bound with $K=1$, give \eqref{eq:erm-supercritical}. Inserting \eqref{eq:erm-supercritical} into \eqref{eq:erm-markov} with $\varepsilon=n^{-(c-2)/4}$ bounds the failure probability by $\mathcal O\big(n^{1-c/2}/\varepsilon\big)=\mathcal O\big(n^{-(c-2)/4}\big)\to0$.
+
+(b) By \cref{thm:erm-sharp}, $\mathbb{E}_G[\mathcal Z(G)]\to2\sqrt e$. Take $\varepsilon=(2\sqrt e-2)/\delta$ in \eqref{eq:erm-markov}.
+
+(c) Here Markov's inequality is of no use, since it bounds only the upper tail. Moreover, $\mathbb{E}_G[\mathcal Z(G)]\to\infty$ alone does not imply that $\mathcal Z(G)$ is large for a typical graph: the upper bound in \eqref{eq:erm-bounds} allows $\mathbb{E}_G[\mathcal Z(G)]$ to be as large as $\exp\big((\frac12+o(1))n^{1-c/2}\big)$, so the mean could a priori be carried by a vanishing fraction of graphs. Instead, we use the weight-one frequencies, which contribute $X(G):=\sum_v2^{-1-\deg(v)}\le\mathcal Z(G)$ with $\mathbb{E}_G[X]=t_1=T_n\to\infty$. The second-moment computation in \cref{app:tight-threshold} gives $\operatorname{Var}(X)/(\mathbb{E}X)^2\to0$, so by Chebyshev's inequality $X\ge(1-o(1))T_n$ w.h.p.
+\end{proof}
+
+Consequently, a typical graph yields an anti-concentrated ensemble for $c>2$ (this is the property used in \cref{thm:ac_and_pst_exist}) and fails to do so for $c<2$, so $c=2$ is the threshold for anti-concentration of the sparse Erd\H{o}s--R\'enyi architecture. At $c=2$, \cref{cor:erm-typical}(b) gives $\mathcal Z(G)\in\mathcal O(1)$ with probability arbitrarily close to $1$, but not w.h.p.; whether $\mathcal Z(G)$ concentrates around $2\sqrt e$ would require a second-moment estimate for the full sum $\mathcal Z(G)$, which we do not pursue.
 \endgroup
 
 % ===== Original (unrevised) version of the subsection above, kept for reference. Labels suffixed with -orig. =====
