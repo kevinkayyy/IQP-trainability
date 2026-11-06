@@ -1,0 +1,14 @@
+# LaTeX build artifacts
+build/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.out
+*.bbl
+*.blg
+*.toc
+
+# macOS
+.DS_Store
