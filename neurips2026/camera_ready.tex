@@ -757,7 +757,7 @@ For sparse Erd\H os-R\'enyi architectures under a suitable edge probability, we 
 
 This does not contradict the claim of \citet{herbst25} that sampling hardness rooted in anti-concentration precludes trainability: their argument assumes pseudo-independence, which is strictly stronger than anti-concentration and forces all nonzero characteristic functions to vanish exponentially. By contrast, $L^2$ anti-concentration only controls the collision probability and permits a small set of frequencies to remain polynomially visible, as in \cref{eg:sparse}.
 
-Our trainability analysis characterizes gradient scaling under random parameter initialization; avoiding a barren plateau is a necessary, but not sufficient, condition for efficient end-to-end optimization. The MMD lower bound is averaged over a target-distribution ensemble, and its implications for a particular dataset depend on the dataset's Fourier spectrum and the chosen kernel. Moreover, the classical sampling-hardness result is conditional on standard complexity-theoretic conjectures, while the numerical experiments consider idealized circuits and a limited set of architectures and training settings. Extending the analysis to noisy devices, broader initialization schemes, and application-specific targets is an important direction for future work.
+
 
 \paragraph{Acknowledgements} VD and HW were supported by the Dutch National Growth Fund (NGF), as part of the Quantum Delta NL programme.
 This work was also supported by the European Union’s Horizon Europe program through the ERC CoG BeMAIQuantum (Grant No. 101124342). This research was funded by the BMW Group. 
