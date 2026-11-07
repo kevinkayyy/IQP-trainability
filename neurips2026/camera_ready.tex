@@ -162,7 +162,7 @@ Here, trainability refers to whether
 a practical optimization procedure, such as stochastic gradient descent, can reduce the loss within a reasonable time. 
 A major obstruction to trainability in QML is the barren plateau (BP) phenomenon, in which the variance of the loss gradient with respect to the parameter distribution decays exponentially with the number of qubits $n$~\citep{mcclean18,Cerezo21,Holmes22,Larocca25}. In the presence of BP, the exponentially small gradient information will make both gradient- and sampling-based optimization ineffective for large $n$. To our knowledge, the occurrence of BPs in IQP-QCBMs has not been formally studied. The fact that the MMD loss and its gradients for IQP-QCBMs can be evaluated classically does not imply trainability; it only addresses the cost of computing the loss signal, rather than this signal being significant enough for effective training.
 
-In this work, we show that whether an IQP-QCBM exhibits a BP depends on two practical design choices: the IQP circuit architecture (see~\cref{def:IQP}) and the kernel used in the MMD loss (see~\cref{prop:mmd-loss}). We derive the closed-form expression of variance of the MMD loss gradient, and we identify the "critical rank" of the IQP-QCBM model, the dimension of the space spanned by the anti-commuting generators with respect to the observable, as the deciding factor for the presence or absence of BPs. Also, using four example circuit architectures, we demonstrate the scaling of their loss gradients and show that, in many cases, BPs can be mitigated with an appropriately chosen kernel. Our analytical work provides guidance for avoiding architectures that are provably susceptible to BPs and narrows the design space of trainable IQP-QCBMs.
+In this work, we show that whether an IQP-QCBM exhibits a BP depends on two practical design choices: the IQP circuit architecture (see~\cref{def:IQP}) and the kernel used in the MMD loss (see~\cref{prop:mmd-loss}). We derive a closed-form expression for the variance of the MMD loss gradient, and we identify the "critical rank" of the IQP-QCBM model, the dimension of the space spanned by the anti-commuting generators with respect to the observable, as the deciding factor for the presence or absence of BPs. Also, using four example circuit architectures, we demonstrate the scaling of their loss gradients and show that, in many cases, BPs can be mitigated with an appropriately chosen kernel. Our analytical work provides guidance for avoiding architectures that are provably susceptible to BPs and narrows the design space of trainable IQP-QCBMs.
 
 \begin{table}
 \centering
@@ -561,7 +561,8 @@ Let $Q = \{q_\vttheta\}_\vttheta$ be a family of probability distributions on $\
 where the quantity $\sum_x q_\vttheta(x)^2$ is known as the collision probability.  
 \end{definition}
 \cref{def:anti-concentration} implies an alternative formulation of anti-concentration: there exist $\alpha>0,\beta>0$ such that $\forall x\in \{0,1\}^n, \;\Pr\left[q_\vttheta(x)\geq \alpha 2^{-n}\right]\ge \beta$,
-which appears in sampling hardness arguments of IQP circuits~\cite{Bremner16, Bremner17}. To see this implication, we first observe that due to symmetry, all bitstrings $x$ have equal contributions: $\E_\vttheta[\sum_xq_\vttheta(x)] = 1\implies \E_\vttheta[q_\vttheta(x)] = 2^{-n}$ and $\E_\vttheta[q_\vttheta(x)^2] \le b2^{-2n}$, then we apply the Paley-Zygmund inequality to obtain $\Pr[q_\vttheta(x) \ge \alpha2^{-n}] \ge (1-\alpha)^2/b$. Setting $\beta = (1-\alpha)^2/b$ completes the proof.\\
+which appears in sampling hardness arguments of IQP circuits~\cite{Bremner16, Bremner17}. To see this implication, we first observe that due to symmetry, all bitstrings $x$ have equal contributions: $\E_\vttheta[\sum_xq_\vttheta(x)] = 1\implies \E_\vttheta[q_\vttheta(x)] = 2^{-n}$ and $\E_\vttheta[q_\vttheta(x)^2] \le b2^{-2n}$, then we apply the Paley-Zygmund inequality to obtain $\Pr[q_\vttheta(x) \ge \alpha2^{-n}] \ge (1-\alpha)^2/b$. Setting $\beta = (1-\alpha)^2/b$ completes the proof.
+
 To study the classical hardness of IQP-QCBMs, it is convenient to relate the $L^2$ anti-concentration condition in~\cref{def:anti-concentration} to the critical rank quantities introduced previously  in~\cref{thm:uniform}. Since the Fourier transform is an $L^2$ isometry (the Parseval identity), we can achieve it automatically in the next proposition.
 % Below, we focus on IQP-QCBMs under uniform initialization. In this setting, by parseval identity, we can alternatively express collision probabilities with Fourier frequencies. Then, using \cref{thm:uniform} allows us to equivalently write the definition of $L_2$ concentration using the quantities $r^\vta$. This serves as a bridge relating the absence or presence of barren plateau with anti-concentration.
 %%%%%%%%%%%%%%%%%%%%
@@ -645,7 +646,7 @@ We denote by $|E(G)|$ the number of edges in $G$ and by $d_G = n + |E(G)|$ the n
 % Combining the results, we show that a typical IQP-QCBM of sparse Erd\H os-R\'enyi architecture, when the scaling constant $c>2$,  is simultaneously trainable and anticoncentrated, thus possessing classical sampling hardness. 
 Both distributions sample the circuit's connectivity graph $G$ from the sparse Erd\H os-R\'enyi family, i.e., $G\sim G(n,p)$, where $p=c\ln n/n$ with $c>2$, and differ in the way $\theta$ is sampled: 
 \begin{itemize}
-    \item $\mathcal{D}_n$ (adopted from~\cite{Bremner17}) samples $\theta_{ij}=\pi k / 8, k\sim\mathcal{U}(\{0, 1,2,3\})$ for a two-qubit gate supported on edge $(i,j)$, and samples $\theta_{i}=-\pi k / 8 - \sum_{j\colon (i,j)\in E(G)} \theta_{ij}, k\sim\mathcal{U}(\{0, 1,\ldots,7\})$ for a single-qubit gate on vertex $i$. See~\cref{app:low-rank-tail} for its equivalence to the original definition in~\cite{Bremner17}.
+    \item $\mathcal{D}_n$ (adopted from~\cite{Bremner17}) samples $\theta_{ij}=\pi k / 8, k\sim\mathcal{U}(\{0, 1,2,3\})$ for a two-qubit gate supported on edge $(i,j)$, and samples $\theta_{i}=-\pi k / 8 - \sum_{j\colon (i,j)\in E(G)} \theta_{ij}, k\sim\mathcal{U}(\{0, 1,\ldots,7\})$ for a single-qubit gate on vertex $i$. See~\cref{app:sampling-hardness} for its equivalence to the original definition in~\cite{Bremner17}.
     \item $\mathcal{C}_n$ samples $\theta$ u.a.r.~in $[0,2\pi)^{d_G}$, i.e., $\theta \mid G\sim \mathcal{U}([0,2\pi)^{d_G})$.
 \end{itemize}
 A circuit instance/sample is a pair $C=(G,\vttheta)$. We write the output distribution of $C$ as $P_C$. Restricting the above distributions to the event $E_n$ induces the
@@ -691,7 +692,7 @@ We provide two experimental validations of our theoretical predictions (see~\cre
 
 Second, we study MMD loss trajectories to test whether the predicted presence or absence of BPs matches practical trainability. We show the MMD training trajectories in~\cref{pic:numerics} (bottom row). The 2D lattice and sparse ER graph architectures exhibit improved training stability and convergence as the sample size for gradient estimation increases. Moreover, the 2D lattice architecture consistently converges faster than the sparse ER graph architectures, matching its smaller critical rank predicted in \cref{eg:lattice,eg:sparse}. In contrast, the complete-graph architecture remains untrainable even at the largest sample size, consistent with the predicted BP.
 
-Note that the sparse ER graph with $c=0.5$ lies below the threshold and is therefore not anti-concentrated, while the one with $c=2$ is at anti-concentration threshold. However, the trainability prediction for low-weight frequencies holds for any scaling constant $c$ (\cref{eg:sparse}).
+Note that the sparse ER graph with $c=0.5$ lies below the threshold and is therefore not anti-concentrated, while the one with $c=2$ is at the anti-concentration threshold. However, the trainability prediction for low-weight frequencies holds for any scaling constant $c$ (\cref{eg:sparse}).
 
 \begin{figure}[h]
 \centering
@@ -804,17 +805,17 @@ Consider averaging this quantity over an unbiased ensemble of target distributio
 4 \sum_{\vta\in \mathbb{F}_2^n} \Lambda^2(\vta)\sigma^2(\vta)\operatorname*{Var}_{\vttheta\sim\mu_n} \left[ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \right].
 \end{equation*}
 \begin{proof}
-Continuing from the proof above, we first identify the four-copy terms as square terms, i.e., 
+Continuing from the proof above, we first identify the four-copy terms as a squared term, i.e.,
 \begin{equation*}
     \operatorname*{\mathbb{E}}_{\vttheta} \left[ \sum_{\vta, \vtb} \Lambda(\vta) \Lambda(\vtb) C_\vttheta(\vta) C_\vttheta(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}\right] =\operatorname*{\mathbb{E}}_{\vttheta}\left[ \left(\sum_{\vta \in \mathbb{F}_2^n} \Lambda(\vta) C_\vttheta(\vta) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}\right)^2\right]
 \end{equation*}
 which we can safely drop in the lower bound as non-negative terms. 
 %As explained in the main text, a finer analysis shows that these terms sum to an exponentially small positive quantity, which we neglect.
 
-Then we can apply the ensemble average. All the three-copy terms $C_p(\vta) C_\vttheta(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}$ vanish. Due to the uncorrelatedness between $C_p(\vta)$ and $C_p(\vtb)$, all the off-diagonal two copy terms $C_p(\vta) C_p(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}$ also vanish. Finally, we obtain the desired non-trivial lower bound for an average-case problem.
+Then we can apply the ensemble average. All the three-copy terms $C_p(\vta) C_\vttheta(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}$ vanish. Due to the uncorrelatedness between $C_p(\vta)$ and $C_p(\vtb)$, all the off-diagonal two-copy terms $C_p(\vta) C_p(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}$ also vanish. Finally, we obtain the desired non-trivial lower bound for an average-case problem.
 \begin{align*}
  \operatorname*{\mathbb{E}}_p\left[\operatorname*{Var}_{\vttheta} \left[ \frac{\partial \mathcal{L}(\vttheta)}{\partial \theta_\ell} \right]\right] &\geq 4 \operatorname*{\mathbb{E}}_{\vttheta}  \left[ \sum_{\vta \in \mathbb{F}_2^n} \Lambda(\vta)^2 (C_p(\vta))^2 \left(\frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}\right)^2 \right] \\
- &= 4 \sum_a\Lambda(\vta)^2\sigma_\vta^2\operatorname*{Var}_{\vttheta} \left[ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \right] 
+ &= 4 \sum_{\vta\in\mathbb{F}_2^n}\Lambda(\vta)^2\sigma_\vta^2\operatorname*{Var}_{\vttheta} \left[ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \right]
 \end{align*}
 \end{proof}
 
@@ -969,7 +970,7 @@ Let $Q=\{q_\vttheta\}_\vttheta$ be the ensemble of output distributions of an
 $n$-qubit IQP-QCBM with $\vttheta\sim\mathcal U([0,2\pi)^D)$, and let
 $\mathcal Z \coloneqq \sum_{\vta\in\mathbb{F}_2^n} 2^{-r^\vta}$, with $r^{\mathbf 0}=0$.
 Then the expected collision probability is exactly
-\begin{equation}\label{eq:collision-identity}
+\begin{equation}
 \operatorname*{\mathbb{E}}_{\vttheta}\Big[\sum_{x\in\{0,1\}^n} q_\vttheta(x)^2\Big]
 = \frac{\mathcal Z}{2^n}.
 \end{equation}
@@ -1273,8 +1274,8 @@ By a union bound, this estimate succeeds with probability at least $\beta-4b_n/\
 A sampler $A$ satisfying \cref{eq:low-rank-sampling-error} for every circuit with $G\in E_n$ would, in particular, sample every instance under $\mathcal{D}_n^{\rm low}$, since the low-rank circuits with discrete angles described in the main text form a subset of the circuits with graphs in $E_n$. The sampler $A$ would therefore succeed with probability one under $\mathcal{D}_n^{\rm low}$, contradicting the average-case hardness proved above.
 
 \section{Setup for numerical validation}\label{sec:setup}
-To train the models, we use MMD loss with a kernel that consists of weight-2 and weight-1 frequencies. We train all models with the Adam optimizer, learning rate 0.02 (obtained from hyperparameter search), $\beta_1=0.9, \beta_2=0.999$ (by default), where the initial parameters are sampled u.a.r.~in $[0, 2\pi)^D$. For each architecture, we trained for 5 resource budgets (sample sizes from 64 to 1024) using the MMD loss. If the sample size is too small, the Monte Carlo noise will be too large to be overcome by the gradient signal, thereby hindering training. The sample size cannot be too large, as this would increase training cost and cause an out-of-memory problem.  
-To demonstrate the full training of IQP-QCBM on real-world datasets, we have also performed the training on the binarized MNIST dataset (requires 784 qubits). We tested three architectures: 2D Lattice, Sparse ER, and Complete graph. The training is conducted on an RTX 6000 ADA GPU.
+To train the models, we use MMD loss with a kernel that consists of weight-2 and weight-1 frequencies. We train all models with the Adam optimizer, learning rate 0.02 (obtained from hyperparameter search), $\beta_1=0.9, \beta_2=0.999$ (by default), where the initial parameters are sampled u.a.r.~in $[0, 2\pi)^D$. For each architecture, we train for 5 resource budgets (sample sizes from 64 to 1024) using the MMD loss. If the sample size is too small, the Monte Carlo noise will be too large to be overcome by the gradient signal, thereby hindering training. The sample size cannot be too large, as this would increase training cost and cause an out-of-memory problem.
+To demonstrate the full training of IQP-QCBM on real-world datasets, we also perform the training on the binarized MNIST dataset (requires 784 qubits). We test three architectures: 2D Lattice, Sparse ER, and Complete graph. The training is conducted on an RTX 6000 ADA GPU.
 
 \section{Architecture Illustration}
 \begin{figure}[h]
