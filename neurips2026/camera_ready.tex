@@ -130,11 +130,6 @@
 
 \usepackage[textsize=tiny]{todonotes}
 
-\newcommand{\hw}[1]{\textcolor{red}{Hao: #1}}
-\newcommand{\ks}[1]{\textcolor{orange}{Kevin: #1}}
-\newcommand{\rev}[1]{{\color{red}#1}} % camera-ready revisions (rebuttal content)
-\newcommand{\revtwo}[1]{{\color{green!60!black}#1}} % camera-ready revisions (follow-up clarification)
-
 \begin{document}
 
 
@@ -208,11 +203,10 @@ Complete Graph
 Another important criterion for QML architectures is that they possess representational or computational power beyond efficient classical simulation, thereby providing the possibility of quantum advantage. Accordingly, promising IQP-QCBM architectures must be assessed not only for trainability, but also for whether their output distribution families remain classically hard to simulate. Existing classical sampling-hardness results for IQP circuits have been established only under specific architectural assumptions~\citep{Bremner10,Bremner16,Bremner17}. Indeed, certain restricted IQP architectures are provably classically simulable; for example, planar IQP circuits are connected to exactly solvable Ising models and can be efficiently simulated in relevant regimes~\citep{Fujii17}.
 
 This issue is further highlighted by recent work on supervised QML, which argues that many architectures with provable absence of barren plateaus are also efficiently classically simulable, because the mechanisms that avoid gradient concentration often restrict the computation to polynomially-sized subspaces~\citep{Cerezo2025Simulability}.
-\rev{It is therefore natural to ask whether classical non-simulability and trainability can coexist in a quantum generative model, which is a prerequisite for a potentially useful quantum advantage.
-}
+It is therefore natural to ask whether classical non-simulability and trainability can coexist in a quantum generative model, which is a prerequisite for a potentially useful quantum advantage.
 
-\rev{In this work, we provide a positive answer to this question by showing that a high-probability family of sparse Erd\H{o}s--R\'enyi architectures with $\mathcal{O}(n\log n)$ edges has inverse-polynomial low-order moment-gradient variances, while no uniform efficient classical sampler can approximate every instance in this family, assuming the sparse average-case hardness conjecture and noncollapse of the polynomial hierarchy~\citep{Bremner17}. We summarize the application of our main results regarding critical rank, BPs, and anti-concentration to the example architectures in~\cref{tab:examples-summary}.
-}
+In this work, we provide a positive answer to this question by showing that a high-probability family of sparse Erd\H{o}s--R\'enyi architectures with $\mathcal{O}(n\log n)$ edges has inverse-polynomial low-order moment-gradient variances, while no uniform efficient classical sampler can approximate every instance in this family, assuming the sparse average-case hardness conjecture and noncollapse of the polynomial hierarchy~\citep{Bremner17}. We summarize the application of our main results regarding critical rank, BPs, and anti-concentration to the example architectures in~\cref{tab:examples-summary}.
+
 
 % \begin{researchquestion}
 %     \textbf{Q1.} \emph{How do the IQP circuit architecture and the kernel choice in the MMD loss affect the trainability of IQP-QCBMs, in particular, the presence or absence of barren plateaus?}
@@ -258,7 +252,7 @@ We refer to $S=\{\vtsj\}_j$ as the generator set, which determines the model arc
 
 %%%%%%%%%%%%%%%%
 Previous work~\citet{recioarmengol25} proposed training IQP-QCBMs using the MMD loss. 
-\rev{
+
 \begin{definition}[Maximum Mean Discrepancy (MMD)]
 \label{def:mmd-kernel}
 Let $p$ and $q$ be probability distributions on a data space $\mathcal{X}$, and let $k\colon\mathcal{X}\times\mathcal{X}\to\mathbb{R}$ be a positive-definite kernel. The squared maximum mean discrepancy between $p$ and $q$ is
@@ -270,7 +264,7 @@ Let $p$ and $q$ be probability distributions on a data space $\mathcal{X}$, and 
 \end{equation}
 where $x,x'$ are independent draws from $p$ and $y,y'$ are independent draws from $q$.
 \end{definition}
-}
+
 % Given two distributions $p$ and $q$, and a kernel $k$ inducing a reproducing kernel Hilbert space $\mathcal{H}$ with norm $\|\cdot\|_{\mathcal{H}}$, the MMD writes $
 % \operatorname{MMD}^2_k(p,q)
 % =
@@ -289,8 +283,8 @@ where $C_p(\vta)  = \operatorname*{\mathbb{E}}_{\vtx \sim p}[(-1)^{\vtx \cdot \v
 \end{proposition}
 In QML, loss functions expressed in terms of expectation values often suffer from BPs, whereby gradients vanish exponentially with the number of qubits $n$~\citep{mcclean18}. BPs have been extensively studied, particularly in supervised learning settings. For instance, \citet{Cerezo21} characterized the dependence of gradient variance on circuit depth, while \citet{Wang21} showed that hardware noise can induce BPs. More recently, \citet{Ragone24} proposed a general algebraic framework for bounding gradient variance using the dynamical Lie algebra (DLA) generated by the circuit, and \citet{fontana2024characterizing} obtained related results using Lie group representation theory.
 
-\rev{However, we note that the DLA-based approach of~\citet{Ragone24} cannot be directly applied to IQP-QCBMs. Concretely, applying the main result of ~\citet{Ragone24} requires that, first, the Lie algebra of the generators is semisimple, i.e., $\mathfrak{g} = \mathfrak{g}_{1}\oplus \mathfrak{g}_{2}\oplus\cdots$, where each $\mathfrak{g}_i$ is simple, and second, either the initial state $\rho$ or the observable $O$ has non-zero $\mathfrak{g}_{i}$-purity for at least one $i$. In the setting of IQP-QCBMs, the DLA is the abelian algebra $\mathfrak{g}=\operatorname{span}_{\mathbb{R}}\{iZ^{\vtsj}\}_j$, and the $\mathfrak{g}$-purity of both the observables $X^{\vta}$, for all $\vta\neq\bm 0$, and the initial state $\ket{+}\bra{+}$ is zero. Likewise, the framework of~\citet{fontana2024characterizing} applies to Lie-algebra-supported ansätze, i.e., $iO\in\mathfrak{g}$, whereas here $iX^{\vta}\notin\mathfrak{g}$. Therefore, in this paper, we derive the analytical formulas of gradient variances from scratch.}
-%%%%%%%%%%
+However, we note that the DLA-based approach of~\citet{Ragone24} cannot be directly applied to IQP-QCBMs. Concretely, applying the main result of ~\citet{Ragone24} requires that, first, the Lie algebra of the generators is semisimple, i.e., $\mathfrak{g} = \mathfrak{g}_{1}\oplus \mathfrak{g}_{2}\oplus\cdots$, where each $\mathfrak{g}_i$ is simple, and second, either the initial state $\rho$ or the observable $O$ has non-zero $\mathfrak{g}_{i}$-purity for at least one $i$. In the setting of IQP-QCBMs, the DLA is the abelian algebra $\mathfrak{g}=\operatorname{span}_{\mathbb{R}}\{iZ^{\vtsj}\}_j$, and the $\mathfrak{g}$-purity of both the observables $X^{\vta}$, for all $\vta\neq\bm 0$, and the initial state $\ket{+}\bra{+}$ is zero. Likewise, the framework of~\citet{fontana2024characterizing} applies to Lie-algebra-supported ansätze, i.e., $iO\in\mathfrak{g}$, whereas here $iX^{\vta}\notin\mathfrak{g}$. Therefore, in this paper, we derive the analytical formulas of gradient variances from scratch.
+
 \begin{definition}[Barren Plateau] \label{def:bp}
 Let $\Theta_n=[0,2\pi)^D$ be the parameter space of an $n$-qubit variational quantum
 model with $D$ parameters, and let $\mu_n$ be a reference probability measure on $\Theta_n$.
@@ -312,7 +306,7 @@ meaning that the partial derivatives are exponentially small with high probabili
 with respect to $\mu_n$.
 
 \begin{remark}[Choice of the reference measure $\mu_n$]
-\rev{For a gradient-based optimization procedure to be meaningful, it is necessary that, with non-negligible probability over $\vttheta\in\Theta_n$, the partial derivatives $\frac{\partial \mathcal L(\vttheta)}{\partial \theta_\ell}$ are not exponentially small. In general, $\mu_n$ can be chosen flexibly to study the gradient landscape with respect to a particular sampling scheme or geometric prior on $\Theta_n$. For the purpose of characterizing trainability, we adopt the most natural and common choice: the product-uniform distribution, i.e., $\theta_j \sim \mathcal{U}[0,2\pi)$. The product-uniform measure is the normalized Haar measure on the parameter torus. This choice allows us to determine whether a typical point in the parameter space has an informative gradient with high probability. While the uniform initialization is required for the critical-rank formulas of \cref{thm:uniform}, the distinction between polynomial and exponential scaling of gradient variances is robust for any initialization measure whose density with respect to the uniform measure is bounded above and below by polynomial factors. Moreover, \cref{prop:lower} holds for any reference measure symmetric about zero, not just the product-uniform measure.}
+For a gradient-based optimization procedure to be meaningful, it is necessary that, with non-negligible probability over $\vttheta\in\Theta_n$, the partial derivatives $\frac{\partial \mathcal L(\vttheta)}{\partial \theta_\ell}$ are not exponentially small. In general, $\mu_n$ can be chosen flexibly to study the gradient landscape with respect to a particular sampling scheme or geometric prior on $\Theta_n$. For the purpose of characterizing trainability, we adopt the most natural and common choice: the product-uniform distribution, i.e., $\theta_j \sim \mathcal{U}[0,2\pi)$. The product-uniform measure is the normalized Haar measure on the parameter torus. This choice allows us to determine whether a typical point in the parameter space has an informative gradient with high probability. While the uniform initialization is required for the critical-rank formulas of \cref{thm:uniform}, the distinction between polynomial and exponential scaling of gradient variances is robust for any initialization measure whose density with respect to the uniform measure is bounded above and below by polynomial factors. Moreover, \cref{prop:lower} holds for any reference measure symmetric about zero, not just the product-uniform measure.
 \end{remark}
 % Consider a loss function $\mathcal{L}(\vttheta)$ of a variational quantum algorithm acting on $n$ qubits. For a probability measure $\mu$ over $\vttheta$, we say $\mathcal{L}(\vttheta)$ exhibits a barren plateau if
 % \begin{equation}
@@ -353,7 +347,7 @@ In~\cref{subsec:uniform}, we introduce the critical rank $r^\vta$, a central arc
 % the detailed theoretical results of barren plateaus, covering the scaling of characteristic function values in terms of , and 
 % In \cref{subsec:gaussian}, we focus on the case of Gaussian initialization, where we show that with a suitable choice of the Gaussian distribution of $\vttheta$, barren plateaus can be avoided for all IQP architectures. 
 Finally, in \cref{subsec:non-simulability}, we investigate the non-simulability of IQP-QCBM output distribution. 
-\rev{We establish connections between the critical rank $r^\vta$ and the anti-concentration property, and identify a high-probability low-rank architecture family with low-moment trainability and conditional classical sampling hardness.}
+We establish connections between the critical rank $r^\vta$ and the anti-concentration property, and identify a high-probability low-rank architecture family with low-moment trainability and conditional classical sampling hardness.
 
 % We establish connections between the critical rank $r^\vta$ and the anti-concentration property, and identify an architecture that is both trainable and classically nonsimulable.
 
@@ -604,7 +598,7 @@ $\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)^2]=2^{-r^\vta}$ for all $\
 comparing \cref{eq:collision-identity} with \cref{def:anti-concentration}.
 \end{proof}
 
-\rev{Using this proposition, we can check whether the examples of IQP architectures studied in~\cref{subsec:uniform} have the anti-concentration property or not. 
+Using this proposition, we can check whether the examples of IQP architectures studied in~\cref{subsec:uniform} have the anti-concentration property or not. 
 \begin{itemize}
     \item For~\cref{eg:product}, we have: $\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}=\sum_{k=0}^n \binom{n}{k}2^{-k}=(3/2)^n$, so the output distribution is not anti-concentrated.
     \item For~\cref{eg:lattice}, we have: $\sum_{\vta \in \mathbb{F}_2^n} 2^{-r^\vta} \geq \sum_{k=0}^n \binom{n}{k}2^{-5k}=\left(\frac{33}{32}\right)^n$, so the output distribution is not anti-concentrated.
@@ -635,7 +629,7 @@ Let $G\sim G(n,p)$ with $p=c\ln n/n$.
 \noindent\textup{(b)} If $c=2$, then for every fixed $\delta\in(0,1)$, $\Pr_G\big[\mathcal Z(G)\le2+(2\sqrt e-2)/\delta\big]\ge1-\delta-o(1)$.
 
 \noindent\textup{(c)} If $c<2$, then with high probability $\mathcal Z(G)\ge(1-o(1))\,T_n\to\infty$.
-\end{corollary}}
+\end{corollary}
 
 %%%%%%%%%%%%%%%%%%%%
  % The complete derivation can be found in . In \cite{Bremner17}, they show anticoncentration in the discrete sparse IQP circuit ensemble. Our derivation is complementary. 
@@ -646,7 +640,7 @@ Let $G\sim G(n,p)$ with $p=c\ln n/n$.
 % \end{equation}
 % Then, the ensemble $\{q_\vttheta\}$ has $L_2$ anti-concentration iff there exists a constant $\alpha>0$ such that $\sum_{\vta\in\mathbb{F}_2^n}2^{-r^\vta} < \alpha $.
 %%%%%%%%%%%%%%%%%%%%
-\rev{Example~\ref{eg:sparse} and~\cref{thm:uniform} show that at low frequencies $\abs{\vta}\in\mathcal{O}(1)$, the sparse Erd\H{o}s--R\'enyi circuits have logarithmic critical rank and hence polynomially decaying gradient variance with high probability. We therefore ask whether this low-rank fraction of the sparse Erd\H{o}s--R\'enyi circuits is also hard to sample classically. We first show the tail bound of the critical rank.
+Example~\ref{eg:sparse} and~\cref{thm:uniform} show that at low frequencies $\abs{\vta}\in\mathcal{O}(1)$, the sparse Erd\H{o}s--R\'enyi circuits have logarithmic critical rank and hence polynomially decaying gradient variance with high probability. We therefore ask whether this low-rank fraction of the sparse Erd\H{o}s--R\'enyi circuits is also hard to sample classically. We first show the tail bound of the critical rank.
 %%%%%%%%%%%%%%%%%%%%
 \begin{lemma}[Critical rank for sparse IQP circuits at low frequency] \label{lemma:low-rank-tail}
 Fix $k_0 \geq 1$ independent of $n$ and a sufficiently large constant
@@ -655,11 +649,11 @@ There exist constants $K,\gamma>0$ such that $E_n \coloneqq \{G \colon R_{k_0}(G
 \end{lemma}
 %%%%%%%%%%%%%%%%%%%%
 The proof is in \cref{app:low-rank-tail}.
-}
-\rev{We denote by $|E(G)|$ the number of edges in $G$ and by $d_G = n + |E(G)|$ the number of parameters in the circuit. For a fixed connectivity graph $G$, the corresponding diagonal unitary of IQP is $U(G,\vttheta)=\prod_{i=1}^n e^{i\theta_i Z_i}\prod_{\{i,j\}\in E(G)}e^{i\theta_{ij}Z_iZ_j}$. Next, we consider two probability distributions of circuits and parameters in the sampling-hardness result. 
-}
+
+We denote by $|E(G)|$ the number of edges in $G$ and by $d_G = n + |E(G)|$ the number of parameters in the circuit. For a fixed connectivity graph $G$, the corresponding diagonal unitary of IQP is $U(G,\vttheta)=\prod_{i=1}^n e^{i\theta_i Z_i}\prod_{\{i,j\}\in E(G)}e^{i\theta_{ij}Z_iZ_j}$. Next, we consider two probability distributions of circuits and parameters in the sampling-hardness result. 
+
 % Combining the results, we show that a typical IQP-QCBM of sparse Erd\H os-R\'enyi architecture, when the scaling constant $c>2$,  is simultaneously trainable and anticoncentrated, thus possessing classical sampling hardness. 
-\rev{Both distributions sample the circuit's connectivity graph $G$ from the sparse Erd\H os-R\'enyi family, i.e., $G\sim G(n,p)$, where $p=c\ln n/n$ with $c>2$, and differ in the way $\theta$ is sampled: 
+Both distributions sample the circuit's connectivity graph $G$ from the sparse Erd\H os-R\'enyi family, i.e., $G\sim G(n,p)$, where $p=c\ln n/n$ with $c>2$, and differ in the way $\theta$ is sampled: 
 \begin{itemize}
     \item $\mathcal{D}_n$ (adopted from~\cite{Bremner17}) samples $\theta_{ij}=\pi k / 8, k\sim\mathcal{U}(\{0, 1,2,3\})$ for a two-qubit gate supported on edge $(i,j)$, and samples $\theta_{i}=-\pi k / 8 - \sum_{j\colon (i,j)\in E(G)} \theta_{ij}, k\sim\mathcal{U}(\{0, 1,\ldots,7\})$ for a single-qubit gate on vertex $i$. See~\cref{app:low-rank-tail} for its equivalence to the original definition in~\cite{Bremner17}.
     \item $\mathcal{C}_n$ samples $\theta$ u.a.r.~in $[0,2\pi)^{d_G}$, i.e., $\theta \mid G\sim \mathcal{U}([0,2\pi)^{d_G})$.
@@ -687,8 +681,6 @@ hierarchy. Fix $k_0\in\mathcal{O}(1)$ and choose $K$ as above. There exist const
 \end{theorem}
 \paragraph{Proof idea.}
 Extend a sampler for $\mathcal{D}_n^{\rm low}$ arbitrarily outside $E_n$. Since $\delta_n=o(1)$, accuracy on a sufficiently large constant fraction of the conditional ensemble would contradict the original sampling-hardness result of \cite{Bremner17}. The complete proof is in~\cref{app:sampling-hardness}.
-}
-
 
 % We formalize this result as \cref{thm:ac_and_pst_exist} below.
 % \begin{theorem}[Existence of classically nonsimulable and trainable IQP-QCBM]
@@ -723,7 +715,7 @@ We provide two experimental validations of our theoretical predictions (see~\cre
 
 Second, we study MMD loss trajectories to test whether the predicted presence or absence of BPs matches practical trainability. We show the MMD training trajectories in~\cref{pic:numerics} (bottom row). The 2D lattice and sparse ER graph architectures exhibit improved training stability and convergence as the sample size for gradient estimation increases. Moreover, the 2D lattice architecture consistently converges faster than the sparse ER graph architectures, matching its smaller critical rank predicted in \cref{eg:lattice,eg:sparse}. In contrast, the complete-graph architecture remains untrainable even at the largest sample size, consistent with the predicted BP.
 
-\rev{Note that the sparse ER graph with $c=0.5$ lies below the threshold and is therefore not anti-concentrated, while the one with $c=2$ is at anti-concentration threshold. However, the trainability prediction for low-weight frequencies holds for any scaling constant $c$ (\cref{eg:sparse}).}
+Note that the sparse ER graph with $c=0.5$ lies below the threshold and is therefore not anti-concentrated, while the one with $c=2$ is at anti-concentration threshold. However, the trainability prediction for low-weight frequencies holds for any scaling constant $c$ (\cref{eg:sparse}).
 % To verify the scaling of the MMD gradient magnitudes in practice, we have created datasets of different sizes ($20,40,60,\dots,200$ bits) with marginals and correlations that approximately match the Fourier spectrum of real-world datasets MNIST. We studied all 4 architectures considered in the paper, Product, 2D Lattice, Sparse ER (with parameter $c=0.5$ or 2), and Complete graph, with different qubit numbers ranging from 20 to 200 under either uniform initialisation or Gaussian initialisation (variance is set to 1/D, D being the parameter count, consistent with our Theorem 3.13). For each setting, we estimated the magnitude of the partial derivative of the MMD loss, averaged over coordinates, with three different kernels: 
 % 1. A kernel that only consists of weight-2 frequencies. 
 % 2. A kernel that only consists of weight-$\log(n)$ frequencies. 
@@ -987,7 +979,6 @@ Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^{m^\vta} 
 % By Taylor expansion, we can derive that $\mu = 4c/D + o(1/D)$ and $\nu^{D-1} = e^{-4c} + o(1)$. Therefore, $4\mu \nu^{D-1} =\Theta(1/D)$, which completes the proof.
 % \end{proof}
 
-\rev{
 \subsection{Proof of \cref{thm:erm-sharp}}
 \label{app:er-merged}
 Let $c>0$ and $p=c\ln n/n$. Let $G\sim G(n,p)$ be an Erd\H{o}s--R\'enyi graph instance. The expected quantity $\mathbb{E}_G[\mathcal Z(G)]$ can be bounded by:
@@ -1154,9 +1145,8 @@ X(G)=\sum\limits_{v=1}^{n}Y_v, \qquad Y_v=2^{-r^{\bm e_v}(G)}=2^{-1-\deg(v)},
 \Pr_G\big[X(G)\le(1-\eta)T_n\big]\le\frac1{\eta^2}\Big(\frac1{2T_n}+p\Big).
 \end{equation}
 By \eqref{eq:erm-Tn}, $T_n\to\infty$ for $c<2$, and $p\to0$. Choosing $\eta=(1/T_n+p)^{1/3}\to0$ yields $\mathcal Z(G)\ge X(G)\ge(1-o(1))\,T_n$ with high probability.
-\end{proof}}
+\end{proof}
 
-\rev{
 \subsection{Proof of~\cref{lemma:low-rank-tail}}
 \label{app:low-rank-tail}
 Let $p=c\ln n/n$. By the binomial law in Example~\ref{eg:sparse}, for $k=\abs{\vta}\leq k_0$ we have $r^{\vta}=k+X_{\vta}$, where $X_{\vta}\sim\operatorname{Bin}(n-k,1-(1-p)^k)$ and $\mathbb{E} X_{\vta}\leq c k_0\ln n$. Choose $L>ec k_0$ so that $\rho:=L\ln(L/(ec k_0))>k_0$, and set $K=L+k_0$ and $\gamma=\rho-k_0>0$. For $n\geq e$, a Chernoff bound and a union bound yield
@@ -1167,11 +1157,10 @@ Let $p=c\ln n/n$. By the binomial law in Example~\ref{eg:sparse}, for $k=\abs{\v
  \label{eq:low-rank-rank-tail}
 \end{align}
 No independence between different frequencies is required.
-}
 
 \subsection{Proof of~\cref{thm:sampling-hardness}}
 \label{app:sampling-hardness}
-\rev{
+
 We first recap the definition of the distribution $\mathcal{D}_n$ in the original work.
 
 \paragraph{The original sparse IQP distribution in~\cite[Section~2]{Bremner17}.}
@@ -1193,9 +1182,7 @@ Next, we show our reformulation of $\mathcal{D}_n$ is equivalent. By the followi
  &=e^{i\phi/4}e^{-i\phi Z_i/4}e^{-i\phi Z_j/4}e^{i\phi Z_iZ_j/4}
 \end{align*}
 we see that the diagonal part of each original instance agrees, up to a global phase, with $U(G,\vttheta)$ generated from $\mathcal{D}_n$ in the main text.
-}
 
-\rev{
 We then recap the sampling-hardness theorem from~\cite{Bremner17}, which is used in this proof. 
     
 \begin{theorem}[Rewrite of {\cite[Theorem~3]{Bremner17}}] \label{thm:BMS17}
@@ -1213,9 +1200,7 @@ For the anti-concentration bound, one may fix $\alpha,\beta>0$ such that
  \qquad c < \beta/2.
 \end{equation}
 To use~\cref{thm:BMS17}, we need to prove the anti-concentration bound for low-rank ensemble $\mathcal{D}_n^{\rm low}$.
-}
 
-\rev{
 \paragraph{Anti-concentration of $\mathcal{D}_n^{\rm low}$.}
 Denote circuit instance by $C=(G,\theta)$. Since $\Pr_{C\sim\mathcal{D}_n}[G\notin E_n]=\delta_n=o(1)$, we have
 \begin{align} 
@@ -1279,9 +1264,6 @@ By a union bound, this estimate succeeds with probability at least $\beta-4b_n/\
 
 \paragraph{Worst-case hardness for the low-rank ensemble $\mathcal{C}_n^{\rm low}$.}
 A sampler $A$ satisfying \cref{eq:low-rank-sampling-error} for every circuit with $G\in E_n$ would, in particular, sample every instance under $\mathcal{D}_n^{\rm low}$, since the low-rank circuits with discrete angles described in the main text form a subset of the circuits with graphs in $E_n$. The sampler $A$ would therefore succeed with probability one under $\mathcal{D}_n^{\rm low}$, contradicting the average-case hardness proved above.
-}
-
-
 
 \section{Setup for numerical validation}\label{sec:setup}
 To train the models, we use MMD loss with a kernel that consists of weight-2 and weight-1 frequencies. We train all models with the Adam optimizer, learning rate 0.02 (obtained from hyperparameter search), $\beta_1=0.9, \beta_2=0.999$ (by default), where the initial parameters are sampled u.a.r.~in $[0, 2\pi)^D$. For each architecture, we trained for 5 resource budgets (sample sizes from 64 to 1024) using the MMD loss. If the sample size is too small, the Monte Carlo noise will be too large to be overcome by the gradient signal, thereby hindering training. The sample size cannot be too large, as this would increase training cost and cause an out-of-memory problem.  
