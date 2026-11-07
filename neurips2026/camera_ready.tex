@@ -856,16 +856,21 @@ In the derivation above, we first used the Cauchy-Schwarz inequality, then we us
 \subsection{Proof of \cref{thm:uniform}}
 Before proving \cref{thm:uniform}, we will first prove a more general result applying to a broader family of reference measures that are symmetric about $0$, from which \cref{thm:uniform} follows as a special case.
 
-We wish to show that: For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n \setminus \{\mathbf{0}\}$, define $S^{\vta} := \{ \vtsj \big| \vta \cdot \vtsj = 1 \}$, $
+We wish to show that: Let $\theta_1,\dots,\theta_D$ be i.i.d.\ with a common distribution that is symmetric about $0$. For a fixed Fourier frequency $\vta \in \mathbb{F}_2^n$, define $S^{\vta} := \{ \vtsj \big| \vta \cdot \vtsj = 1 \}$, $
 m^\vta := \abs{S^{\vta}}$. Let $
 \Xi^\vta:= \{J\subseteq S^\vta:\ \sum_{j\in J}\vtsj=\mathbf 0 \}.$ Then, 
 %%%%%%%%%
+\begin{equation*}
+\operatorname*{\mathbb{E}}_\vttheta\big[C_\vttheta(\vta)\big] = \kappa^{m^\vta}, \qquad
+\operatorname*{\mathbb{E}}_\vttheta\big[C_\vttheta(\vta)^2\big] = \sum_{J\in \Xi^\vta} \mu^{|J|} \nu^{m^\vta-|J|},
+\end{equation*}
+and hence
 \begin{equation*}
      \operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = 
 \left(\sum_{J\in \Xi^\vta} \mu^{|J|} \nu^{m^\vta-|J|}\right) - \kappa^{2m^\vta},
 \end{equation*}
 %%%%%%%%%
-where $\mu=\operatorname*{\mathbb{E}}_{\vttheta}[\sin^2(2\theta)]$, $\nu=\operatorname*{\mathbb{E}}_{\vttheta}[\cos^2(2\theta)]$, $\kappa=\operatorname*{\mathbb{E}}_{\vttheta}[\cos(2\theta)]$. Fix $1\leq l \leq D$. If $\vtsl \notin S^\vta$, then $ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. If $\vtsl \in S^\vta$, then, 
+where $\mu=\operatorname*{\mathbb{E}}[\sin^2(2\theta_1)]$, $\nu=\operatorname*{\mathbb{E}}[\cos^2(2\theta_1)]$, $\kappa=\operatorname*{\mathbb{E}}[\cos(2\theta_1)]$. Fix $\ell\in[D]$. If $\vtsl \notin S^\vta$, then $ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. If $\vtsl \in S^\vta$, then, 
 %%%%%%%%%
 \begin{align*}
 \operatorname*{Var}_\vttheta \left[ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \right]
@@ -879,7 +884,7 @@ where $\mu=\operatorname*{\mathbb{E}}_{\vttheta}[\sin^2(2\theta)]$, $\nu=\operat
 %%%%%%%%%
 
 \begin{proof}
-Fix $\vta\neq \mathbf 0$ and abbreviate $S:=S^\vta$, $m:=m^\vta$. Start from the expression $C_\vttheta(\vta)=\bra{+} U_\vttheta^\dagger X^{\vta}U_\vttheta\ket{+}
+Fix $\vta\in\mathbb{F}_2^n$ and abbreviate $S:=S^\vta$, $m:=m^\vta$. If $m=0$, then $X^\vta$ commutes with $U_\vttheta$, so $C_\vttheta(\vta)\equiv 1$; this agrees with all formulas above, since then $\Xi^\vta=\{\emptyset\}$ and $\kappa^{0}=1$. Assume $m\geq 1$ from now on. Start from the expression $C_\vttheta(\vta)=\bra{+} U_\vttheta^\dagger X^{\vta}U_\vttheta\ket{+}
 $. By recursively swapping the gates in $U_\vttheta$ with the observable $X^{\vta}$ and applying the commutation or anticommutation rule, one can derive the following:
 \begin{align*}
 C_\vttheta(\vta)
@@ -890,12 +895,12 @@ C_\vttheta(\vta)
 \end{align*}
 where $\eta_J \in \{-1,1\}$. The equation is a reformulation of equation 27 of \cite{recioarmengol25}. Note that $\forall J \in \Xi^\vta, \abs{J} = 0 \, (\text{mod 2})$, so no imaginary number $i$ appears. Also note that $\sin(\cdot)$ is an odd function, whose expectation vanishes for any symmetric distribution. We will use this property many times.
 
-First, we derive the variance of the characteristic function values, $\operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = \operatorname*{\mathbb{E}}_\vttheta \left[ (C_\vttheta(\vta))^2\right] - \left(\operatorname*{\mathbb{E}}_\vttheta \left[ C_\vttheta(\vta) \right]\right)^2$. Regarding $\operatorname*{\mathbb{E}}_\vttheta \left[ C_\vttheta(\vta) \right]$, except for the empty set $J = \emptyset$, all the other terms in the summation contain $\sin(2\theta_j)$ for some $j$ and hence vanish in expectation. Regarding $\operatorname*{\mathbb{E}}_\vttheta \left[ (C_\vttheta(\vta))^2\right]$, for the same reason, $\forall J \neq K$,  $\operatorname*{\mathbb{E}}_{\vttheta}[R_J(\vttheta)R_K(\vttheta)] = 0.$ Putting the remaining terms together gives the formula:
+First, we derive the variance of the characteristic function values, $\operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = \operatorname*{\mathbb{E}}_\vttheta \left[ (C_\vttheta(\vta))^2\right] - \left(\operatorname*{\mathbb{E}}_\vttheta \left[ C_\vttheta(\vta) \right]\right)^2$. Regarding $\operatorname*{\mathbb{E}}_\vttheta \left[ C_\vttheta(\vta) \right]$, except for the empty set $J = \emptyset$ (for which $\eta_\emptyset=1$), all the other terms in the summation contain $\sin(2\theta_j)$ for some $j$ and hence vanish in expectation by independence, so $\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)]=\kappa^{m}$. Regarding $\operatorname*{\mathbb{E}}_\vttheta \left[ (C_\vttheta(\vta))^2\right]$, for the same reason, $\forall J \neq K$,  $\operatorname*{\mathbb{E}}_{\vttheta}[R_J(\vttheta)R_K(\vttheta)] = 0$, since $R_JR_K$ contains a single factor $\sin(2\theta_j)$ for every $j\in J\triangle K\neq\emptyset$. Putting the remaining terms together gives
 \begin{equation*}
-\label{eq: symmetric cost variance}
-     \operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = \left(\sum_{J \in \Xi^\vta} \operatorname*{\mathbb{E}}_{\vttheta}[\sin^2(2\theta)]^\abs{J} \operatorname*{\mathbb{E}}_{\vttheta}[\cos^2(2\theta)]^{m^\vta-\abs{J}}\right) - \operatorname*{\mathbb{E}}_{\vttheta}[\cos(2\theta)]^{2m^\vta}
+     \operatorname*{\mathbb{E}}_\vttheta \left[ C_\vttheta(\vta)^2 \right] = \sum_{J \in \Xi^\vta} \operatorname*{\mathbb{E}}_\vttheta[R_J(\vttheta)^2] = \sum_{J \in \Xi^\vta} \mu^{\abs{J}} \nu^{m-\abs{J}},
 \end{equation*}
-Then, we derive the variance of the partial derivatives. We differentiate the terms $R_J(\vttheta)$ with respect to $\theta_\ell$. If $\vts \notin S^\vta$, then $\comm{Z^{\vts^\ell}}{X^\vta}=0$, so $C_\vttheta(\vta)$ is independent of $\theta_\ell$, giving $\frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. Now, if $\vtsl \in S^\vta$,
+and subtracting $\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)]^2=\kappa^{2m}$ gives the variance.
+Then, we derive the variance of the partial derivatives. We differentiate the terms $R_J(\vttheta)$ with respect to $\theta_\ell$. If $\vtsl \notin S^\vta$, then $\comm{Z^{\vtsl}}{X^\vta}=0$, so $C_\vttheta(\vta)$ is independent of $\theta_\ell$, giving $\frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. Now, if $\vtsl \in S^\vta$,
 
 \begin{equation*}
 \frac{\partial C_\vttheta(\vta)}{\partial\theta_\ell}
@@ -922,21 +927,22 @@ Therefore,
 \sum_{J\in \Xi^\vta}\operatorname*{\mathbb{E}}_{\vttheta}[T_J(\vttheta)^2],
 \label{eq: symmetric derivative variance}
 \end{equation*}
-Finally, by plugging in \cref{eq:TJ_def} gives the desired result.
+Finally, computing $\operatorname*{\mathbb{E}}_\vttheta[T_J(\vttheta)^2]$ from the two cases of $T_J$ above gives the desired result.
 \end{proof}
 
-Now we are ready to prove \cref{thm:uniform}. Consider an $n$-qubit IQP-QCBM in~\cref{def:IQP} with the generator set $S=\{\vtsj\}_{j=1}^D$, and let the reference measure on the parameter space be uniform, namely $\mu_n = \mathcal{U}([0,2\pi)^D)$. For a frequency $\vta \in \mathbb{F}_2^n \setminus \{\mathbf{0}\}$, define $S^{\vta} \coloneqq \{ \vtsj\in S \mid \vta \cdot \vtsj = 1 \}$ and define the critical rank $r^\vta \coloneqq \dim \operatorname{span}_{\mathbb{F}_2}\left( S^{\vta} \right)$. Then
+Now we are ready to prove \cref{thm:uniform}. Consider an $n$-qubit IQP-QCBM in~\cref{def:IQP} with the generator set $S=\{\vtsj\}_{j=1}^D$, and let the reference measure on the parameter space be uniform, namely $\mu_n = \mathcal{U}([0,2\pi)^D)$. For a frequency $\vta \in \mathbb{F}_2^n$, define $S^{\vta} \coloneqq \{ \vtsj\in S \mid \vta \cdot \vtsj = 1 \}$ and the critical rank $r^\vta \coloneqq \dim \operatorname{span}_{\mathbb{F}_2}( S^{\vta})$ (so $r^\vta=0$ if $S^\vta=\emptyset$, in particular $r^{\mathbf 0}=0$). Then
 \begin{equation*}
-\operatorname*{Var}_{\vttheta\sim\mu_n} \left[ C_\vttheta(\vta)\right] = 2^{-r^\vta}. 
-\end{equation*} For $\ell \in [D]$, if $\vtsl \notin S^\vta$, then $ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. If $\vtsl \in S^\vta$, then
+\operatorname*{\mathbb{E}}_{\vttheta\sim\mu_n}\big[C_\vttheta(\vta)^2\big] = 2^{-r^\vta},
+\end{equation*}
+and if $S^\vta\neq\emptyset$, then $\operatorname*{\mathbb{E}}_{\vttheta}[C_\vttheta(\vta)]=0$, hence $\operatorname*{Var}_{\vttheta\sim\mu_n}[C_\vttheta(\vta)] = 2^{-r^\vta}$. (If $S^\vta=\emptyset$, then $C_\vttheta(\vta)\equiv 1$.) For $\ell \in [D]$, if $\vtsl \notin S^\vta$, then $ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. If $\vtsl \in S^\vta$, then
 \begin{equation*}
 \operatorname*{Var}_{\vttheta\sim\mu_n} \left[ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \right] = 2^{\,2-r^\vta}. \end{equation*}
 \begin{proof}
 Using the same notations as in the previous proof, in the case of uniform distribution, $\mu = \nu = 1/2$ and $\kappa = 0$. Plugging in these values gives, \begin{equation*}
-    \operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = 2^{-m^\vta} \abs{\Xi^\vta} , \qquad \operatorname*{Var}_{\vttheta}\left[\frac{\partial C_\vttheta(\vta)}{\partial\theta_\ell}\right]
-= 2^{2-m^\vta} \abs{\Xi^\vta} 
+    \operatorname*{\mathbb{E}}_\vttheta \left[ C_\vttheta(\vta)^2 \right] = 2^{-m^\vta} \abs{\Xi^\vta} , \qquad \operatorname*{Var}_{\vttheta}\left[\frac{\partial C_\vttheta(\vta)}{\partial\theta_\ell}\right]
+= 2^{2-m^\vta} \abs{\Xi^\vta} .
 \end{equation*}
-Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^{m^\vta} | H \vtx = \bm{0}\}$, where $H$ is the matrix whose columns are the elements of $S^\vta$. In other words, $\Xi^\vta$ is the kernel of $H$ and hence $\abs{\Xi^\vta} = 2^{m^\vta-r^\vta}$ by rank-nullity theorem. This completes the proof.
+Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^{m^\vta} | H \vtx = \bm{0}\}$, where $H$ is the matrix whose columns are the elements of $S^\vta$. In other words, $\Xi^\vta$ is the kernel of $H$ and hence $\abs{\Xi^\vta} = 2^{m^\vta-r^\vta}$ by the rank-nullity theorem (this also holds for $m^\vta=0$, where $\Xi^\vta=\{\emptyset\}$). This gives $\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)^2]=2^{-r^\vta}$ and the derivative formula. Finally, $\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)]=\kappa^{m^\vta}=0$ whenever $m^\vta\geq1$, i.e.\ $S^\vta\neq\emptyset$, in which case $\operatorname*{Var}_\vttheta[C_\vttheta(\vta)]=\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)^2]=2^{-r^\vta}$. This completes the proof.
 \end{proof}
  
 
