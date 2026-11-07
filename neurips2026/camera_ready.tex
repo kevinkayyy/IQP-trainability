@@ -588,16 +588,6 @@ Consequently, $Q$ is $L^2$ anti-concentrated with constant $b$ if and only if
 $\mathcal Z\le b$. 
 \end{proposition}
 
-\begin{proof}
-For fixed $\vttheta$, $C_\vttheta(\vta)=\sum_{x}(-1)^{\vta\cdot x}q_\vttheta(x)$ is the
-(unnormalised) Walsh--Hadamard transform of $q_\vttheta$. Parseval's identity gives
-$\sum_{\vta\in\mathbb{F}_2^n} C_\vttheta(\vta)^2 = 2^n\sum_x q_\vttheta(x)^2$ for every
-$\vttheta$. Taking expectations over $\vttheta$ (both sums are finite) and using
-$\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)^2]=2^{-r^\vta}$ for all $\vta$
-(\cref{thm:uniform}) yields \cref{eq:collision-identity}. The equivalence follows by
-comparing \cref{eq:collision-identity} with \cref{def:anti-concentration}.
-\end{proof}
-
 Using this proposition, we can check whether the examples of IQP architectures studied in~\cref{subsec:uniform} have the anti-concentration property or not. 
 \begin{itemize}
     \item For~\cref{eg:product}, we have: $\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}=\sum_{k=0}^n \binom{n}{k}2^{-k}=(3/2)^n$, so the output distribution is not anti-concentrated.
@@ -679,8 +669,8 @@ hierarchy. Fix $k_0\in\mathcal{O}(1)$ and choose $K$ as above. There exist const
     for all sufficiently large $n$.
 \end{enumerate}
 \end{theorem}
-\paragraph{Proof idea.}
-Extend a sampler for $\mathcal{D}_n^{\rm low}$ arbitrarily outside $E_n$. Since $\delta_n=o(1)$, accuracy on a sufficiently large constant fraction of the conditional ensemble would contradict the original sampling-hardness result of \cite{Bremner17}. The complete proof is in~\cref{app:sampling-hardness}.
+% \paragraph{Proof idea.}
+% Extend a sampler for $\mathcal{D}_n^{\rm low}$ arbitrarily outside $E_n$. Since $\delta_n=o(1)$, accuracy on a sufficiently large constant fraction of the conditional ensemble would contradict the original sampling-hardness result of \cite{Bremner17}. The complete proof is in~\cref{app:sampling-hardness}.
 
 % We formalize this result as \cref{thm:ac_and_pst_exist} below.
 % \begin{theorem}[Existence of classically nonsimulable and trainable IQP-QCBM]
@@ -697,6 +687,10 @@ Extend a sampler for $\mathcal{D}_n^{\rm low}$ arbitrarily outside $E_n$. Since 
 \section{Numerical validation} \label{sec:numerical-validation}
 We provide two experimental validations of our theoretical predictions (see~\cref{sec:setup} for the experimental setup). First, we verify the scaling of the MMD partial derivative with respect to the number of qubits on MNIST-inspired synthetic datasets of size $n=20,40,\ldots,200$, whose marginals and correlations approximately match the Fourier spectrum of binarized MNIST. We test the five IQP architectures considered in the paper: product state, 2D lattice, sparse ER graph with $c=0.5$, sparse ER graph with $c=2$, and complete graph. We consider three kernels supported on frequencies of Hamming weight $2$, $\log(n)$, and $n/4$, respectively. The results are shown in~\cref{pic:numerics} (top row). Due to finite-sample estimation of the MMD gradient, the experiments exhibit a numerical noise floor, explaining why several curves flatten below $10^{-9}$. Across all kernels and architectures, the observed gradient scaling is either polynomial or exponential in $n$, in agreement with the predictions in \cref{eg:product,eg:lattice,eg:sparse,eg:complete}.
 
+Second, we study MMD loss trajectories to test whether the predicted presence or absence of BPs matches practical trainability. We show the MMD training trajectories in~\cref{pic:numerics} (bottom row). The 2D lattice and sparse ER graph architectures exhibit improved training stability and convergence as the sample size for gradient estimation increases. Moreover, the 2D lattice architecture consistently converges faster than the sparse ER graph architectures, matching its smaller critical rank predicted in \cref{eg:lattice,eg:sparse}. In contrast, the complete-graph architecture remains untrainable even at the largest sample size, consistent with the predicted BP.
+
+Note that the sparse ER graph with $c=0.5$ lies below the threshold and is therefore not anti-concentrated, while the one with $c=2$ is at anti-concentration threshold. However, the trainability prediction for low-weight frequencies holds for any scaling constant $c$ (\cref{eg:sparse}).
+
 \begin{figure}[h]
 \centering
 \begin{subfigure}{\textwidth}
@@ -712,10 +706,6 @@ We provide two experimental validations of our theoretical predictions (see~\cre
 \caption{Top: Scaling of the MMD derivative with respect to the number of qubits, measured on MNIST-inspired datasets and reporting the mean and standard deviation over $50$ repetitions. Bottom: Trajectories of the MMD training loss for learning the $784$-qubit binarized MNIST dataset, with increasing sample sizes for estimating the MMD loss.}
 \label{pic:numerics}
 \end{figure}
-
-Second, we study MMD loss trajectories to test whether the predicted presence or absence of BPs matches practical trainability. We show the MMD training trajectories in~\cref{pic:numerics} (bottom row). The 2D lattice and sparse ER graph architectures exhibit improved training stability and convergence as the sample size for gradient estimation increases. Moreover, the 2D lattice architecture consistently converges faster than the sparse ER graph architectures, matching its smaller critical rank predicted in \cref{eg:lattice,eg:sparse}. In contrast, the complete-graph architecture remains untrainable even at the largest sample size, consistent with the predicted BP.
-
-Note that the sparse ER graph with $c=0.5$ lies below the threshold and is therefore not anti-concentrated, while the one with $c=2$ is at anti-concentration threshold. However, the trainability prediction for low-weight frequencies holds for any scaling constant $c$ (\cref{eg:sparse}).
 % To verify the scaling of the MMD gradient magnitudes in practice, we have created datasets of different sizes ($20,40,60,\dots,200$ bits) with marginals and correlations that approximately match the Fourier spectrum of real-world datasets MNIST. We studied all 4 architectures considered in the paper, Product, 2D Lattice, Sparse ER (with parameter $c=0.5$ or 2), and Complete graph, with different qubit numbers ranging from 20 to 200 under either uniform initialisation or Gaussian initialisation (variance is set to 1/D, D being the parameter count, consistent with our Theorem 3.13). For each setting, we estimated the magnitude of the partial derivative of the MMD loss, averaged over coordinates, with three different kernels: 
 % 1. A kernel that only consists of weight-2 frequencies. 
 % 2. A kernel that only consists of weight-$\log(n)$ frequencies. 
@@ -755,13 +745,7 @@ Note that the sparse ER graph with $c=0.5$ lies below the threshold and is there
 % Finally, we emphasize that training IQP-QCBM by minimizing $\MMD_k^2(p, q_\vttheta)$ for any choice of kernel $k$ does not imply that we can get a small total variation distance $\operatorname{TV}(p, q_\vttheta)$ since it is widely known that MMD is controlled by TV, but not vice versa. This limitation is purely classical information-theoretical, and not specific to IQP. 
 % It reflects the general fact that learning an arbitrary distribution on $\{0,1\}^n$ in total variation requires exponentially many samples in the worst case, since the space has $2^n-1$ degrees of freedom. 
 % What methods, like MMD, can learn efficiently are restricted families. 
-
-
-\section{Limitations}
-Our trainability analysis characterizes gradient scaling under random parameter initialization; avoiding a barren plateau is a necessary, but not sufficient, condition for efficient end-to-end optimization. The MMD lower bound is averaged over a target-distribution ensemble, and its implications for a particular dataset depend on the dataset's Fourier spectrum and the chosen kernel. Moreover, the classical sampling-hardness result is conditional on standard complexity-theoretic conjectures, while the numerical experiments consider idealized circuits and a limited set of architectures and training settings. Extending the analysis to noisy devices, broader initialization schemes, and application-specific targets is an important direction for future work.
-
-
-\section{Discussion and Conclusions}
+\section{Conclusions and Limitations}
 \label{sec:conclusion}
 In this work, we study the trainability and classical non-simulability of IQP-QCBMs, a promising family of quantum generative models believed to offer a potential route to quantum advantage. To study trainability, we express the variance of the MMD-loss gradient in terms of the characteristic function of the IQP output distribution and the spectral measure of the kernel used in the loss. 
 
@@ -775,6 +759,8 @@ As our second major result, concerning classical non-simulability, we show that 
 
 As a last note, we clarify a key difference from a related work. \citet{herbst25} claim that ``quantum models with sampling hardness rooted in anti-concentration will not be trainable.'' This claim is not in contradiction with our results, because their argument relies on pseudo-independence, a condition strictly stronger than anti-concentration: a random measure $p$ is pseudo-independent if $p(x)=Y_x / (\sum_{j=1}^{2^n} Y_j)$
 where the $Y_j$ are i.i.d. positive random variables. Pseudo-independence implies anti-concentration, but the converse is false: pseudo-independence forces all nonzero characteristic function values to vanish exponentially. By contrast, $L^2$ anti-concentration only controls the collision probability and still permits a small set of frequencies to remain polynomially visible. Our \cref{eg:sparse} illustrates precisely this distinction. 
+
+Our trainability analysis characterizes gradient scaling under random parameter initialization; avoiding a barren plateau is a necessary, but not sufficient, condition for efficient end-to-end optimization. The MMD lower bound is averaged over a target-distribution ensemble, and its implications for a particular dataset depend on the dataset's Fourier spectrum and the chosen kernel. Moreover, the classical sampling-hardness result is conditional on standard complexity-theoretic conjectures, while the numerical experiments consider idealized circuits and a limited set of architectures and training settings. Extending the analysis to noisy devices, broader initialization schemes, and application-specific targets is an important direction for future work.
 
 \paragraph{Acknowledgements} VD and HW were supported by the Dutch National Growth Fund (NGF), as part of the Quantum Delta NL programme.
 This work was also supported by the European Union’s Horizon Europe program through the ERC CoG BeMAIQuantum (Grant No. 101124342). This research was funded by the BMW Group. 
@@ -978,6 +964,28 @@ Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^{m^\vta} 
 % \end{align}
 % By Taylor expansion, we can derive that $\mu = 4c/D + o(1/D)$ and $\nu^{D-1} = e^{-4c} + o(1)$. Therefore, $4\mu \nu^{D-1} =\Theta(1/D)$, which completes the proof.
 % \end{proof}
+
+\subsection{Proof of \cref{lem:parseval}}
+Let $Q=\{q_\vttheta\}_\vttheta$ be the ensemble of output distributions of an
+$n$-qubit IQP-QCBM with $\vttheta\sim\mathcal U([0,2\pi)^D)$, and let
+$\mathcal Z \coloneqq \sum_{\vta\in\mathbb{F}_2^n} 2^{-r^\vta}$, with $r^{\mathbf 0}=0$.
+Then the expected collision probability is exactly
+\begin{equation}\label{eq:collision-identity}
+\operatorname*{\mathbb{E}}_{\vttheta}\Big[\sum_{x\in\{0,1\}^n} q_\vttheta(x)^2\Big]
+= \frac{\mathcal Z}{2^n}.
+\end{equation}
+Consequently, $Q$ is $L^2$ anti-concentrated with constant $b$ if and only if
+$\mathcal Z\le b$. 
+
+\begin{proof}
+For fixed $\vttheta$, $C_\vttheta(\vta)=\sum_{x}(-1)^{\vta\cdot x}q_\vttheta(x)$ is the
+(unnormalised) Walsh--Hadamard transform of $q_\vttheta$. Parseval's identity gives
+$\sum_{\vta\in\mathbb{F}_2^n} C_\vttheta(\vta)^2 = 2^n\sum_x q_\vttheta(x)^2$ for every
+$\vttheta$. Taking expectations over $\vttheta$ (both sums are finite) and using
+$\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)^2]=2^{-r^\vta}$ for all $\vta$
+(\cref{thm:uniform}) yields \cref{eq:collision-identity}. The equivalence follows by
+comparing \cref{eq:collision-identity} with \cref{def:anti-concentration}.
+\end{proof}
 
 \subsection{Proof of \cref{thm:erm-sharp}}
 \label{app:er-merged}
