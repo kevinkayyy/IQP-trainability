@@ -446,15 +446,21 @@ As we will see in the next section, characteristic-function gradients at high Ha
 \subsection{Impact of IQP-QCBM's architecture on the presence of BPs} \label{subsec:uniform}
 % The discussions before apply to all symmetric initializations (\cref{ass:symm-iid-init}). 
 % Now we focus on the case where each parameter is i.i.d., and initialized by uniform distribution, the default choice in quantum machine learning. The results are stated as \cref{thm:uniform}. We notice that the scaling of the characteristic function values and their partial derivatives yields extremely concise forms: they are fully determined by the quantities $r^\vta$, which for a fixed $\vta$ is essentially the number of $\mathbb{F}_2$-linearly independent generators in the set $S^\vta$. We give $r^\vta$ the name ``critical rank''.
-We show that, for each Fourier frequency $\vta$, the scaling of the variance of the characteristic function's partial derivative is completely determined by a simple architectural quantity of the IQP-QCBM: the ``critical rank'' $r^\vta$. $r^\vta$ is defined as the number of $\mathbb{F}_2$-linearly independent bitstrings in the generator set $S^\vta$.
+We show that, for each Fourier frequency $\vta$, the scaling of the variance of the characteristic function's partial derivative is completely determined by a simple architectural quantity of the IQP-QCBM: the ``critical rank'' $r^\vta$, which is the number of $\mathbb{F}_2$-linearly independent bitstrings in the generator set $S^\vta$.
 %%%%%%%%%%%%%%%%%%
+
+
 \begin{theorem}[Critical rank determines the variance of the characteristic function's partial derivative]
 \label{thm:uniform}
-Consider an $n$-qubit IQP-QCBM in~\cref{def:IQP} with the generator set $S=\{\vtsj\}_{j=1}^D$, and let the reference measure on the parameter space be uniform, namely $\mu_n = \mathcal{U}([0,2\pi)^D)$. For a frequency $\vta \in \mathbb{F}_2^n \setminus \{\mathbf{0}\}$, define $S^{\vta} \coloneqq \{ \vtsj\in S \mid \vta \cdot \vtsj = 1 \}$ and define the critical rank $r^\vta \coloneqq \dim \operatorname{span}_{\mathbb{F}_2}\left( S^{\vta} \right)$. Then
-% which is the number of $\mathbb{F}_2$-linearly independent generators. 
+Consider an $n$-qubit IQP-QCBM in~\cref{def:IQP} with the generator set $S=\{\vtsj\}_{j=1}^D$, and let the reference measure on the parameter space be uniform, namely $\mu_n = \mathcal{U}([0,2\pi)^D)$. For a frequency $\vta \in \mathbb{F}_2^n$, define $S^{\vta} \coloneqq \{ \vtsj\in S \mid \vta \cdot \vtsj = 1 \}$
+and the critical rank $r^\vta \coloneqq \dim \operatorname{span}_{\mathbb{F}_2}( S^{\vta})$
+(so $r^\vta=0$ if $S^\vta=\emptyset$, in particular $r^{\mathbf 0}=0$). Then
 \begin{equation}
-\operatorname*{Var}_{\vttheta\sim\mu_n} \left[ C_\vttheta(\vta)\right] = 2^{-r^\vta}. 
-\end{equation} For $\ell \in [D]$, if $\vtsl \notin S^\vta$, then $ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. If $\vtsl \in S^\vta$, then
+\operatorname*{\mathbb{E}}_{\vttheta\sim\mu_n}\big[C_\vttheta(\vta)^2\big] = 2^{-r^\vta},
+\end{equation}
+and if $S^\vta\neq\emptyset$, then $\operatorname*{\mathbb{E}}_{\vttheta}[C_\vttheta(\vta)]=0$, hence
+$\operatorname*{Var}_{\vttheta\sim\mu_n}[C_\vttheta(\vta)] = 2^{-r^\vta}$.
+(If $S^\vta=\emptyset$, then $C_\vttheta(\vta)\equiv 1$.) For $\ell \in [D]$, if $\vtsl \notin S^\vta$, then $ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. If $\vtsl \in S^\vta$, then
 \begin{equation}
 \operatorname*{Var}_{\vttheta\sim\mu_n} \left[ \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \right] = 2^{\,2-r^\vta}. \end{equation}
 \end{theorem}
@@ -484,7 +490,7 @@ Let $G=(V,E)$ be a two-dimensional rectangular lattice graph on $n=\abs{V}$ qubi
 \begin{equation*}
     A:=\{v\in V: a_v=1\}
 \end{equation*}
-be the support of the observable $X^\vta$. For a single-qubit generator $\bm{e}_v$, we have that $\bm{e}_v\in S^\vta$ iff $v\in A$. For a two-qubit generator $\bm{e}_u+\bm{e}_v$, we have that $\vta \cdot (\bm{e}_u+\bm{e}_v)=a_u+a_v\ (\mathrm{mod}\ 2)$. Hence $\bm{e}_u+\bm{e}_v\in S^\vta$ iff exactly one of $\{u,v\}$ lies in $A$. Equivalently, the two qubit generators in $S^\vta$ are precisely the boundary edges of the cut $(A, V\setminus A)$, because 
+be the support of the observable $X^\vta$. For a single-qubit generator $\bm{e}_v$, we have that $\bm{e}_v\in S^\vta$ iff $v\in A$. For a two-qubit generator $\bm{e}_u+\bm{e}_v$, we have that $\vta \cdot (\bm{e}_u+\bm{e}_v)=a_u+a_v\ (\mathrm{mod}\ 2)$. Hence $\bm{e}_u+\bm{e}_v\in S^\vta$ iff exactly one of $\{u,v\}$ lies in $A$. Equivalently, the two qubit generators in $S^\vta$ are precisely the boundary edges of the cut $(A, V\setminus A)$.
 
 Define the open neighborhood of $A$ by
 \begin{equation}
@@ -560,19 +566,43 @@ Let $Q = \{q_\vttheta\}_\vttheta$ be a family of probability distributions in $\
 where the quantity $\sum_x q_\vttheta(x)^2$ is known as the collision probability.  
 \end{definition}
 \cref{def:anti-concentration} implies an alternative formulation of anti-concentration: there exist $\alpha>0,\beta>0$ such that $\forall x\in \{0,1\}^n, \;\Pr\left[q_\vttheta(x)\geq \alpha 2^{-n}\right]\ge \beta$,
-which appears in sampling hardness arguments of IQP circuits~\cite{Bremner16, Bremner17}. To see this implication, we first observe that due to symmetry, all bitstrings $x$ have equal contributions: $\E_\vttheta(\sum_xq_\vttheta(x)) = 1\implies \E_\vttheta(q_\vttheta(x)) = 2^{-n}$ and $\E_\vttheta(q_\vttheta(x)^2) \le b2^{-2n}$, then we apply the Paley-Zygmund inequality to obtain $\Pr(q_\vttheta(x) \ge \alpha2^{-n}) \ge (1-\alpha)^2/b$. Setting $\beta = (1-\alpha)^2/b$ completes the proof.\\
+which appears in sampling hardness arguments of IQP circuits~\cite{Bremner16, Bremner17}. To see this implication, we first observe that due to symmetry, all bitstrings $x$ have equal contributions: $\E_\vttheta[\sum_xq_\vttheta(x)] = 1\implies \E_\vttheta[q_\vttheta(x)] = 2^{-n}$ and $\E_\vttheta[q_\vttheta(x)^2] \le b2^{-2n}$, then we apply the Paley-Zygmund inequality to obtain $\Pr[q_\vttheta(x) \ge \alpha2^{-n}] \ge (1-\alpha)^2/b$. Setting $\beta = (1-\alpha)^2/b$ completes the proof.\\
 To study the classical hardness of IQP-QCBMs, it is convenient to relate the $L^2$ anti-concentration condition in~\cref{def:anti-concentration} to the critical rank quantities introduced previously  in~\cref{thm:uniform}. Since the Fourier transform is an $L^2$ isometry (the Parseval identity), we can achieve it automatically in the next proposition.
 % Below, we focus on IQP-QCBMs under uniform initialization. In this setting, by parseval identity, we can alternatively express collision probabilities with Fourier frequencies. Then, using \cref{thm:uniform} allows us to equivalently write the definition of $L_2$ concentration using the quantities $r^\vta$. This serves as a bridge relating the absence or presence of barren plateau with anti-concentration.
 %%%%%%%%%%%%%%%%%%%%
+% \begin{proposition}[$L^2$ anti-concentration of IQP-QCBM]
+% \label{lem:parseval} Let $Q = \{q_\vttheta\}_\vttheta$ be the random ensemble of output distributions of an IQP-QCBM with $\vttheta$ sampled uniformly at random in $[0,2\pi)^D$. For each frequency $\vta \in \mathbb{F}_2^n \setminus \{\mathbf{0}\}$, let $r^\vta$ be the critical rank defined as in~\cref{thm:uniform}. Then, $Q$ is $L^2$ anti-concentrated if and only if $\sum_{\vta\in\mathbb{F}_2^n}2^{-r^\vta} \in \mathcal{O}(1)$.
+% \end{proposition}
+% %%%%%%%%%%%%%%%%%%%%
+% \begin{proof}
+%     Let $C_\vttheta(\vta) = \sum_{x\in \mathbb{F}_2^n} (-1)^{x\cdot \vta}q_\vtheta(x)$ be a characteristic function value.
+%     By Parseval's identity, $\E_\vttheta\left[\sum_{\vta\in \mathbb{F}_2^n}(C_\vttheta(\vta))^2\right]=2^n\E_\vttheta\left[\norm{q_\vttheta}^2_2\right]$. By~\cref{thm:uniform}, we have $\sum_{\vta\in \mathbb{F}_2^n}\E[C_\vttheta(\vta)^2]=\sum_{\vta\in\mathbb{F}_2^n}2^{-r^\vta}.$
+% \end{proof}
+
 \begin{proposition}[$L^2$ anti-concentration of IQP-QCBM]
-\label{lem:parseval} Let $Q = \{q_\vttheta\}_\vttheta$ be the random ensemble of output distributions of an IQP-QCBM with $\vttheta$ sampled u.a.r. in $[0,2\pi)^D$. For each frequency $\vta \in \mathbb{F}_2^n \setminus \{\mathbf{0}\}$, let $r^\vta$ be the critical rank defined as in~\cref{thm:uniform}. $Q$ is $L^2$ anti-concentrated iff. $\sum_{\vta\in\mathbb{F}_2^n}2^{-r^\vta} \in \mathcal{O}(1)\,.$
+\label{lem:parseval}
+Let $Q=\{q_\vttheta\}_\vttheta$ be the ensemble of output distributions of an
+$n$-qubit IQP-QCBM with $\vttheta\sim\mathcal U([0,2\pi)^D)$, and let
+$\mathcal Z \coloneqq \sum_{\vta\in\mathbb{F}_2^n} 2^{-r^\vta}$, with $r^{\mathbf 0}=0$.
+Then the expected collision probability is exactly
+\begin{equation}\label{eq:collision-identity}
+\operatorname*{\mathbb{E}}_{\vttheta}\Big[\sum_{x\in\{0,1\}^n} q_\vttheta(x)^2\Big]
+= \frac{\mathcal Z}{2^n}.
+\end{equation}
+Consequently, $Q$ is $L^2$ anti-concentrated with constant $b$ if and only if
+$\mathcal Z\le b$. 
 \end{proposition}
-%%%%%%%%%%%%%%%%%%%%
+
 \begin{proof}
-    Let $C_\vttheta(\vta) = \sum_{x\in \mathbb{F}_2^n} (-1)^{x\cdot \vta}q_\vtheta(x)$ be a characteristic function value.
-    By Parseval's identity, $\E_\vttheta\left(\sum_{\vta\in \mathbb{F}_2^n}(C_\vttheta(\vta))^2\right)=2^n\E_\vttheta\left(\norm{q_\vttheta}^2_2\right)\in\mathcal{O}(1)$. By~\cref{thm:uniform}, we have $\sum_{\vta\in \mathbb{F}_2^n}\E(C_\vttheta(\vta))^2=\sum_{\vta\in\mathbb{F}_2^n}2^{-r^\vta}.$
+For fixed $\vttheta$, $C_\vttheta(\vta)=\sum_{x}(-1)^{\vta\cdot x}q_\vttheta(x)$ is the
+(unnormalised) Walsh--Hadamard transform of $q_\vttheta$. Parseval's identity gives
+$\sum_{\vta\in\mathbb{F}_2^n} C_\vttheta(\vta)^2 = 2^n\sum_x q_\vttheta(x)^2$ for every
+$\vttheta$. Taking expectations over $\vttheta$ (both sums are finite) and using
+$\operatorname*{\mathbb{E}}_\vttheta[C_\vttheta(\vta)^2]=2^{-r^\vta}$ for all $\vta$
+(\cref{thm:uniform}) yields \cref{eq:collision-identity}. The equivalence follows by
+comparing \cref{eq:collision-identity} with \cref{def:anti-concentration}.
 \end{proof}
-%%%%%%%%%%%%%%%%%%%%
+
 \rev{Using this proposition, we can check whether the examples of IQP architectures studied in~\cref{subsec:uniform} have the anti-concentration property or not. 
 \begin{itemize}
     \item For~\cref{eg:product}, we have: $\sum_{\vta \in \mathbb{F}_2^n}  2^{-r^\vta}=\sum_{k=0}^n \binom{n}{k}2^{-k}=(3/2)^n$, so the output distribution is not anti-concentrated.
@@ -630,7 +660,7 @@ The proof is in \cref{app:low-rank-tail}.
 % Combining the results, we show that a typical IQP-QCBM of sparse Erd\H os-R\'enyi architecture, when the scaling constant $c>2$,  is simultaneously trainable and anticoncentrated, thus possessing classical sampling hardness. 
 \rev{Both distributions sample the circuit's connectivity graph $G$ from the sparse Erd\H os-R\'enyi family, i.e., $G\sim G(n,p)$, where $p=c\ln n/n$ with $c>2$, and differ in the way $\theta$ is sampled: 
 \begin{itemize}
-    \item $\mathcal{D}_n$ (adopted from~\cite{Bremner17}) samples $\theta_{ij}=\pi n / 8, n\sim\mathcal{U}(\{0, 1,2,3\})$ for a two-qubit gate supported on edge $(i,j)$, and samples $\theta_{i}=-\pi n / 8 - \sum_{j\colon (i,j)\in E(G)} \theta_{ij}, n\sim\mathcal{U}(\{0, 1,\ldots,7\})$ for a single-qubit gate on vertex $i$. See~\cref{app:low-rank-tail} for its equivalence to the original definition in~\cite{Bremner17}.
+    \item $\mathcal{D}_n$ (adopted from~\cite{Bremner17}) samples $\theta_{ij}=\pi k / 8, k\sim\mathcal{U}(\{0, 1,2,3\})$ for a two-qubit gate supported on edge $(i,j)$, and samples $\theta_{i}=-\pi k / 8 - \sum_{j\colon (i,j)\in E(G)} \theta_{ij}, k\sim\mathcal{U}(\{0, 1,\ldots,7\})$ for a single-qubit gate on vertex $i$. See~\cref{app:low-rank-tail} for its equivalence to the original definition in~\cite{Bremner17}.
     \item $\mathcal{C}_n$ samples $\theta$ u.a.r.~in $[0,2\pi)^{d_G}$, i.e., $\theta \mid G\sim \mathcal{U}([0,2\pi)^{d_G})$.
 \end{itemize}
 A circuit instance/sample is a pair $C=(G,\vttheta)$. We write the output distribution of $C$ as $P_C$. Restricting the above distributions to the event $E_n$ induces the
@@ -744,7 +774,7 @@ Our first major result is that we identify a key architectural quantity, the cri
 % In particular, we focus on investigating the scaling of the characteristic function of the output distribution of IQP-QCBM and of the MMD loss function.
 % We give an architecture-level characterization of trainability for IQP-QCBMs under MMD. 
 % We first derive the closed-form variance expressions for the characteristic function values and the MMD and 
-As our second major result, classical non-simulability, we show that for an IQP-QCBM whose architecture is generated by a sparse Erd\H os-R\'enyi graph under a suitable edge probability, its output distribution family is hard to approximate classically. Moreover, this sparse Erd\H os-R\'enyi architecture is trainable: by allocating most of the spectral measure to the low Hamming-weight frequencies, we can avoid exponentially vanishing gradients of the MMD loss.  In all, we conclude a fundamentally important finding: there exists a IQP-QCBM family which is trainable and classically nonsimulable at the same time, unlike what theoretical studies suggested for supervised quantum machine learning models, where trainability usually implies classical-simulability.
+As our second major result, classical non-simulability, we show that for an IQP-QCBM whose architecture is generated by a sparse Erd\H os-R\'enyi graph under a suitable edge probability, its output distribution family is hard to approximate classically in the worst case. Moreover, this sparse Erd\H os-R\'enyi architecture is trainable: by allocating most of the spectral measure to the low Hamming-weight frequencies, we can avoid exponentially vanishing gradients of the MMD loss.  In all, we conclude a fundamentally important finding: there exists a IQP-QCBM family which is trainable and classically non-simulable at the same time, unlike what theoretical studies suggested for supervised quantum machine learning models, where trainability usually implies classical simulability.
 
 As a last note, we clarify a key difference from a related work. \citet{herbst25} claim that ``quantum models with sampling hardness rooted in anti-concentration will not be trainable.'' This claim is not in contradiction with our results, because their argument relies on pseudo-independence, a condition strictly stronger than anti-concentration: a random measure $p$ is pseudo-independent if $p(x)=Y_x / (\sum_{j=1}^{2^n} Y_j)$
 where the $Y_j$ are i.i.d. positive random variables. Pseudo-independence implies anti-concentration, but the converse is false: pseudo-independence forces all nonzero characteristic function values to vanish exponentially. By contrast, $L^2$ anti-concentration only controls the collision probability and still permits a small set of frequencies to remain polynomially visible. Our \cref{eg:sparse} illustrates precisely this distinction. 
