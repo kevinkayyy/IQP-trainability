@@ -202,7 +202,7 @@ Complete Graph
 & $\checkmark$ \\
 \bottomrule
 \end{tabular}
-\vspace{-0.8cm}
+\vspace{-0.5cm}
 \end{table}
 
 Another important criterion for QML architectures is that they possess representational or computational power beyond efficient classical simulation, thereby providing the possibility of quantum advantage. Accordingly, promising IQP-QCBM architectures must be assessed not only for trainability, but also for whether their output distribution families remain classically hard to simulate. Existing classical sampling-hardness results for IQP circuits have been established only under specific architectural assumptions~\citep{Bremner10,Bremner16,Bremner17}. Indeed, certain restricted IQP architectures are provably classically simulable; for example, planar IQP circuits are connected to exactly solvable Ising models and can be efficiently simulated in relevant regimes~\citep{Fujii17}.
@@ -634,7 +634,7 @@ The proof is in \cref{app:low-rank-tail}.
     \item $\mathcal{C}_n$ samples $\theta$ u.a.r.~in $[0,2\pi)^{d_G}$, i.e., $\theta \mid G\sim \mathcal{U}([0,2\pi)^{d_G})$.
 \end{itemize}
 A circuit instance/sample is a pair $C=(G,\vttheta)$. We write the output distribution of $C$ as $P_C$. Restricting the above distributions to the event $E_n$ induces the
-conditional measures $\mathcal{D}_n^{\rm low} \coloneqq \mathcal{D}_n(\cdot\mid G\in E_n)$ and $\mathcal{C}_n^{\rm low} \coloneqq \mathcal{C}_n(\cdot\mid G\in E_n)$. By Proposition~\ref{lem:parseval} and \cref{thm:erm-sharp}, we have $\mathbb{E}_{C\sim\mathcal{C}_n^{\rm low}}\sum_x P_C(x)^2 \leq 2^{-n}\mathbb{E}_G[\mathcal Z(G)]/(1-\delta_n) =(2+o(1))2^{-n}$, so the low-rank ensemble $\mathcal{C}_n$ is anti-concentrated.
+conditional measures $\mathcal{D}_n^{\rm low} \coloneqq \mathcal{D}_n(\cdot\mid G\in E_n)$ and $\mathcal{C}_n^{\rm low} \coloneqq \mathcal{C}_n(\cdot\mid G\in E_n)$. By Proposition~\ref{lem:parseval} and \cref{thm:erm-sharp}, we have $\mathbb{E}_{C\sim\mathcal{C}_n^{\rm low}}\sum_x P_C(x)^2 \leq 2^{-n}\mathbb{E}_G[\mathcal Z(G)]/(1-\delta_n) =(2+o(1))2^{-n}$, so the low-rank ensemble $\mathcal{C}_n^{\rm low}$ is anti-concentrated.
 
 \begin{theorem}[Sampling hardness of low-rank sparse IQP circuits]
 \label{thm:sampling-hardness}
@@ -1248,7 +1248,7 @@ To demonstrate the full training of IQP-QCBM on real-world datasets, we have als
 \newpage
 \section{Architecture Illustration}
 \begin{figure}[h]
-  \begin{center}    \centerline{\includegraphics[width=0.8\columnwidth]{lattice_illustration.pdf}}
+  \begin{center}    \centerline{\includegraphics[width=0.6\columnwidth]{lattice_illustration.pdf}}
     \caption{Illustration of the IQP architectures considered in this paper: product state (\cref{eg:product}), 2D lattice (\cref{eg:lattice}), sparse Erd\H os-R\'enyi graph (\cref{eg:sparse}), and complete graph (\cref{eg:complete}).}
     \label{pic:illustration}
   \end{center}
