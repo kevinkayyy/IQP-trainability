@@ -765,6 +765,10 @@ Second, we study MMD loss trajectories to test whether the predicted presence or
 % What methods, like MMD, can learn efficiently are restricted families. 
 
 
+\section{Limitations}
+Our trainability analysis characterizes gradient scaling under random parameter initialization; avoiding a barren plateau is a necessary, but not sufficient, condition for efficient end-to-end optimization. The MMD lower bound is averaged over a target-distribution ensemble, and its implications for a particular dataset depend on the dataset's Fourier spectrum and the chosen kernel. Moreover, the classical sampling-hardness result is conditional on standard complexity-theoretic conjectures, while the numerical experiments consider idealized circuits and a limited set of architectures and training settings. Extending the analysis to noisy devices, broader initialization schemes, and application-specific targets is an important direction for future work.
+
+
 \section{Discussion and Conclusions}
 \label{sec:conclusion}
 In this work, we study the trainability and classical non-simulability of IQP-QCBMs, a promising family of quantum generative models believed to offer a potential route to quantum advantage. To study trainability, we express the variance of the MMD-loss gradient in terms of the characteristic function of the IQP output distribution and the spectral measure of the kernel used in the loss. 
