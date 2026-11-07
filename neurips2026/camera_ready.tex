@@ -392,7 +392,7 @@ We can decompose the MMD partial derivative variance into frequency-wise contrib
 Consider an $n$-qubit IQP-QCBM in~\cref{def:IQP}, with generator set $S=\{\vtsj\}_{j=1}^D$, and the MMD loss $\mathcal{L}$ defined in~\cref{prop:mmd-loss}. Let $\mu_n$ be a reference measure on the parameter space that is symmetric about 0 (e.g., uniform), and let $\Lambda$ be a positive spectral probability measure on $\mathbb{F}_2^n$. Then the variance of the partial derivative of the MMD admits the decomposition
 \begin{align}
 &\operatorname*{Var}_{\vttheta\sim \mu_n} \left[ \frac{\partial \mathcal{L}(\vttheta)}{\partial \theta_\ell} \right]
-= 4 \operatorname*{\mathbb{E}}_{\vttheta\sim \mu_n} \left( \sum_{\vta, \vtb \in \mathbb{F}_2^n} \Lambda(\vta) \Lambda(\vtb)F(\vta, \vtb)\right), \label{eq:decomposition} \\
+= 4 \operatorname*{\mathbb{E}}_{\vttheta\sim \mu_n} \left[ \sum_{\vta, \vtb \in \mathbb{F}_2^n} \Lambda(\vta) \Lambda(\vtb)F(\vta, \vtb)\right], \label{eq:decomposition} \\
 &F(\vta, \vtb) = \left( C_\vttheta(\vta) C_\vttheta(\vtb) - 2C_p(\vta) C_\vttheta(\vtb) + C_p(\vta) C_p(\vtb) \right)\frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell} \nonumber
 \end{align}
 % where $$. 
@@ -1265,9 +1265,10 @@ $$
 $$
 and $Q_{C^{(x)}}(x) \leq 5P_C(0)/4$.
 This is precisely where anti-concentration is needed: it converts an additive error of order $2^{-n}$ into a relative error. The triangle inequality now yields
-$$
-    |\widetilde Q_{C^{(x)}}(x)-P_C(0)| \leq|\widetilde{Q}-Q_{C^{(x)}}(x)|+|Q_{C^{(x)}}(x)-P_C(0)| \leq\tau Q_{C^{(x)}}(x) + P_C(0)/4 \leq\left(\tfrac14+o(1)\right)P_C(0) \,.
-$$
+\begin{align}
+        |\widetilde Q_{C^{(x)}}(x)-P_C(0)| \leq&|\widetilde{Q}-Q_{C^{(x)}}(x)|+|Q_{C^{(x)}}(x)-P_C(0)| \\ \leq&\tau Q_{C^{(x)}}(x) + P_C(0)/4 \\ \leq& \left(\tfrac14+o(1)\right)P_C(0) \,.
+\end{align}
+
 By a union bound, this estimate succeeds with probability at least $\beta-4b_n/\alpha-o(1)$ over the instance $C$. Thus $\varepsilon$ and $\eta$ can be chosen sufficiently small that, using \cref{eq:mean-sampling-error} and $\delta_n=o(1)$, the success bound exceeds the fixed fraction stipulated in Conjecture~8 of \cite{Bremner17}, as in their original argument.
 
 \paragraph{Worst-case hardness for the low-rank ensemble $\mathcal{C}_n^{\rm low}$.}
