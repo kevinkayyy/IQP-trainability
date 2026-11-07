@@ -796,7 +796,8 @@ Continuing from the proof above, we first identify the four-copy terms as square
 \begin{equation*}
     \operatorname*{\mathbb{E}}_{\vttheta} \left[ \sum_{\vta, \vtb} \Lambda(\vta) \Lambda(\vtb) C_\vttheta(\vta) C_\vttheta(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}\right] =\operatorname*{\mathbb{E}}_{\vttheta}\left[ \left(\sum_{\vta \in \mathbb{F}_2^n} \Lambda(\vta) C_\vttheta(\vta) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}\right)^2\right]
 \end{equation*}
-which we can safely drop in the lower bound as non-negative terms. As explained in the main text, a finer analysis shows that these terms sum to an exponentially small positive quantity, which we neglect.
+which we can safely drop in the lower bound as non-negative terms. 
+%As explained in the main text, a finer analysis shows that these terms sum to an exponentially small positive quantity, which we neglect.
 
 Then we can apply the ensemble average. Due to the symmetry about $0$, all the three-copy terms $C_p(\vta) C_\vttheta(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}$ vanish. Due to the uncorrelatedness between $C_p(\vta)$ and $C_p(\vtb)$, all the off-diagonal two copy terms $C_p(\vta) C_p(\vtb) \frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell} \frac{\partial C_\vttheta(\vtb)}{\partial \theta_\ell}$ also vanish. Finally, we obtain the desired non-trivial lower bound for an average-case problem.
 \begin{align*}
@@ -852,7 +853,7 @@ Fix $\vta\neq \mathbf 0$ and abbreviate $S:=S^\vta$, $m:=m^\vta$. Start from the
 $. By recursively swapping the gates in $U_\vttheta$ with the observable $X^{\vta}$ and applying the commutation or anticommutation rule, one can derive the following:
 \begin{align*}
 C_\vttheta(\vta)
-&= \bra{+}^{\otimes n} \prod_{\vtsj\in S^\vta} \exp(-2\theta_jZ^\vtsj) \ket{+}^{\otimes n} \\
+&= \bra{+}^{\otimes n} \prod_{\vtsj\in S^\vta} \exp(-2i\theta_jZ^\vtsj) \ket{+}^{\otimes n} \\
 &= \bra{+}^{\otimes n} \prod_{\vtsj\in S^\vta} (\cos(2\theta_j)I - i \sin(2\theta_j)Z^\vtsj) \ket{+}^{\otimes n}  \\
 &= \sum_{J\in\Xi^\vta} R_J(\vttheta), \qquad R_J(\vttheta)=\eta_J 
 \Bigl(\prod_{j\in J} \sin(2\theta_j)\Bigr)\Bigl(\prod_{j\in S\setminus J}\cos(2\theta_j)\Bigr),
@@ -864,7 +865,7 @@ First, we derive the variance of the characteristic function values, $\operatorn
 \label{eq: symmetric cost variance}
      \operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = \left(\sum_{J \in \Xi^\vta} \operatorname*{\mathbb{E}}_{\vttheta}[\sin^2(2\theta)]^\abs{J} \operatorname*{\mathbb{E}}_{\vttheta}[\cos^2(2\theta)]^{m^\vta-\abs{J}}\right) - \operatorname*{\mathbb{E}}_{\vttheta}[\cos(2\theta)]^{2m^\vta}
 \end{equation*}
-Then, we derive the variance of the partial derivatives. We differentiate the terms $R_J(\vttheta)$ with respect to $\theta_\ell$. If $\vta \notin S^\vta$, then $\comm{Z^{\vts^\ell}}{X^\vta}=0$, so $C_\vttheta(\vta)$ is independent of $\theta_\ell$, giving $\frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. Now, if $\vtsl \in S^\vta$,
+Then, we derive the variance of the partial derivatives. We differentiate the terms $R_J(\vttheta)$ with respect to $\theta_\ell$. If $\vts \notin S^\vta$, then $\comm{Z^{\vts^\ell}}{X^\vta}=0$, so $C_\vttheta(\vta)$ is independent of $\theta_\ell$, giving $\frac{\partial C_\vttheta(\vta)}{\partial \theta_\ell}=0$. Now, if $\vtsl \in S^\vta$,
 
 \begin{equation*}
 \frac{\partial C_\vttheta(\vta)}{\partial\theta_\ell}
@@ -905,7 +906,7 @@ Using the same notations as in the previous proof, in the case of uniform distri
     \operatorname*{Var}_\vttheta \left[ C_\vttheta(\vta) \right] = 2^{-m^\vta} \abs{\Xi^\vta} , \qquad \operatorname*{Var}_{\vttheta}\left[\frac{\partial C_\vttheta(\vta)}{\partial\theta_\ell}\right]
 = 2^{2-m^\vta} \abs{\Xi^\vta} 
 \end{equation*}
-Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^n | A \vtx = \bm{0}\}$, where $A$ is the matrix whose columns are the elements of $S^\vta$. In other words, $\Xi^\vta$ is the kernel of $A$ and hence $\abs{\Xi^\vta} = 2^{m^\vta-r^\vta}$ by rank-nullity theorem. This completes the proof.
+Note that $\Xi^\vta$ is isomorphic to the set $\{\vtx \in \mathbb{F}_2^{m^\vta} | H \vtx = \bm{0}\}$, where $H$ is the matrix whose columns are the elements of $S^\vta$. In other words, $\Xi^\vta$ is the kernel of $H$ and hence $\abs{\Xi^\vta} = 2^{m^\vta-r^\vta}$ by rank-nullity theorem. This completes the proof.
 \end{proof}
  
 
