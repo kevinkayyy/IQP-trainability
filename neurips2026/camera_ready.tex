@@ -1157,6 +1157,10 @@ By \eqref{eq:erm-Tn}, $T_n\to\infty$ for $c<2$, and $p\to0$. Choosing $\eta=(1/T
 
 \subsection{Proof of~\cref{lemma:low-rank-tail}}
 \label{app:low-rank-tail}
+Fix $k_0 \geq 1$ independent of $n$ and a sufficiently large constant
+$c>2$. For $G\sim G(n,c\ln n/n)$, we define $R_{k_0}(G) \coloneqq \max_{1\leq\abs{\vta}\leq k_0}r^{\vta}(G)$.
+There exist constants $K,\gamma>0$ such that $E_n \coloneqq \{G \colon R_{k_0}(G)\leq K\ln n\}$ satisfies $\delta_n \coloneqq\Pr_{G\sim G(n,c\ln n/n)}[G\notin E_n] \in \mathcal{O}(n^{-\gamma})$.
+\begin{proof}
 Let $p=c\ln n/n$. By the binomial law in Example~\ref{eg:sparse}, for $k=\abs{\vta}\leq k_0$ we have $r^{\vta}=k+X_{\vta}$, where $X_{\vta}\sim\operatorname{Bin}(n-k,1-(1-p)^k)$ and $\mathbb{E} X_{\vta}\leq c k_0\ln n$. Choose $L>ec k_0$ so that $\rho:=L\ln(L/(ec k_0))>k_0$, and set $K=L+k_0$ and $\gamma=\rho-k_0>0$. For $n\geq e$, a Chernoff bound and a union bound yield
 \begin{align}
  \Pr_{G\sim G(n,p)}\left(R_{k_0}(G)>K\ln n\right)
@@ -1165,10 +1169,26 @@ Let $p=c\ln n/n$. By the binomial law in Example~\ref{eg:sparse}, for $k=\abs{\v
  \label{eq:low-rank-rank-tail}
 \end{align}
 No independence between different frequencies is required.
+\end{proof}
 
 \subsection{Proof of~\cref{thm:sampling-hardness}}
 \label{app:sampling-hardness}
-
+Assume Conjecture~8 of \cite{Bremner17} and noncollapse of the polynomial
+hierarchy. Fix $k_0\in\mathcal{O}(1)$ and choose $K$ as above. There exist constants $\varepsilon>0$ and $\eta>0$ such that
+\begin{enumerate}
+    \item There is no uniform polynomial-time classical sampler $A$ which takes a description of circuit $C$ and outputs a distribution $Q_C^A$ satisfying
+    \begin{equation} \label{eq:low-rank-average-hardness}
+    \Pr_{C\sim\mathcal D_n^{\rm low}}\left(\|Q_C^A-P_C\|_1\leq\varepsilon \right) \geq 1 - \eta
+    \end{equation}
+    for all sufficiently large $n$.
+    \item There is no uniform polynomial-time classical sampler $A$ whose output distribution $Q_C^A$ satisfies
+    \begin{equation}
+    \|Q_C^A-P_C\|_1\leq\varepsilon \quad\text{for every } C\in\mathcal{C}_n^{\rm low}
+    \label{eq:low-rank-sampling-error}
+    \end{equation}
+    for all sufficiently large $n$.
+\end{enumerate}
+\begin{proof}
 We first recap the definition of the distribution $\mathcal{D}_n$ in the original work.
 
 \paragraph{The original sparse IQP distribution in~\cite[Section~2]{Bremner17}.}
@@ -1273,6 +1293,7 @@ By a union bound, this estimate succeeds with probability at least $\beta-4b_n/\
 
 \paragraph{Worst-case hardness for the low-rank ensemble $\mathcal{C}_n^{\rm low}$.}
 A sampler $A$ satisfying \cref{eq:low-rank-sampling-error} for every circuit with $G\in E_n$ would, in particular, sample every instance under $\mathcal{D}_n^{\rm low}$, since the low-rank circuits with discrete angles described in the main text form a subset of the circuits with graphs in $E_n$. The sampler $A$ would therefore succeed with probability one under $\mathcal{D}_n^{\rm low}$, contradicting the average-case hardness proved above.
+\end{proof}
 
 \section{Setup for numerical validation}\label{sec:setup}
 To train the models, we use MMD loss with a kernel that consists of weight-2 and weight-1 frequencies. We train all models with the Adam optimizer, learning rate 0.02 (obtained from hyperparameter search), $\beta_1=0.9, \beta_2=0.999$ (by default), where the initial parameters are sampled u.a.r.~in $[0, 2\pi)^D$. For each architecture, we train for 5 resource budgets (sample sizes from 64 to 1024) using the MMD loss. If the sample size is too small, the Monte Carlo noise will be too large to be overcome by the gradient signal, thereby hindering training. The sample size cannot be too large, as this would increase training cost and cause an out-of-memory problem.
@@ -1280,7 +1301,7 @@ To demonstrate the full training of IQP-QCBM on real-world datasets, we also per
 
 \section{Architecture Illustration}
 \begin{figure}[h]
-  \begin{center}    \centerline{\includegraphics[width=0.6\columnwidth]{lattice_illustration.pdf}}
+  \begin{center}    \centerline{\includegraphics[width=0.5\columnwidth]{lattice_illustration.pdf}}
     \caption{Illustration of the IQP architectures considered in this paper: product state (\cref{eg:product}), 2D lattice (\cref{eg:lattice}), sparse Erd\H os-R\'enyi graph (\cref{eg:sparse}), and complete graph (\cref{eg:complete}).}
     \label{pic:illustration}
   \end{center}
